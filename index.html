@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,viewport-fit=cover">
-<title>幻刃紀 — 角色面板</title>
+<title>幻刃紀 v3 — 角色面板</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;700;900&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -186,9 +186,10 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
 
 /* BOTTOM NAV */
 .bottom-nav{position:relative;z-index:10;background:linear-gradient(0deg,rgba(7,9,15,.98),rgba(11,14,28,.95));
-  border-top:1px solid var(--border2);display:flex;
-  padding-bottom:env(safe-area-inset-bottom,0px);}
-.nav-btn{flex:1;padding:9px 4px 12px;display:flex;flex-direction:column;align-items:center;gap:3px;
+  border-top:1px solid var(--border2);display:flex;flex-direction:column;}
+.nav-btn-row{display:flex;width:100%;}
+.nav-safe{height:env(safe-area-inset-bottom,20px);min-height:20px;background:rgba(7,9,15,.98);}
+.nav-btn{flex:1;padding:9px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:3px;
   cursor:pointer;border:none;background:transparent;transition:background .18s;font-family:'Noto Serif TC',serif;}
 .nav-btn.active{background:rgba(200,168,74,.07);}
 .nav-ico{font-size:17px;}
@@ -205,11 +206,14 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
   <div class="char-tabs" id="tabs"></div>
   <div class="main" id="main"></div>
   <div class="bottom-nav">
-    <button class="nav-btn active" onclick="switchPage(0)"><span class="nav-ico">⚔️</span><span class="nav-lbl">狀態</span></button>
-    <button class="nav-btn" onclick="switchPage(1)"><span class="nav-ico">🌿</span><span class="nav-lbl">技能樹</span></button>
-    <button class="nav-btn" onclick="switchPage(2)"><span class="nav-ico">🗺️</span><span class="nav-lbl">地圖</span></button>
-    <button class="nav-btn" onclick="switchPage(3)"><span class="nav-ico">📖</span><span class="nav-lbl">日誌</span></button>
-    <button class="nav-btn" onclick="switchPage(4)"><span class="nav-ico">⚙️</span><span class="nav-lbl">設定</span></button>
+    <div class="nav-btn-row">
+      <button class="nav-btn active" onclick="switchPage(0)"><span class="nav-ico">⚔️</span><span class="nav-lbl">狀態</span></button>
+      <button class="nav-btn" onclick="switchPage(1)"><span class="nav-ico">🌿</span><span class="nav-lbl">技能樹</span></button>
+      <button class="nav-btn" onclick="switchPage(2)"><span class="nav-ico">🗺️</span><span class="nav-lbl">地圖</span></button>
+      <button class="nav-btn" onclick="switchPage(3)"><span class="nav-ico">📖</span><span class="nav-lbl">日誌</span></button>
+      <button class="nav-btn" onclick="switchPage(4)"><span class="nav-ico">⚙️</span><span class="nav-lbl">設定</span></button>
+    </div>
+    <div class="nav-safe"></div>
   </div>
 </div>
 <script>
