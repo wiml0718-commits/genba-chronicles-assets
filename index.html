@@ -624,32 +624,102 @@ function jFilter(char,btn){
     block.style.display=vis?'':'none';
   });
 }
-function renderJournal(c){return `<div class="jnl-page">
+function renderJournal(c){
+  const key=c.key;
+  const acc=c.acc;
+  const profiles={
+    anei:{
+      name:'暗影 Anei',realName:'本名：琳恩・夏洛伊',
+      tags:[
+        {t:'影刃刺客',cls:'ul',style:'color:#9b7fd4'},
+        {t:'傭兵',cls:'ul',style:'color:#9b7fd4'},
+        {t:'復仇者',cls:'ul',style:'color:var(--gold)'},
+        {t:'夏洛伊王國公主',cls:'lk',style:''},
+        {t:'封印的繼承者',cls:'lk',style:''},
+      ],
+      rows:[
+        {lbl:'現況',text:'追查雙親被暗殺、大臣叛變的真相。以傭兵身分遊走幻刃洲，劍術由師父傑特傳授。',lk:false},
+        {lbl:'已知過去',text:'十年前黑月之變中失去雙親，師父傑特帶她殺出重圍。此後在銅葉嶺山隱習劍，成年後獨自踏上調查之路。',lk:false},
+      ],
+      unknowns:['艾爾薇斯與王妃之死的關聯。','自己的旅途是被引導的陷阱。','菲拉的真實身世。'],
+      wound:'「復仇的終點，是殺死同伴的手。」',
+      arc:'從「復仇的公主」→ 放下身分，選擇自己的生活',
+    },
+    lika:{
+      name:'莉卡莉絲 Licarise',realName:'緋色酒館 老闆',
+      tags:[
+        {t:'酒館老闆',cls:'ul',style:'color:#d46050'},
+        {t:'情報商人',cls:'ul',style:'color:#d46050'},
+        {t:'術師',cls:'ul',style:'color:#d46050'},
+        {t:'沒落貴族之女',cls:'lk',style:''},
+        {t:'前夫組織的受害者',cls:'lk',style:''},
+        {t:'傑特的舊識',cls:'lk',style:''},
+      ],
+      rows:[
+        {lbl:'現況',text:'以情報商人身分潛伏夏洛伊王都緋色酒館，蒐集情報、等待時機。',lk:false},
+        {lbl:'已知過去（部分）',text:'與暗影同在山隱生活過一段時間，視暗影如己出，知曉她的真實身分。',lk:false},
+      ],
+      unknowns:['十年前外嫁貴族之女，以為丈夫家族是擁王派，親手引狼入室，家人與國王因此而死。','王國覆滅後被夫家拋棄，中毒毀容，由傑特所救，後以魔法修復外貌。'],
+      wound:'「我的信任，殺死了所有我愛的人。」',
+      arc:'從「被拋棄的人」→ 建立一個不拋棄任何人的地方',
+    },
+    fira:{
+      name:'菲拉 Fira',realName:'月之眼 第二小隊長',
+      tags:[
+        {t:'傭兵',cls:'ul',style:'color:#d47040'},
+        {t:'第二小隊長',cls:'ul',style:'color:#d47040'},
+        {t:'魔王混血後裔',cls:'lk',style:''},
+        {t:'第三重血祭候補',cls:'lk',style:''},
+        {t:'命運的主體',cls:'lk',style:''},
+      ],
+      rows:[
+        {lbl:'現況',text:'跟隨艾爾薇斯行動，來源不明的異常力量時常顯現，原因不詳。',lk:false},
+        {lbl:'已知過去',text:'十年前家園月隱砦邊境村毀於戰亂，養父生母被殺。此後由月之眼前任首領月華收養，與艾爾薇斯情同姐妹。',lk:false},
+      ],
+      unknowns:['自己是上古魔王的混血後裔——收養本是二把手的計謀。','「異常力量」的真實來源：魔王血脈。'],
+      wound:'「我的存在，是一個詛咒。」',
+      arc:'從「傭兵團的妹妹」→ 奪回自己命運的主體性',
+    },
+    elweis:{
+      name:'艾爾薇斯 Elweis',realName:'月之眼傭兵團首領',
+      tags:[
+        {t:'傭兵',cls:'ul',style:'color:#7090c8'},
+        {t:'月之眼首領',cls:'ul',style:'color:#7090c8'},
+        {t:'被利用的兇器',cls:'lk',style:''},
+        {t:'禁忌之術繼承者',cls:'lk',style:''},
+      ],
+      rows:[
+        {lbl:'現況',text:'率領月之眼傭兵團，四處尋找失蹤的前任首領月華。',lk:false},
+        {lbl:'已知過去',text:'十年前作為月之眼天才新人，奉二把手之命執行王都任務。任務結束後才逐漸意識到事態異常。',lk:false},
+      ],
+      unknowns:['從暗影身世推斷出王妃之死與自己的關聯——一直暗中保護她，但從未開口。'],
+      unknownLabel:'藏在心底的秘密',
+      wound:'「我是被利用的兇器，用強大贖罪。」',
+      arc:'不再以強大償還罪惡感 → 放下罪惡感，選擇活著',
+    },
+  };
+  const p=profiles[key];
+  const tagsHTML=p.tags.map(t=>`<span class="j-tag ${t.cls}" ${t.style?`style="${t.style}"`:''}>${t.t}</span>`).join('');
+  const rowsHTML=p.rows.map(r=>`<div><div class="j-row-label">${r.lbl}</div><div class="j-row-text">${r.text}</div></div>`).join('');
+  const unkLabel=p.unknownLabel||'未知的事';
+  const unkHTML=p.unknowns.map(u=>`<div class="j-row-text lk">${u}</div>`).join('');
+  const profileHTML=`
+    <div class="j-card show" id="jc-cur" style="animation:pageIn .3s ease both">
+      <div class="j-card-head">
+        <div class="j-cname" style="color:${acc}">${p.name}</div>
+        <div class="j-crealname">${p.realName}</div>
+        <div class="j-tags">${tagsHTML}</div>
+      </div>
+      <div class="j-card-body">
+        ${rowsHTML}
+        <div><div class="j-row-label">${unkLabel}</div>${unkHTML}</div>
+        <div class="wound">${p.wound}</div>
+        <div class="arc">${p.arc}</div>
+      </div>
+    </div>`;
+  return `<div class="jnl-page">
   <div class="jnl-subnav"><button class="active" id="jtab-p" onclick="switchJnl('profile')">角色檔案</button><button id="jtab-e" onclick="switchJnl('events')">事件記錄</button></div>
-  <div class="jnl-scroll" id="jnl-profile">
-    <div class="j-char-grid">
-      <div class="j-ctab sel" data-c="anei" onclick="jSelectChar('anei')" style="border-left:2px solid #9b7fd4"><div class="jcn" style="color:#9b7fd4">暗影</div><div class="jcr">影刃刺客</div></div>
-      <div class="j-ctab" data-c="lika" onclick="jSelectChar('lika')" style="border-left:2px solid #d46050"><div class="jcn" style="color:#d46050">莉卡莉絲</div><div class="jcr">酒館術師</div></div>
-      <div class="j-ctab" data-c="fira" onclick="jSelectChar('fira')" style="border-left:2px solid #d47040"><div class="jcn" style="color:#d47040">菲拉</div><div class="jcr">第二小隊長</div></div>
-      <div class="j-ctab" data-c="elweis" onclick="jSelectChar('elweis')" style="border-left:2px solid #7090c8"><div class="jcn" style="color:#7090c8">艾爾薇斯</div><div class="jcr">月之眼首領</div></div>
-    </div>
-    <div class="j-card show" id="jc-anei">
-      <div class="j-card-head"><div class="j-cname" style="color:#9b7fd4">暗影 Anei</div><div class="j-crealname">本名：琳恩・夏洛伊</div><div class="j-tags"><span class="j-tag ul" style="color:#9b7fd4">影刃刺客</span><span class="j-tag ul" style="color:#9b7fd4">傭兵</span><span class="j-tag ul" style="color:var(--gold)">復仇者</span><span class="j-tag lk">夏洛伊王國公主</span><span class="j-tag lk">封印的繼承者</span></div></div>
-      <div class="j-card-body"><div><div class="j-row-label">現況</div><div class="j-row-text">追查雙親被暗殺、大臣叛變的真相。以傭兵身分遊走幻刃洲，劍術由師父傑特傳授。</div></div><div><div class="j-row-label">已知過去</div><div class="j-row-text">十年前黑月之變中失去雙親，師父傑特帶她殺出重圍。此後在銅葉嶺山隱習劍，成年後獨自踏上調查之路。</div></div><div><div class="j-row-label">未知的事</div><div class="j-row-text lk">艾爾薇斯與王妃之死的關聯。</div><div class="j-row-text lk">自己的旅途是被引導的陷阱。</div><div class="j-row-text lk">菲拉的真實身世。</div></div><div class="wound">「復仇的終點，是殺死同伴的手。」</div><div class="arc">從「復仇的公主」→ 放下身分，選擇自己的生活</div></div>
-    </div>
-    <div class="j-card" id="jc-lika">
-      <div class="j-card-head"><div class="j-cname" style="color:#d46050">莉卡莉絲 Licarise</div><div class="j-crealname">緋色酒館 老闆</div><div class="j-tags"><span class="j-tag ul" style="color:#d46050">酒館老闆</span><span class="j-tag ul" style="color:#d46050">情報商人</span><span class="j-tag ul" style="color:#d46050">術師</span><span class="j-tag lk">沒落貴族之女</span><span class="j-tag lk">前夫組織的受害者</span><span class="j-tag lk">傑特的舊識</span></div></div>
-      <div class="j-card-body"><div><div class="j-row-label">現況</div><div class="j-row-text">以情報商人身分潛伏夏洛伊王都緋色酒館，蒐集情報、等待時機。</div></div><div><div class="j-row-label">已知過去（部分）</div><div class="j-row-text">與暗影同在山隱生活過一段時間，視暗影如己出，知曉她的真實身分。</div><div class="j-row-text lk">十年前外嫁貴族之女，以為丈夫家族是擁王派，親手引狼入室，家人與國王因此而死。</div><div class="j-row-text lk">王國覆滅後被夫家拋棄，中毒毀容，由傑特所救，後以魔法修復外貌。</div></div><div class="wound">「我的信任，殺死了所有我愛的人。」</div><div class="arc">從「被拋棄的人」→ 建立一個不拋棄任何人的地方</div></div>
-    </div>
-    <div class="j-card" id="jc-fira">
-      <div class="j-card-head"><div class="j-cname" style="color:#d47040">菲拉 Fira</div><div class="j-crealname">月之眼 第二小隊長</div><div class="j-tags"><span class="j-tag ul" style="color:#d47040">傭兵</span><span class="j-tag ul" style="color:#d47040">第二小隊長</span><span class="j-tag lk">魔王混血後裔</span><span class="j-tag lk">第三重血祭候補</span><span class="j-tag lk">命運的主體</span></div></div>
-      <div class="j-card-body"><div><div class="j-row-label">現況</div><div class="j-row-text">跟隨艾爾薇斯行動，來源不明的異常力量時常顯現，原因不詳。</div></div><div><div class="j-row-label">已知過去</div><div class="j-row-text">十年前家園月隱砦邊境村毀於戰亂，養父生母被殺。此後由月之眼前任首領月華收養，與艾爾薇斯情同姐妹。</div></div><div><div class="j-row-label">未知的事</div><div class="j-row-text lk">自己是上古魔王的混血後裔——收養本是二把手的計謀。</div><div class="j-row-text lk">「異常力量」的真實來源：魔王血脈。</div></div><div class="wound">「我的存在，是一個詛咒。」</div><div class="arc">從「傭兵團的妹妹」→ 奪回自己命運的主體性</div></div>
-    </div>
-    <div class="j-card" id="jc-elweis">
-      <div class="j-card-head"><div class="j-cname" style="color:#7090c8">艾爾薇斯 Elweis</div><div class="j-crealname">月之眼傭兵團首領</div><div class="j-tags"><span class="j-tag ul" style="color:#7090c8">傭兵</span><span class="j-tag ul" style="color:#7090c8">月之眼首領</span><span class="j-tag lk">被利用的兇器</span><span class="j-tag lk">禁忌之術繼承者</span></div></div>
-      <div class="j-card-body"><div><div class="j-row-label">現況</div><div class="j-row-text">率領月之眼傭兵團，四處尋找失蹤的前任首領月華。</div></div><div><div class="j-row-label">已知過去</div><div class="j-row-text">十年前作為月之眼天才新人，奉二把手之命執行王都任務。任務結束後才逐漸意識到事態異常。</div></div><div><div class="j-row-label">藏在心底的秘密</div><div class="j-row-text lk">從暗影身世推斷出王妃之死與自己的關聯——一直暗中保護她，但從未開口。</div></div><div class="wound">「我是被利用的兇器，用強大贖罪。」</div><div class="arc">不再以強大償還罪惡感 → 放下罪惡感，選擇活著</div></div>
-    </div>
-  </div>
+  <div class="jnl-scroll" id="jnl-profile">${profileHTML}</div>
   <div class="jnl-scroll" id="jnl-events" style="display:none">
     <div class="ev-legend"><div class="ev-legend-item"><div class="ev-dot key"></div>關鍵</div><div class="ev-legend-item"><div class="ev-dot rev"></div>揭露</div><div class="ev-legend-item"><div class="ev-dot loss"></div>失去</div><div class="ev-legend-item"><div class="ev-dot norm"></div>一般</div></div>
     <div class="ev-filter"><button class="ev-fbtn active" onclick="jFilter('all',this)">全部</button><button class="ev-fbtn" onclick="jFilter('anei',this)">暗影</button><button class="ev-fbtn" onclick="jFilter('lika',this)">莉卡莉絲</button><button class="ev-fbtn" onclick="jFilter('fira',this)">菲拉</button><button class="ev-fbtn" onclick="jFilter('elweis',this)">艾爾薇斯</button></div>
