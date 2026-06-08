@@ -68,7 +68,19 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
 .sec{font-size:8px;letter-spacing:3px;color:var(--gold);display:flex;align-items:center;gap:8px;margin-bottom:6px;}
 .sec::before{content:'';width:3px;height:11px;border-radius:2px;background:var(--gold);}
 .sec::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border2),transparent);}
-.equip-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.equip-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  grid-template-rows:auto auto;
+  gap:6px;
+}
+/* 固定槽位：武器左上、鞋子左下、頭飾中上、防具中下、飾品右上、飾品右下 */
+.equip-grid .equip-slot:nth-child(1){grid-column:1;grid-row:1;} /* 武器 */
+.equip-grid .equip-slot:nth-child(2){grid-column:2;grid-row:2;} /* 防具 */
+.equip-grid .equip-slot:nth-child(3){grid-column:2;grid-row:1;} /* 頭飾 */
+.equip-grid .equip-slot:nth-child(4){grid-column:1;grid-row:2;} /* 鞋子 */
+.equip-grid .equip-slot:nth-child(5){grid-column:3;grid-row:1;} /* 飾品1 */
+.equip-grid .equip-slot:nth-child(6){grid-column:3;grid-row:2;} /* 飾品2 */
 .equip-slot{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:7px 8px;
   display:flex;flex-direction:column;gap:4px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;}
 .equip-slot:hover{border-color:var(--border2);}
@@ -114,38 +126,66 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
 .attr-val{font-size:12px;font-weight:700;}
 .trait-row{display:flex;gap:4px;flex-wrap:wrap;}
 .trait{font-size:7px;padding:2px 7px;border-radius:3px;letter-spacing:.5px;}
-.tree-section{padding:10px 12px 0;}
-.skill-tree{display:flex;flex-direction:column;gap:0;}
-.tree-row{display:flex;align-items:flex-start;gap:0;padding:0 4px;position:relative;}
-.tree-node{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;position:relative;cursor:pointer;padding:0 2px 12px;}
-.node-circle{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;position:relative;z-index:2;border:2px solid;transition:all .22s;flex-shrink:0;}
-.node-circle:hover{transform:scale(1.12);}
-.node-unlocked .node-circle{background:rgba(255,255,255,.06);box-shadow:0 0 12px currentColor;}
-.node-locked .node-circle{background:rgba(255,255,255,.03);border-color:var(--border2)!important;filter:grayscale(.8) brightness(.5);}
-.node-maxed .node-circle{animation:maxPulse 2s ease-in-out infinite;}
-@keyframes maxPulse{0%,100%{box-shadow:0 0 8px currentColor;}50%{box-shadow:0 0 22px currentColor,0 0 38px currentColor;}}
-.node-name{font-size:8px;letter-spacing:.3px;text-align:center;line-height:1.3;}
-.node-lv{font-size:7px;color:var(--text2);text-align:center;}
-.node-desc{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(10,14,26,.96);border:1px solid var(--border2);border-radius:6px;padding:6px 8px;width:110px;font-size:8px;color:var(--text);line-height:1.5;pointer-events:none;opacity:0;transition:opacity .2s;z-index:20;text-align:center;}
-.tree-node:hover .node-desc{opacity:1;}
-.tree-connector{position:absolute;left:50%;top:100%;width:1px;height:12px;transform:translateX(-50%);z-index:0;}
-.passive-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:7px 4px 0;}
-.passive-card{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:7px 7px 6px;display:flex;gap:7px;align-items:flex-start;cursor:pointer;transition:all .18s;}
-.passive-card:hover{border-color:var(--border2);transform:translateY(-2px);}
-.passive-ico{font-size:15px;flex-shrink:0;margin-top:1px;}
-.passive-name{font-size:9px;letter-spacing:.3px;margin-bottom:2px;}
-.passive-desc{font-size:7px;color:var(--text2);line-height:1.5;}
-.passive-lv{font-size:7px;margin-top:3px;}
-.sp-traits{display:flex;flex-direction:column;gap:6px;padding:0 4px 16px;}
-.sp-card{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:9px 10px;display:flex;gap:10px;align-items:center;position:relative;overflow:hidden;}
-.sp-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;}
-.sp-ico{font-size:18px;flex-shrink:0;}
-.sp-body{flex:1;min-width:0;}
-.sp-name{font-size:11px;letter-spacing:.5px;margin-bottom:2px;}
-.sp-desc{font-size:8px;color:var(--text2);line-height:1.5;}
-.sp-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
-.sp-lv-badge{font-size:8px;font-weight:900;padding:2px 7px;border-radius:3px;letter-spacing:1px;}
-.sp-cost{font-size:7px;color:var(--text2);}
+
+/* ══ SKILL MANAGEMENT PAGE ══ */
+.sk-page{padding:0 0 16px;}
+.sk-section-bar{padding:9px 14px 7px;background:linear-gradient(180deg,rgba(7,9,15,.98),rgba(11,14,28,.95));border-bottom:1px solid var(--border2);position:sticky;top:0;z-index:8;}
+.sk-section-title{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;color:var(--gold);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.sk-section-title::before{content:'';width:3px;height:10px;border-radius:2px;background:var(--gold);}
+.sk-section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border2),transparent);}
+/* 裝備槽 grid */
+.sk-slots{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px 12px;}
+.sk-slot{background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:8px 10px;cursor:pointer;transition:all .18s;min-height:54px;display:flex;align-items:center;gap:9px;position:relative;}
+.sk-slot:hover{border-color:var(--border2);}
+.sk-slot.filled{border-color:var(--border2);}
+.sk-slot.empty{border-style:dashed;opacity:.5;}
+.sk-slot-ico{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.sk-slot-body{flex:1;min-width:0;}
+.sk-slot-label{font-size:7px;color:var(--text2);letter-spacing:1.5px;margin-bottom:2px;}
+.sk-slot-name{font-size:10px;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sk-slot-cost{font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700;white-space:nowrap;margin-top:3px;display:inline-block;}
+.sk-slot-num{position:absolute;top:5px;right:7px;font-size:7px;color:var(--border2);font-family:'Cinzel',serif;}
+/* 技能池 */
+.sk-pool{padding:6px 12px 0;}
+.sk-pool-item{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:9px 11px;margin-bottom:6px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;}
+.sk-pool-item:hover{border-color:var(--border2);transform:translateX(2px);}
+.sk-pool-item.equipped{border-color:currentColor;}
+.sk-pool-item.equipped::after{content:'裝備中';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:7px;padding:2px 6px;border-radius:2px;background:rgba(255,255,255,.06);color:var(--text2);letter-spacing:.5px;}
+.sk-pool-ico{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.sk-pool-body{flex:1;min-width:0;padding-right:50px;}
+.sk-pool-name{font-size:10px;letter-spacing:.3px;margin-bottom:2px;}
+.sk-pool-desc{font-size:8px;color:var(--text2);line-height:1.5;}
+.sk-pool-lv{font-size:7px;color:var(--text2);margin-top:3px;}
+/* 特性區 */
+.tr-slots{display:flex;flex-wrap:wrap;gap:5px;padding:8px 12px;}
+.tr-slot{background:var(--panel2);border:1px solid var(--border);border-radius:7px;padding:5px 10px;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:6px;flex:1;min-width:calc(50% - 3px);}
+.tr-slot:hover{border-color:var(--border2);}
+.tr-slot.filled{border-left-width:2px;}
+.tr-slot.empty{border-style:dashed;opacity:.45;}
+.tr-slot-ico{font-size:14px;flex-shrink:0;}
+.tr-slot-body{flex:1;min-width:0;}
+.tr-slot-name{font-size:9px;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tr-slot-desc{font-size:7px;color:var(--text2);line-height:1.4;margin-top:1px;}
+.tr-pool-item{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:9px 11px;margin-bottom:6px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;}
+.tr-pool-item:hover{border-color:var(--border2);}
+.tr-pool-item.equipped{border-color:currentColor;}
+.tr-pool-item.equipped::after{content:'裝備中';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:7px;padding:2px 6px;border-radius:2px;background:rgba(255,255,255,.06);color:var(--text2);letter-spacing:.5px;}
+.tr-pool-item.locked{opacity:.35;cursor:default;}
+.tr-pool-item.locked::after{content:'🔒 未解鎖';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:7px;padding:2px 6px;border-radius:2px;background:rgba(0,0,0,.3);color:var(--text2);}
+.tr-pool-ico{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.tr-pool-body{flex:1;min-width:0;padding-right:55px;}
+.tr-pool-name{font-size:10px;letter-spacing:.3px;margin-bottom:2px;}
+.tr-pool-desc{font-size:8px;color:var(--text2);line-height:1.5;}
+.tr-pool-meta{font-size:7px;margin-top:3px;}
+/* 選擇 modal 覆用 .modal-* */
+.sk-pick-modal .modal-sheet{max-height:70vh;overflow-y:auto;border-radius:16px 16px 0 0;}
+.sk-pick-list{display:flex;flex-direction:column;gap:5px;margin-top:10px;}
+.sk-pick-item{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:9px 11px;cursor:pointer;transition:all .18s;}
+.sk-pick-item:hover{border-color:var(--border2);background:rgba(255,255,255,.07);}
+.sk-pick-item.cur{border-color:var(--gold);background:rgba(200,168,74,.06);}
+.sk-pick-item-none{padding:10px 11px;border:1px dashed var(--border2);border-radius:8px;font-size:10px;color:var(--text2);text-align:center;cursor:pointer;transition:all .18s;letter-spacing:1px;}
+.sk-pick-item-none:hover{border-color:#c83838;color:#f07070;}
+.sk-counter{font-size:8px;color:var(--text2);letter-spacing:1px;margin-top:4px;}
 .placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;opacity:.35;}
 .placeholder-ico{font-size:52px;}
 .placeholder-title{font-family:'Cinzel',serif;font-size:12px;letter-spacing:4px;color:var(--gold);}
@@ -153,7 +193,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
 .bottom-nav{position:relative;z-index:10;background:linear-gradient(0deg,rgba(7,9,15,.98),rgba(11,14,28,.95));
   border-top:1px solid var(--border2);display:flex;flex-direction:column;}
 .nav-btn-row{display:flex;width:100%;}
-.nav-safe{height:env(safe-area-inset-bottom,20px);min-height:20px;background:rgba(7,9,15,.98);}
+.nav-safe{height:env(safe-area-inset-bottom,34px);min-height:34px;background:rgba(7,9,15,.98);}
 .nav-btn{flex:1;padding:9px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:3px;
   cursor:pointer;border:none;background:transparent;transition:background .18s;font-family:'Noto Serif TC',serif;}
 .nav-btn.active{background:rgba(200,168,74,.07);}
@@ -250,6 +290,24 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-famil
 .ev-type.rev{background:rgba(139,92,246,.12);color:#a78bfa;}
 .ev-type.loss{background:rgba(200,56,56,.12);color:#f07070;}
 
+
+/* ══ UNEQUIP MODAL ══ */
+.modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .18s ease;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-sheet{width:100%;max-width:480px;background:var(--panel2);border:1px solid var(--border2);border-radius:16px 16px 0 0;padding:20px 18px calc(env(safe-area-inset-bottom,34px) + 16px);animation:slideUp .22s ease;}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px;color:var(--gold);margin-bottom:4px;}
+.modal-item-name{font-size:15px;letter-spacing:.5px;margin-bottom:4px;}
+.modal-item-bonus{font-size:10px;color:#70f0a8;margin-bottom:16px;}
+.modal-btns{display:flex;gap:8px;}
+.modal-btn{flex:1;padding:11px 0;border-radius:8px;font-family:'Noto Serif TC',serif;font-size:11px;letter-spacing:1px;cursor:pointer;border:none;transition:all .18s;}
+.modal-btn-cancel{background:rgba(255,255,255,.06);color:var(--text2);border:1px solid var(--border2);}
+.modal-btn-confirm{background:rgba(200,56,56,.15);color:#f08080;border:1px solid rgba(200,56,56,.3);}
+.modal-btn-confirm:hover{background:rgba(200,56,56,.28);}
+/* 空槽樣式 */
+.equip-slot.empty{opacity:.4;border-style:dashed;}
+.equip-slot.empty .equip-ico{opacity:.3;}
+
 </style>
 </head>
 <body>
@@ -277,121 +335,183 @@ const FULL={anei:"anei_full.jpg",lika:"licarise_full.jpg",fira:"fira_full.jpg",e
 const PAGE_TITLES=["裝備 & 狀態","全身立繪 & 技能樹","世界地圖","冒險日誌","系統設定"];
 let curChar=0, curPage=0;
 const CHARS=[
-  {key:"anei",nameEn:"Anei",nameZh:"暗　影",cls:"影刃刺客・前王國公主",lv:1,acc:"#9b7fd4",
+  {key:"anei",nameEn:"Anei",nameZh:"暗　影",cls:"影刃刺客・前王國公主",lv:15,acc:"#9b7fd4",
    bg:"radial-gradient(ellipse at 30% 50%,rgba(80,40,140,.25),transparent 70%)",
    hp:1240,maxHp:1600,mp:580,maxMp:700,rb:65,maxRb:100,exp:2400,nextExp:3200,
    str:62,mag:78,def:44,spd:95,
    traits:[{l:"暗屬性",c:"#7040a0"},{l:"刺客",c:"#504080"},{l:"棋局之心",c:"#806080"}],
-   equip:[
-     {t:"武器",name:"暗影・武士刀",ico:"🗡️",bonus:"+MAG 38 / 暴擊+15%",r:"rarity-s"},
-     {t:"防具",name:"影布黑袍",ico:"🥷",bonus:"+SPD 22 / 暗屬抵抗",r:"rarity-a"},
-     {t:"頭飾",name:"殘棋髮飾",ico:"♟️",bonus:"+MAG 15 / MP+80",r:"rarity-a"},
-     {t:"鞋子",name:"影踏靴",ico:"👢",bonus:"+SPD 18 / 消音",r:"rarity-b"},
-     {t:"飾品",name:"陰陽玉墜",ico:"☯️",bonus:"+迴避率 12%",r:"rarity-b"},
-     {t:"飾品",name:"殘月戒指",ico:"💍",bonus:"+暗屬攻擊 10%",r:"rarity-b"},
-   ],
-   abilities:[
-     {ico:"♟",bg:"#302060",name:"落子無悔",desc:"快速斬擊，無視防禦30%",cost:"18 MP",cc:"cost-mp"},
-     {ico:"⊞",bg:"#602030",name:"縱橫之局",desc:"棋盤範圍攻擊，全列敵人",cost:"ATB×3",cc:"cost-atb"},
-     {ico:"🌑",bg:"#1a0830",name:"復國之誓・黑刃",desc:"【LIMIT】亡國之痛化為力量",cost:"LIMIT",cc:"cost-lmt"},
-   ],
    statusAilments:[],
-   spTraits:[
-     {ico:"🌑",name:"暗影適性",desc:"暗屬技能消耗MP減少15%，暗屬傷害+10%",lv:1,maxLv:3,nextCost:"15 SP",c:"#7040a0"},
-     {ico:"♟",name:"棋局之心",desc:"戰鬥開始時有30%機率讀取敵方行動，可預判攻擊",lv:1,maxLv:2,nextCost:"20 SP",c:"#504080"},
+   // ── 裝備 ──
+   inventory:[
+     {id:'anei_e1',t:"武器",name:"暗影・武士刀",ico:"🗡️",bonus:"+MAG 38 / 暴擊+15%",r:"rarity-s"},
+     {id:'anei_e2',t:"防具",name:"影布黑袍",ico:"🥷",bonus:"+SPD 22 / 暗屬抵抗",r:"rarity-a"},
+     {id:'anei_e3',t:"頭飾",name:"殘棋髮飾",ico:"♟️",bonus:"+MAG 15 / MP+80",r:"rarity-a"},
+     {id:'anei_e4',t:"鞋子",name:"影踏靴",ico:"👢",bonus:"+SPD 18 / 消音",r:"rarity-b"},
+     {id:'anei_e5',t:"飾品",name:"陰陽玉墜",ico:"☯️",bonus:"+迴避率 12%",r:"rarity-b"},
+     {id:'anei_e6',t:"飾品",name:"殘月戒指",ico:"💍",bonus:"+暗屬攻擊 10%",r:"rarity-b"},
+     {id:'anei_e7',t:"武器",name:"破曉刃",ico:"⚔️",bonus:"+STR 20 / 命中+8%",r:"rarity-b"},
+     {id:'anei_e8',t:"防具",name:"影衛輕甲",ico:"🛡️",bonus:"+DEF 18 / HP+150",r:"rarity-b"},
    ],
-   tree:[
-     [{ico:"⚡",name:"影步",desc:"瞬間移位至敵後方",lv:"5/5",s:"maxed"},{ico:"🗡️",name:"暗刃",desc:"單體斬擊，暗屬傷害",lv:"5/5",s:"maxed"},{ico:"🛡️",name:"影避",desc:"被動：迴避率+12%",lv:"3/5",s:"unlocked"}],
-     [{ico:"♟",name:"落子無悔",desc:"快速連斬，無視防禦30%",lv:"4/5",s:"unlocked"},{ico:"🌑",name:"月蝕刃",desc:"蓄力大斬，暗+物理",lv:"2/5",s:"unlocked"},{ico:"👁",name:"觀心術",desc:"看穿敵人弱點，暴擊+25%",lv:"0/5",s:"locked"}],
-     [{ico:"⊞",name:"縱橫之局",desc:"棋盤範圍攻擊全列",lv:"1/3",s:"unlocked"},{ico:"🌑",name:"復國之誓",desc:"【LIMIT】釋放全部封印",lv:"0/1",s:"locked"},{ico:"♛",name:"棋局終局",desc:"全場敵人石化一回合",lv:"0/3",s:"locked"}],
+   equippedEquip:['anei_e1','anei_e2','anei_e3','anei_e4','anei_e5','anei_e6'],
+   // ── 技能 ──
+   activePool:[
+     {id:'sk_a1',ico:"⚡",bg:"#302060",name:"影步",desc:"瞬間移位至敵後方",cost:"12 MP",cc:"cost-mp",unlockLv:1},
+     {id:'sk_a2',ico:"🗡️",bg:"#401840",name:"暗刃",desc:"單體斬擊，暗屬傷害×1.8",cost:"18 MP",cc:"cost-mp",unlockLv:1},
+     {id:'sk_a3',ico:"♟",bg:"#302060",name:"落子無悔",desc:"快速斬擊，無視防禦30%",cost:"18 MP",cc:"cost-mp",unlockLv:5},
+     {id:'sk_a4',ico:"🌑",bg:"#1a0830",name:"月蝕刃",desc:"蓄力大斬，暗+物理雙屬",cost:"28 MP",cc:"cost-mp",unlockLv:8},
+     {id:'sk_a5',ico:"⊞",bg:"#602030",name:"縱橫之局",desc:"棋盤範圍攻擊，全列敵人",cost:"ATB×3",cc:"cost-atb",unlockLv:12},
+     {id:'sk_a6',ico:"🌑",bg:"#1a0830",name:"復國之誓・黑刃",desc:"【LIMIT】亡國之痛化為力量，全場暗屬爆發",cost:"LIMIT",cc:"cost-lmt",unlockLv:15},
    ],
-   passives:[{ico:"🌸",name:"梅影",desc:"夜間場景攻擊+20%",lv:"Lv.3",c:"#7040a0"},{ico:"⚔️",name:"雙持適性",desc:"雙刀時追加一擊",lv:"Lv.2",c:"#504080"},{ico:"♟",name:"棋士之眼",desc:"戰鬥開始看穿敵方行動",lv:"Lv.1",c:"#806080"}]},
-  {key:"lika",nameEn:"Licarise",nameZh:"莉卡莉絲",cls:"酒館術師・情報商人",lv:1,acc:"#d46050",
+   passivePool:[
+     {id:'sk_p1',ico:"🌸",name:"梅影",desc:"夜間場景攻擊+20%",lv:"Lv.1",unlockLv:1,c:"#7040a0"},
+     {id:'sk_p2',ico:"⚔️",name:"雙持適性",desc:"雙刀時追加一擊",lv:"Lv.1",unlockLv:3,c:"#504080"},
+     {id:'sk_p3',ico:"♟",name:"棋士之眼",desc:"戰鬥開始看穿敵方行動",lv:"Lv.1",unlockLv:6,c:"#806080"},
+     {id:'sk_p4',ico:"🛡️",name:"影避",desc:"被動：迴避率+12%",lv:"Lv.1",unlockLv:9,c:"#7040a0"},
+     {id:'sk_p5',ico:"👁",name:"觀心術",desc:"看穿敵人弱點，暴擊+25%",lv:"Lv.1",unlockLv:13,c:"#504080"},
+   ],
+   equippedActive:['sk_a1','sk_a3','sk_a5','sk_a6'],
+   equippedPassive:['sk_p1','sk_p2','sk_p3','sk_p4'],
+   // ── 特性 ──
+   traitPool:[
+     {id:'tr1',ico:"🌑",name:"暗影適性",desc:"暗屬技能消耗MP-15%，暗屬傷害+10%",spCost:15,unlocked:true,c:"#7040a0"},
+     {id:'tr2',ico:"♟",name:"棋局之心",desc:"戰鬥開始時有30%機率預判敵方攻擊",spCost:20,unlocked:true,c:"#504080"},
+     {id:'tr3',ico:"🌙",name:"殘月之力",desc:"HP低於30%時，暗屬傷害+35%",spCost:25,unlocked:true,c:"#806080"},
+     {id:'tr4',ico:"⚡",name:"疾影步法",desc:"每場戰鬥開始，速度+15（三回合）",spCost:18,unlocked:true,c:"#7040a0"},
+     {id:'tr5',ico:"🩸",name:"出血專精",desc:"暴擊時附加流血狀態，持續3回合",spCost:22,unlocked:true,c:"#504080"},
+     {id:'tr6',ico:"🎯",name:"暗殺者之眼",desc:"對HP 50%以上的敵人，傷害+20%",spCost:30,unlocked:false,c:"#806080"},
+     {id:'tr7',ico:"🌸",name:"月華庇護",desc:"復仇值滿時，自動回復15% HP",spCost:28,unlocked:false,c:"#7040a0"},
+     {id:'tr8',ico:"♛",name:"棋局終局",desc:"連續攻擊三次後，下一擊必定暴擊",spCost:35,unlocked:false,c:"#504080"},
+   ],
+   equippedTraits:['tr1','tr2','tr3','tr4','tr5'],
+  },
+
+  {key:"lika",nameEn:"Licarise",nameZh:"莉卡莉絲",cls:"酒館術師・情報商人",lv:14,acc:"#d46050",
    bg:"radial-gradient(ellipse at 30% 50%,rgba(140,40,30,.2),transparent 70%)",
    hp:1080,maxHp:1400,mp:820,maxMp:900,rb:40,maxRb:100,exp:1800,nextExp:2800,
    str:45,mag:94,def:38,spd:72,
    traits:[{l:"火屬性",c:"#a03020"},{l:"回復",c:"#804030"},{l:"酒館之主",c:"#906040"}],
-   equip:[
-     {t:"武器",name:"赤鬼・妖刀",ico:"🩸",bonus:"+MAG 52 / 吸血效果",r:"rarity-s"},
-     {t:"防具",name:"血色旗袍",ico:"👘",bonus:"+MP 120 / 咒術加成",r:"rarity-a"},
-     {t:"頭飾",name:"蝴蝶簪",ico:"🦋",bonus:"+MAG 12 / 詠唱速度+",r:"rarity-a"},
-     {t:"鞋子",name:"朱紅繡鞋",ico:"👠",bonus:"+MP 60 / 迴避+5%",r:"rarity-b"},
-     {t:"飾品",name:"酒杯吊墜",ico:"🍷",bonus:"+回復量 20%",r:"rarity-b"},
-     {t:"飾品",name:"賭徒骰子",ico:"🎲",bonus:"+暴擊率 8%",r:"rarity-b"},
-   ],
-   abilities:[
-     {ico:"💊",bg:"#206040",name:"緋紅治癒",desc:"回復單體HP，附帶解毒",cost:"35 MP",cc:"cost-mp"},
-     {ico:"🩸",bg:"#802020",name:"妖刀赤鬼斬",desc:"斬擊後吸收敵方MP",cost:"ATB×2",cc:"cost-atb"},
-     {ico:"🐉",bg:"#601010",name:"赤鬼覺醒・千劍",desc:"【LIMIT】釋放全部封印之力",cost:"LIMIT",cc:"cost-lmt"},
-   ],
    statusAilments:[],
-   spTraits:[
-     {ico:"🍷",name:"酒館人脈",desc:"戰鬥勝利後有機會獲得情報碎片，累積可兌換道具",lv:1,maxLv:3,nextCost:"12 SP",c:"#a03020"},
-     {ico:"🔥",name:"焰術天賦",desc:"火屬性魔法傷害+15%，燃燒狀態持續回合+1",lv:1,maxLv:3,nextCost:"18 SP",c:"#804030"},
+   inventory:[
+     {id:'lika_e1',t:"武器",name:"赤鬼・妖刀",ico:"🩸",bonus:"+MAG 52 / 吸血效果",r:"rarity-s"},
+     {id:'lika_e2',t:"防具",name:"血色旗袍",ico:"👘",bonus:"+MP 120 / 咒術加成",r:"rarity-a"},
+     {id:'lika_e3',t:"頭飾",name:"蝴蝶簪",ico:"🦋",bonus:"+MAG 12 / 詠唱速度+",r:"rarity-a"},
+     {id:'lika_e4',t:"鞋子",name:"朱紅繡鞋",ico:"👠",bonus:"+MP 60 / 迴避+5%",r:"rarity-b"},
+     {id:'lika_e5',t:"飾品",name:"酒杯吊墜",ico:"🍷",bonus:"+回復量 20%",r:"rarity-b"},
+     {id:'lika_e6',t:"飾品",name:"賭徒骰子",ico:"🎲",bonus:"+暴擊率 8%",r:"rarity-b"},
+     {id:'lika_e7',t:"武器",name:"銀月法杖",ico:"🪄",bonus:"+MAG 30 / 詠唱-1",r:"rarity-b"},
    ],
-   tree:[
-     [{ico:"🔥",name:"火炎術",desc:"單體火焰魔法",lv:"5/5",s:"maxed"},{ico:"💊",name:"治癒術",desc:"回復單體HP",lv:"5/5",s:"maxed"},{ico:"🩸",name:"吸血刃",desc:"攻擊吸收敵方HP",lv:"4/5",s:"unlocked"}],
-     [{ico:"🌊",name:"火海",desc:"範圍火焰，持續燃燒",lv:"3/5",s:"unlocked"},{ico:"💉",name:"強化治癒",desc:"回復量+50%，附加護盾",lv:"2/5",s:"unlocked"},{ico:"🍷",name:"醉影術",desc:"使敵方混亂一回合",lv:"0/5",s:"locked"}],
-     [{ico:"🐉",name:"赤龍召喚",desc:"召喚火龍攻擊全體",lv:"1/3",s:"unlocked"},{ico:"🩸",name:"赤鬼覺醒",desc:"【LIMIT】千劍釋放",lv:"0/1",s:"locked"},{ico:"🌸",name:"血色彼岸",desc:"全隊HP全回復",lv:"0/3",s:"locked"}],
+   equippedEquip:['lika_e1','lika_e2','lika_e3','lika_e4','lika_e5','lika_e6'],
+   activePool:[
+     {id:'lk_a1',ico:"💊",bg:"#206040",name:"緋紅治癒",desc:"回復單體HP，附帶解毒",cost:"35 MP",cc:"cost-mp",unlockLv:1},
+     {id:'lk_a2',ico:"🩸",bg:"#802020",name:"妖刀赤鬼斬",desc:"斬擊後吸收敵方MP",cost:"ATB×2",cc:"cost-atb",unlockLv:1},
+     {id:'lk_a3',ico:"🔥",bg:"#602010",name:"火炎術",desc:"單體火焰魔法，燃燒3回合",cost:"22 MP",cc:"cost-mp",unlockLv:4},
+     {id:'lk_a4',ico:"🌊",bg:"#402010",name:"火海",desc:"範圍火焰，全體敵人燃燒",cost:"40 MP",cc:"cost-mp",unlockLv:9},
+     {id:'lk_a5',ico:"💉",bg:"#204040",name:"強化治癒",desc:"回復量+50%，附加護盾",cost:"50 MP",cc:"cost-mp",unlockLv:12},
+     {id:'lk_a6',ico:"🐉",bg:"#601010",name:"赤鬼覺醒・千劍",desc:"【LIMIT】釋放全部封印之力",cost:"LIMIT",cc:"cost-lmt",unlockLv:14},
    ],
-   passives:[{ico:"🍷",name:"酒館情報",desc:"戰後額外獲得情報點",lv:"Lv.4",c:"#a03020"},{ico:"🔥",name:"焰術師",desc:"火屬性魔法傷害+18%",lv:"Lv.3",c:"#804030"},{ico:"💊",name:"妙手回春",desc:"每回合自動回復5%HP",lv:"Lv.2",c:"#906040"}]},
-  {key:"fira",nameEn:"Fira",nameZh:"菲　拉",cls:"傭兵・月之眼第二小隊長",lv:1,acc:"#d47040",
+   passivePool:[
+     {id:'lk_p1',ico:"🍷",name:"酒館情報",desc:"戰後額外獲得情報點",lv:"Lv.1",unlockLv:1,c:"#a03020"},
+     {id:'lk_p2',ico:"🔥",name:"焰術師",desc:"火屬性魔法傷害+18%",lv:"Lv.1",unlockLv:4,c:"#804030"},
+     {id:'lk_p3',ico:"💊",name:"妙手回春",desc:"每回合自動回復5% HP",lv:"Lv.1",unlockLv:8,c:"#906040"},
+     {id:'lk_p4',ico:"🍀",name:"幸運體質",desc:"暴擊率+10%，獲得道具機率+15%",lv:"Lv.1",unlockLv:11,c:"#a03020"},
+   ],
+   equippedActive:['lk_a1','lk_a2','lk_a3','lk_a6'],
+   equippedPassive:['lk_p1','lk_p2','lk_p3','lk_p4'],
+   traitPool:[
+     {id:'lk_t1',ico:"🍷",name:"酒館人脈",desc:"戰鬥勝利後有機會獲得情報碎片",spCost:12,unlocked:true,c:"#a03020"},
+     {id:'lk_t2',ico:"🔥",name:"焰術天賦",desc:"火屬性傷害+15%，燃燒持續+1回合",spCost:18,unlocked:true,c:"#804030"},
+     {id:'lk_t3',ico:"🩸",name:"吸血妖術",desc:"魔法攻擊後回復傷害10%的HP",spCost:22,unlocked:true,c:"#a03020"},
+     {id:'lk_t4',ico:"💊",name:"急救本能",desc:"隊友HP低於20%時，自動施放治癒",spCost:28,unlocked:true,c:"#804030"},
+     {id:'lk_t5',ico:"🎲",name:"賭徒氣質",desc:"每次行動有15%機率免費使用技能",spCost:25,unlocked:false,c:"#906040"},
+     {id:'lk_t6',ico:"🐉",name:"龍族血契",desc:"LIMIT技能冷卻回合-2",spCost:35,unlocked:false,c:"#a03020"},
+   ],
+   equippedTraits:['lk_t1','lk_t2','lk_t3','lk_t4'],
+  },
+
+  {key:"fira",nameEn:"Fira",nameZh:"菲　拉",cls:"傭兵・月之眼第二小隊長",lv:13,acc:"#d47040",
    bg:"radial-gradient(ellipse at 30% 50%,rgba(140,60,20,.2),transparent 70%)",
    hp:1560,maxHp:1800,mp:380,maxMp:500,rb:80,maxRb:100,exp:1200,nextExp:2200,
    str:88,mag:42,def:62,spd:98,
    traits:[{l:"雷屬性",c:"#806020"},{l:"雙持",c:"#704020"},{l:"月之眼",c:"#504040"}],
-   equip:[
-     {t:"武器",name:"漆黑七首・雙持",ico:"🔪",bonus:"+SPD 28 / 連擊率+20%",r:"rarity-s"},
-     {t:"防具",name:"月之眼戰鬥服",ico:"🥋",bonus:"+DEF 35 / 機動+15",r:"rarity-a"},
-     {t:"頭飾",name:"紅髮帶",ico:"🎀",bonus:"+ATK 10 / 士氣+",r:"rarity-b"},
-     {t:"鞋子",name:"輕甲戰靴",ico:"🥾",bonus:"+SPD 12 / 地形無視",r:"rarity-b"},
-     {t:"飾品",name:"任務徽章",ico:"🏅",bonus:"+EXP獲取 10%",r:"rarity-b"},
-     {t:"飾品",name:"月牙耳環",ico:"🌙",bonus:"+夜間ATK 8%",r:"rarity-c"},
-   ],
-   abilities:[
-     {ico:"🔪",bg:"#803020",name:"月影連斬",desc:"連續六段攻擊，末段必暴擊",cost:"22 MP",cc:"cost-mp"},
-     {ico:"⚡",bg:"#404080",name:"雷步突刺",desc:"穿透防禦直擊要害",cost:"ATB×2",cc:"cost-atb"},
-     {ico:"🌙",bg:"#301060",name:"月之眼・暗殺令",desc:"【LIMIT】全敵HP減半",cost:"LIMIT",cc:"cost-lmt"},
-   ],
    statusAilments:[],
-   spTraits:[
-     {ico:"⚡",name:"雷電體質",desc:"雷屬性技能暴擊率+20%，被雷屬攻擊時傷害減少10%",lv:1,maxLv:3,nextCost:"15 SP",c:"#806020"},
+   inventory:[
+     {id:'fira_e1',t:"武器",name:"漆黑七首・雙持",ico:"🔪",bonus:"+SPD 28 / 連擊率+20%",r:"rarity-s"},
+     {id:'fira_e2',t:"防具",name:"月之眼戰鬥服",ico:"🥋",bonus:"+DEF 35 / 機動+15",r:"rarity-a"},
+     {id:'fira_e3',t:"頭飾",name:"紅髮帶",ico:"🎀",bonus:"+ATK 10 / 士氣+",r:"rarity-b"},
+     {id:'fira_e4',t:"鞋子",name:"輕甲戰靴",ico:"🥾",bonus:"+SPD 12 / 地形無視",r:"rarity-b"},
+     {id:'fira_e5',t:"飾品",name:"任務徽章",ico:"🏅",bonus:"+EXP獲取 10%",r:"rarity-b"},
+     {id:'fira_e6',t:"飾品",name:"月牙耳環",ico:"🌙",bonus:"+夜間ATK 8%",r:"rarity-c"},
    ],
-   tree:[
-     [{ico:"🔪",name:"七首連斬",desc:"雙持六連擊",lv:"5/5",s:"maxed"},{ico:"⚡",name:"雷步",desc:"瞬間加速突刺",lv:"5/5",s:"maxed"},{ico:"🏃",name:"疾風步",desc:"被動：行動順序+1",lv:"3/5",s:"unlocked"}],
-     [{ico:"🌙",name:"月影亂舞",desc:"高速連擊全體敵人",lv:"2/5",s:"unlocked"},{ico:"⚡",name:"雷電突刺",desc:"穿透防禦直擊要害",lv:"3/5",s:"unlocked"},{ico:"🎯",name:"暗殺適性",desc:"背後攻擊傷害+40%",lv:"0/5",s:"locked"}],
-     [{ico:"🌑",name:"月之眼覺醒",desc:"全感知強化三回合",lv:"1/3",s:"unlocked"},{ico:"🌙",name:"暗殺令",desc:"【LIMIT】全敵HP減半",lv:"0/1",s:"locked"},{ico:"⚡",name:"雷霆之怒",desc:"召喚雷暴全場轟炸",lv:"0/3",s:"locked"}],
+   equippedEquip:['fira_e1','fira_e2','fira_e3','fira_e4','fira_e5','fira_e6'],
+   activePool:[
+     {id:'fi_a1',ico:"🔪",bg:"#803020",name:"月影連斬",desc:"連續六段攻擊，末段必暴擊",cost:"22 MP",cc:"cost-mp",unlockLv:1},
+     {id:'fi_a2',ico:"⚡",bg:"#404080",name:"雷步突刺",desc:"穿透防禦直擊要害",cost:"ATB×2",cc:"cost-atb",unlockLv:1},
+     {id:'fi_a3',ico:"🌙",bg:"#301060",name:"月影亂舞",desc:"高速連擊全體敵人",cost:"35 MP",cc:"cost-mp",unlockLv:7},
+     {id:'fi_a4',ico:"⚡",bg:"#303060",name:"雷電突刺",desc:"穿透防禦，雷屬性暴擊",cost:"28 MP",cc:"cost-mp",unlockLv:10},
+     {id:'fi_a5',ico:"🌙",bg:"#301060",name:"月之眼・暗殺令",desc:"【LIMIT】全敵HP減半",cost:"LIMIT",cc:"cost-lmt",unlockLv:13},
    ],
-   passives:[{ico:"🎲",name:"傭兵經驗",desc:"戰鬥後額外獲得Gil",lv:"Lv.3",c:"#806020"},{ico:"🔪",name:"雙持精通",desc:"雙持時命中率+15%",lv:"Lv.4",c:"#704020"},{ico:"🌙",name:"月之眼員",desc:"隊伍迴避率+8%",lv:"Lv.2",c:"#504040"}]},
-  {key:"elweis",nameEn:"Elweis",nameZh:"艾爾薇斯",cls:"傭兵團長・月之眼首領",lv:1,acc:"#7090c8",
+   passivePool:[
+     {id:'fi_p1',ico:"🎲",name:"傭兵經驗",desc:"戰鬥後額外獲得Gil",lv:"Lv.1",unlockLv:1,c:"#806020"},
+     {id:'fi_p2',ico:"🔪",name:"雙持精通",desc:"雙持時命中率+15%",lv:"Lv.1",unlockLv:3,c:"#704020"},
+     {id:'fi_p3',ico:"🌙",name:"月之眼員",desc:"隊伍迴避率+8%",lv:"Lv.1",unlockLv:6,c:"#504040"},
+     {id:'fi_p4',ico:"🏃",name:"疾風步",desc:"行動順序+1",lv:"Lv.1",unlockLv:10,c:"#806020"},
+   ],
+   equippedActive:['fi_a1','fi_a2','fi_a3','fi_a5'],
+   equippedPassive:['fi_p1','fi_p2','fi_p3','fi_p4'],
+   traitPool:[
+     {id:'fi_t1',ico:"⚡",name:"雷電體質",desc:"雷屬技能暴擊率+20%，被雷屬攻擊傷害-10%",spCost:15,unlocked:true,c:"#806020"},
+     {id:'fi_t2',ico:"🔪",name:"雙刃本能",desc:"雙持攻擊時，有25%機率追加一擊",spCost:20,unlocked:true,c:"#704020"},
+     {id:'fi_t3',ico:"🎯",name:"暗殺適性",desc:"背後攻擊傷害+40%",spCost:25,unlocked:true,c:"#504040"},
+     {id:'fi_t4',ico:"🌙",name:"月夜戰士",desc:"夜間場景全屬性+12%",spCost:22,unlocked:false,c:"#806020"},
+     {id:'fi_t5',ico:"⚡",name:"雷霆覺醒",desc:"HP低於25%時，雷屬技能傷害+50%",spCost:30,unlocked:false,c:"#704020"},
+   ],
+   equippedTraits:['fi_t1','fi_t2','fi_t3'],
+  },
+
+  {key:"elweis",nameEn:"Elweis",nameZh:"艾爾薇斯",cls:"傭兵團長・月之眼首領",lv:20,acc:"#7090c8",
    bg:"radial-gradient(ellipse at 30% 50%,rgba(30,50,120,.2),transparent 70%)",
    hp:2200,maxHp:2500,mp:650,maxMp:800,rb:20,maxRb:100,exp:3600,nextExp:5000,
    str:95,mag:68,def:88,spd:70,
    traits:[{l:"月屬性",c:"#304080"},{l:"領袖",c:"#404070"},{l:"雙劍士",c:"#305060"}],
-   equip:[
-     {t:"武器",name:"暗月雙刃",ico:"⚔️",bonus:"+ATK 60 / 夜間傷害+25%",r:"rarity-s"},
-     {t:"防具",name:"月之眼團長袍",ico:"🌑",bonus:"+DEF 55 / 魔法抵抗",r:"rarity-s"},
-     {t:"頭飾",name:"星紋髮飾",ico:"✨",bonus:"+全屬性 +8",r:"rarity-a"},
-     {t:"鞋子",name:"指揮者長靴",ico:"🥿",bonus:"+DEF 20 / 移動力+",r:"rarity-a"},
-     {t:"飾品",name:"指揮者臂章",ico:"🎖️",bonus:"+隊伍ATK 10%",r:"rarity-a"},
-     {t:"飾品",name:"月狼項鍊",ico:"🐺",bonus:"+召喚傷害 15%",r:"rarity-a"},
-   ],
-   abilities:[
-     {ico:"🌙",bg:"#203060",name:"暗月斬",desc:"月光貫穿攻擊，穿透防禦",cost:"30 MP",cc:"cost-mp"},
-     {ico:"⚔️",bg:"#304080",name:"雙刃颶風",desc:"旋轉連擊全體敵人",cost:"ATB×3",cc:"cost-atb"},
-     {ico:"🐺",bg:"#101830",name:"月之眼・覺醒",desc:"【LIMIT】召喚月狼軍團",cost:"LIMIT",cc:"cost-lmt"},
-   ],
    statusAilments:[],
-   spTraits:[
-     {ico:"👑",name:"統率者",desc:"戰鬥開始時全隊攻擊+10%，HP低於30%時隊伍不會陷入恐慌",lv:1,maxLv:5,nextCost:"25 SP",c:"#304080"},
-     {ico:"🌙",name:"月夜契約",desc:"夜間場景全屬性+12%，月屬技能消耗MP-20%",lv:1,maxLv:3,nextCost:"20 SP",c:"#404070"},
+   inventory:[
+     {id:'el_e1',t:"武器",name:"暗月雙刃",ico:"⚔️",bonus:"+ATK 60 / 夜間傷害+25%",r:"rarity-s"},
+     {id:'el_e2',t:"防具",name:"月之眼團長袍",ico:"🌑",bonus:"+DEF 55 / 魔法抵抗",r:"rarity-s"},
+     {id:'el_e3',t:"頭飾",name:"星紋髮飾",ico:"✨",bonus:"+全屬性 +8",r:"rarity-a"},
+     {id:'el_e4',t:"鞋子",name:"指揮者長靴",ico:"🥿",bonus:"+DEF 20 / 移動力+",r:"rarity-a"},
+     {id:'el_e5',t:"飾品",name:"指揮者臂章",ico:"🎖️",bonus:"+隊伍ATK 10%",r:"rarity-a"},
+     {id:'el_e6',t:"飾品",name:"月狼項鍊",ico:"🐺",bonus:"+召喚傷害 15%",r:"rarity-a"},
+     {id:'el_e7',t:"武器",name:"霜月劍",ico:"❄️",bonus:"+MAG 25 / 冰屬性+20%",r:"rarity-a"},
    ],
-   tree:[
-     [{ico:"⚔️",name:"暗月斬",desc:"月光貫穿攻擊",lv:"5/5",s:"maxed"},{ico:"🛡️",name:"月盾",desc:"全防禦大幅提升",lv:"5/5",s:"maxed"},{ico:"👑",name:"領袖光環",desc:"全隊攻擊+10%",lv:"4/5",s:"unlocked"}],
-     [{ico:"🌙",name:"雙刃颶風",desc:"旋轉連擊全體敵人",lv:"3/5",s:"unlocked"},{ico:"❄️",name:"月冰刃",desc:"冰+月屬性複合攻擊",lv:"2/5",s:"unlocked"},{ico:"🐺",name:"月狼契約",desc:"召喚月狼輔助",lv:"0/5",s:"locked"}],
-     [{ico:"🌕",name:"月之力覺醒",desc:"全隊能力全滿三回合",lv:"2/3",s:"unlocked"},{ico:"🐺",name:"月之眼覺醒",desc:"【LIMIT】召喚月狼軍團",lv:"0/1",s:"locked"},{ico:"♾",name:"永恆守護",desc:"全隊無敵一回合",lv:"0/3",s:"locked"}],
+   equippedEquip:['el_e1','el_e2','el_e3','el_e4','el_e5','el_e6'],
+   activePool:[
+     {id:'el_a1',ico:"🌙",bg:"#203060",name:"暗月斬",desc:"月光貫穿攻擊，穿透防禦",cost:"30 MP",cc:"cost-mp",unlockLv:1},
+     {id:'el_a2',ico:"⚔️",bg:"#304080",name:"雙刃颶風",desc:"旋轉連擊全體敵人",cost:"ATB×3",cc:"cost-atb",unlockLv:1},
+     {id:'el_a3',ico:"🛡️",bg:"#202850",name:"月盾",desc:"自身防禦大幅提升（三回合）",cost:"20 MP",cc:"cost-mp",unlockLv:6},
+     {id:'el_a4',ico:"❄️",bg:"#182838",name:"月冰刃",desc:"冰+月屬性複合攻擊",cost:"38 MP",cc:"cost-mp",unlockLv:10},
+     {id:'el_a5',ico:"🌕",bg:"#141c38",name:"月之力覺醒",desc:"全隊能力全滿三回合",cost:"ATB×4",cc:"cost-atb",unlockLv:16},
+     {id:'el_a6',ico:"🐺",bg:"#101830",name:"月之眼・覺醒",desc:"【LIMIT】召喚月狼軍團",cost:"LIMIT",cc:"cost-lmt",unlockLv:20},
    ],
-   passives:[{ico:"👑",name:"團長威嚴",desc:"戰鬥開始士氣+30",lv:"Lv.5",c:"#304080"},{ico:"🌙",name:"月夜適性",desc:"夜間場景全屬強化",lv:"Lv.4",c:"#404070"},{ico:"⚔️",name:"雙劍精通",desc:"雙劍時攻擊頻率+1",lv:"Lv.3",c:"#305060"}]},
+   passivePool:[
+     {id:'el_p1',ico:"👑",name:"團長威嚴",desc:"戰鬥開始士氣+30",lv:"Lv.1",unlockLv:1,c:"#304080"},
+     {id:'el_p2',ico:"🌙",name:"月夜適性",desc:"夜間場景全屬強化",lv:"Lv.1",unlockLv:5,c:"#404070"},
+     {id:'el_p3',ico:"⚔️",name:"雙劍精通",desc:"雙劍時攻擊頻率+1",lv:"Lv.1",unlockLv:9,c:"#305060"},
+     {id:'el_p4',ico:"🛡️",name:"鐵壁守護",desc:"受到攻擊時，有20%機率格擋",lv:"Lv.1",unlockLv:14,c:"#304080"},
+     {id:'el_p5',ico:"🌕",name:"滿月共鳴",desc:"月屬技能傷害+22%",lv:"Lv.1",unlockLv:18,c:"#404070"},
+   ],
+   equippedActive:['el_a1','el_a2','el_a5','el_a6'],
+   equippedPassive:['el_p1','el_p2','el_p3','el_p4'],
+   traitPool:[
+     {id:'el_t1',ico:"👑",name:"統率者",desc:"戰鬥開始時全隊攻擊+10%，HP低於30%不恐慌",spCost:25,unlocked:true,c:"#304080"},
+     {id:'el_t2',ico:"🌙",name:"月夜契約",desc:"夜間場景全屬性+12%，月屬技能消耗MP-20%",spCost:20,unlocked:true,c:"#404070"},
+     {id:'el_t3',ico:"🐺",name:"月狼同盟",desc:"召喚技能傷害+25%，召喚物HP+30%",spCost:28,unlocked:true,c:"#305060"},
+     {id:'el_t4',ico:"❄️",name:"冰月融合",desc:"冰屬性與月屬性技能傷害互相加成10%",spCost:22,unlocked:true,c:"#304080"},
+     {id:'el_t5',ico:"🛡️",name:"守護者意志",desc:"隊友HP低於15%時，強制吸引敵方攻擊",spCost:30,unlocked:true,c:"#404070"},
+     {id:'el_t6',ico:"♾",name:"不滅意志",desc:"HP歸零時，以1HP復活（每場戰鬥一次）",spCost:40,unlocked:false,c:"#305060"},
+     {id:'el_t7',ico:"🌕",name:"皓月斬魂",desc:"滿月之力效果期間，攻擊附加魂奪效果",spCost:35,unlocked:false,c:"#304080"},
+   ],
+   equippedTraits:['el_t1','el_t2','el_t3','el_t4','el_t5'],
+  },
 ];
 function pct(v,m){return Math.round(v/m*100);}
 document.getElementById('tabs').innerHTML=CHARS.map((c,i)=>`
@@ -415,8 +535,17 @@ function img(src,alt,cls,style){
 }
 function renderStatus(c){
   const acc=c.acc;
-  const equipHTML=c.equip.map(e=>`
-    <div class="equip-slot ${e.r}">
+  const ci=curChar;
+  // 裝備槽固定6格，從 equippedEquip（id 陣列）渲染
+  // 固定6槽：[武器, 防具, 頭飾, 鞋子, 飾品, 飾品]
+  const SLOT_TYPES=['武器','防具','頭飾','鞋子','飾品','飾品'];
+  const SLOT_EMPTY_ICO={'武器':'🗡️','防具':'🛡️','頭飾':'👑','鞋子':'👟','飾品':'💎'};
+  const equipHTML=Array.from({length:6},(_,ei)=>{
+    const eid=c.equippedEquip[ei]||null;
+    const e=eid?c.inventory.find(x=>x.id===eid):null;
+    const slotType=SLOT_TYPES[ei];
+    return e?`
+    <div class="equip-slot ${e.r}" onclick="openEquipPicker(${ci},${ei},'${slotType}')" style="cursor:pointer">
       <div class="equip-slot-top">
         <div class="equip-ico">${e.ico}</div>
         <div class="equip-body">
@@ -425,13 +554,18 @@ function renderStatus(c){
         </div>
       </div>
       <div class="equip-bonus">${e.bonus}</div>
-    </div>`).join('');
-  const abHTML=c.abilities.map(a=>`
-    <div class="ab-item">
-      <div class="ab-ico" style="background:${a.bg}30;border:1px solid ${a.bg}60">${a.ico}</div>
-      <div><div class="ab-name">${a.name}</div><div class="ab-desc">${a.desc}</div></div>
-      <div class="ab-cost ${a.cc}">${a.cost}</div>
-    </div>`).join('');
+    </div>`
+    :`<div class="equip-slot empty" onclick="openEquipPicker(${ci},${ei},'${slotType}')">
+      <div class="equip-slot-top">
+        <div class="equip-ico" style="opacity:.3">${SLOT_EMPTY_ICO[slotType]}</div>
+        <div class="equip-body">
+          <div class="equip-type" style="color:var(--border2)">${slotType}</div>
+          <div class="equip-name" style="color:var(--border2)">未裝備</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  // 技能顯示移至技能頁管理
   const rbLabel=c.rb>=100?`${c.rb}% ⚡`:`${c.rb}%`;
   const rbColor=c.rb>=100?'#f07050':'var(--text2)';
   const ailHTML=c.statusAilments.length
@@ -464,7 +598,6 @@ function renderStatus(c){
       </div>
     </div>
     <div><div class="sec">裝　備</div><div class="equip-grid">${equipHTML}</div></div>
-    <div><div class="sec">技　能</div><div class="ab-list">${abHTML}</div></div>
     <div><div class="sec">狀態異常</div><div class="status-row">${ailHTML}</div></div>
   </div>`;
 }
@@ -481,63 +614,134 @@ function nodeHTML(n,acc){
 }
 function renderSkillTree(c){
   const acc=c.acc;
-  const traitsHTML=c.traits.map(t=>`<span class="trait" style="background:${t.c}25;border:1px solid ${t.c}60;color:${t.c}">${t.l}</span>`).join('');
-  const treeHTML=c.tree.map(row=>`
-    <div class="tree-row">
-      <div style="position:absolute;top:19px;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,${acc}40,transparent);"></div>
-      ${row.map(n=>nodeHTML(n,acc)).join('')}
-    </div>`).join('');
-  const passiveHTML=c.passives.map(p=>`
-    <div class="passive-card" style="border-left:2px solid ${p.c}">
-      <div class="passive-ico">${p.ico}</div>
-      <div>
-        <div class="passive-name" style="color:${p.c}">${p.name}</div>
-        <div class="passive-desc">${p.desc}</div>
-        <div class="passive-lv" style="color:${p.c}">${p.lv}</div>
+  const lv=c.lv;
+  // ── 已裝備主動技能槽 (4格) ──
+  const activeSlots=Array.from({length:4},(_,i)=>{
+    const sid=c.equippedActive[i]||null;
+    const sk=sid?c.activePool.find(x=>x.id===sid):null;
+    return sk?`<div class="sk-slot filled" onclick="openSkillPicker(${CHARS.indexOf(c)},'active',${i})">
+      <div class="sk-slot-ico" style="background:${sk.bg}40;border:1px solid ${sk.bg}80">${sk.ico}</div>
+      <div class="sk-slot-body">
+        <div class="sk-slot-label">主動 ${i+1}</div>
+        <div class="sk-slot-name" style="color:${acc}">${sk.name}</div>
+        <div class="sk-slot-cost cost-badge ${sk.cc}">${sk.cost}</div>
       </div>
-    </div>`).join('');
-  const spHTML=c.spTraits.map(t=>`
-    <div class="sp-card" style="border-color:${t.c}40">
-      <div style="position:absolute;left:0;top:0;bottom:0;width:2px;background:${t.c}"></div>
-      <div class="sp-ico">${t.ico}</div>
-      <div class="sp-body">
-        <div class="sp-name" style="color:${t.c}">${t.name}</div>
-        <div class="sp-desc">${t.desc}</div>
+      <div class="sk-slot-num">${i+1}</div>
+    </div>`
+    :`<div class="sk-slot empty" onclick="openSkillPicker(${CHARS.indexOf(c)},'active',${i})">
+      <div class="sk-slot-ico" style="font-size:11px;color:var(--text2)">＋</div>
+      <div class="sk-slot-body">
+        <div class="sk-slot-label">主動 ${i+1}</div>
+        <div class="sk-slot-name" style="color:var(--border2)">空槽</div>
       </div>
-      <div class="sp-right">
-        <div class="sp-lv-badge" style="background:${t.c}25;color:${t.c};border:1px solid ${t.c}60">Lv.${t.lv}/${t.maxLv}</div>
-        <div class="sp-cost">▲ ${t.nextCost}</div>
+      <div class="sk-slot-num">${i+1}</div>
+    </div>`;
+  }).join('');
+  // ── 已裝備被動技能槽 (4格) ──
+  const passiveSlots=Array.from({length:4},(_,i)=>{
+    const sid=c.equippedPassive[i]||null;
+    const sk=sid?c.passivePool.find(x=>x.id===sid):null;
+    return sk?`<div class="sk-slot filled" onclick="openSkillPicker(${CHARS.indexOf(c)},'passive',${i})">
+      <div class="sk-slot-ico" style="background:${sk.c}30;border:1px solid ${sk.c}60">${sk.ico}</div>
+      <div class="sk-slot-body">
+        <div class="sk-slot-label">被動 ${i+1}</div>
+        <div class="sk-slot-name" style="color:${acc}">${sk.name}</div>
+        <div class="sk-slot-cost" style="font-size:7px;color:${sk.c}">${sk.desc.slice(0,16)}…</div>
       </div>
-    </div>`).join('');
-  return `<div class="page-in">
-    <div class="upper">
-      <div class="sprite-bg" style="background:${c.bg}"></div>
-      <div class="sprite-wrap">
-        ${img(FULL[c.key],c.nameZh,'sprite-img','')}
+      <div class="sk-slot-num">${i+1}</div>
+    </div>`
+    :`<div class="sk-slot empty" onclick="openSkillPicker(${CHARS.indexOf(c)},'passive',${i})">
+      <div class="sk-slot-ico" style="font-size:11px;color:var(--text2)">＋</div>
+      <div class="sk-slot-body">
+        <div class="sk-slot-label">被動 ${i+1}</div>
+        <div class="sk-slot-name" style="color:var(--border2)">空槽</div>
       </div>
-      <div class="upper-info">
-        <div>
-          <div class="upper-name" style="color:${acc};text-shadow:0 0 20px ${acc}80">${c.nameEn}</div>
-          <div class="upper-name-zh">${c.nameZh}</div>
-          <div class="upper-class">${c.cls}</div>
-          <div class="lv-chip">LV ${c.lv}</div>
-        </div>
-        <div class="attr-grid">
-          <div class="attr-cell"><div class="attr-lbl">STR</div><div class="attr-val" style="color:${acc}">${c.str}</div></div>
-          <div class="attr-cell"><div class="attr-lbl">MAG</div><div class="attr-val">${c.mag}</div></div>
-          <div class="attr-cell"><div class="attr-lbl">DEF</div><div class="attr-val">${c.def}</div></div>
-          <div class="attr-cell"><div class="attr-lbl">SPD</div><div class="attr-val">${c.spd}</div></div>
-        </div>
-        <div class="trait-row">${traitsHTML}</div>
+      <div class="sk-slot-num">${i+1}</div>
+    </div>`;
+  }).join('');
+  // ── 技能池（已解鎖，按 unlockLv ≤ lv 篩選）──
+  const unlockedActive=c.activePool.filter(s=>s.unlockLv<=lv);
+  const unlockedPassive=c.passivePool.filter(s=>s.unlockLv<=lv);
+  const poolActive=unlockedActive.map(sk=>{
+    const eq=c.equippedActive.includes(sk.id);
+    return `<div class="sk-pool-item${eq?' equipped':''}" onclick="${eq?`removeSkill(${CHARS.indexOf(c)},'active','${sk.id}')`:`openSkillPicker(${CHARS.indexOf(c)},'active',-1,'${sk.id}')`}">
+      <div class="sk-pool-ico" style="background:${sk.bg}40;border:1px solid ${sk.bg}80">${sk.ico}</div>
+      <div class="sk-pool-body">
+        <div class="sk-pool-name" style="color:${eq?acc:'var(--text)'}">${sk.name}</div>
+        <div class="sk-pool-desc">${sk.desc}</div>
+        <div class="sk-pool-lv">解鎖 Lv.${sk.unlockLv} ・ <span class="ab-cost ${sk.cc}" style="display:inline">${sk.cost}</span></div>
       </div>
+    </div>`;
+  }).join('');
+  const poolPassive=unlockedPassive.map(sk=>{
+    const eq=c.equippedPassive.includes(sk.id);
+    return `<div class="sk-pool-item${eq?' equipped':''}" onclick="${eq?`removeSkill(${CHARS.indexOf(c)},'passive','${sk.id}')`:`openSkillPicker(${CHARS.indexOf(c)},'passive',-1,'${sk.id}')`}" style="${eq?`border-color:${sk.c}`:''}">
+      <div class="sk-pool-ico" style="background:${sk.c}30;border:1px solid ${sk.c}60">${sk.ico}</div>
+      <div class="sk-pool-body">
+        <div class="sk-pool-name" style="color:${eq?sk.c:'var(--text)'}">${sk.name}</div>
+        <div class="sk-pool-desc">${sk.desc}</div>
+        <div class="sk-pool-lv" style="color:${sk.c}">解鎖 Lv.${sk.unlockLv}</div>
+      </div>
+    </div>`;
+  }).join('');
+  // ── 特性槽 (最多10個) ──
+  const traitSlots=Array.from({length:10},(_,i)=>{
+    const tid=c.equippedTraits[i]||null;
+    const tr=tid?c.traitPool.find(x=>x.id===tid):null;
+    return tr?`<div class="tr-slot filled" style="border-color:${tr.c}" onclick="openTraitPicker(${CHARS.indexOf(c)},${i})">
+      <div class="tr-slot-ico">${tr.ico}</div>
+      <div class="tr-slot-body">
+        <div class="tr-slot-name" style="color:${tr.c}">${tr.name}</div>
+        <div class="tr-slot-desc">${tr.desc.slice(0,22)}…</div>
+      </div>
+    </div>`
+    :`<div class="tr-slot empty" onclick="openTraitPicker(${CHARS.indexOf(c)},${i})">
+      <div class="tr-slot-ico" style="font-size:11px;color:var(--text2)">＋</div>
+      <div class="tr-slot-body">
+        <div class="tr-slot-name" style="color:var(--border2)">空特性槽</div>
+      </div>
+    </div>`;
+  }).join('');
+  // ── 特性池 ──
+  const traitPool=c.traitPool.map(tr=>{
+    const eq=c.equippedTraits.includes(tr.id);
+    const locked=!tr.unlocked;
+    return `<div class="tr-pool-item${eq?' equipped':''}${locked?' locked':''}" style="${eq?`border-color:${tr.c}`:''}" onclick="${locked?'':eq?`removeTrait(${CHARS.indexOf(c)},'${tr.id}')`:`openTraitPicker(${CHARS.indexOf(c)},-1,'${tr.id}')`}">
+      <div class="tr-pool-ico" style="background:${tr.c}30;border:1px solid ${tr.c}60">${tr.ico}</div>
+      <div class="tr-pool-body">
+        <div class="tr-pool-name" style="color:${locked?'var(--text2)':eq?tr.c:'var(--text)'}">${tr.name}</div>
+        <div class="tr-pool-desc">${tr.desc}</div>
+        <div class="tr-pool-meta" style="color:${tr.c}">SP ${tr.spCost}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `<div class="page-in sk-page">
+    <div class="sk-section-bar">
+      <div class="sk-section-title">主動技能　<span class="sk-counter" style="font-family:'Noto Serif TC',serif;font-size:7px">${c.equippedActive.filter(Boolean).length}/4 裝備中</span></div>
     </div>
-    <div class="tree-section">
-      <div class="sec">主動技能樹</div>
-      <div class="skill-tree">${treeHTML}</div>
-      <div class="sec" style="margin-top:14px">被動特性</div>
-      <div class="passive-row">${passiveHTML}</div>
-      <div class="sec" style="margin-top:14px">個人特性　<span style="font-size:7px;color:var(--text2);letter-spacing:1px">SP 購買升級</span></div>
-      <div class="sp-traits">${spHTML}</div>
+    <div class="sk-slots">${activeSlots}</div>
+    <div style="padding:0 14px 8px">
+      <div class="sk-section-title" style="font-size:8px">技能池</div>
+      <div class="sk-pool">${poolActive||'<div style="font-size:9px;color:var(--text2);padding:8px 0">尚無解鎖技能</div>'}</div>
+    </div>
+
+    <div class="sk-section-bar" style="margin-top:4px">
+      <div class="sk-section-title">被動技能　<span class="sk-counter" style="font-family:'Noto Serif TC',serif;font-size:7px">${c.equippedPassive.filter(Boolean).length}/4 裝備中</span></div>
+    </div>
+    <div class="sk-slots">${passiveSlots}</div>
+    <div style="padding:0 14px 8px">
+      <div class="sk-section-title" style="font-size:8px">技能池</div>
+      <div class="sk-pool">${poolPassive||'<div style="font-size:9px;color:var(--text2);padding:8px 0">尚無解鎖被動</div>'}</div>
+    </div>
+
+    <div class="sk-section-bar" style="margin-top:4px">
+      <div class="sk-section-title">特性　<span class="sk-counter" style="font-family:'Noto Serif TC',serif;font-size:7px">${c.equippedTraits.filter(Boolean).length}/10 裝備中</span></div>
+    </div>
+    <div class="tr-slots">${traitSlots}</div>
+    <div style="padding:0 14px 16px">
+      <div class="sk-section-title" style="font-size:8px;margin-top:8px">特性池</div>
+      <div class="sk-pool">${traitPool}</div>
     </div>
   </div>`;
 }
@@ -762,10 +966,203 @@ function renderJournal(c){
   </div>
 </div>`;}
 
+
+
+// ════ MODAL HELPERS ════
+function closeModal(){
+  const o=document.getElementById('gen-overlay');
+  if(o)o.remove();
+}
+function _makeOverlay(content){
+  closeModal();
+  const ov=document.createElement('div');
+  ov.className='modal-overlay sk-pick-modal';
+  ov.id='gen-overlay';
+  ov.innerHTML=`<div class="modal-sheet" style="max-height:72vh;overflow-y:auto;padding-bottom:calc(env(safe-area-inset-bottom,34px)+16px)">${content}</div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click',e=>{if(e.target===ov)closeModal();});
+}
+
+// ════ EQUIP PICKER ════
+function openEquipPicker(ci,slotIdx,slotType){
+  const c=CHARS[ci];
+  const currentId=c.equippedEquip[slotIdx]||null;
+  // 篩選：只顯示同類型裝備（飾品槽可裝飾品，其他嚴格對應）
+  const filtered=c.inventory.filter(e=>e.t===slotType);
+  const items=filtered.map(e=>{
+    const isCurrent=e.id===currentId;
+    // 找出這個裝備目前裝在哪個槽
+    const otherSlot=c.equippedEquip.findIndex((id,i)=>id===e.id&&i!==slotIdx);
+    const isElsewhere=otherSlot>=0;
+    const SLOT_NAMES=['武器','防具','頭飾','鞋子','飾品1','飾品2'];
+    return `<div class="sk-pick-item${isCurrent?' cur':''}" onclick="confirmEquip(${ci},${slotIdx},'${e.id}')">
+      <div class="equip-ico" style="font-size:20px;width:32px;text-align:center">${e.ico}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:11px;color:${isCurrent?'var(--gold)':'var(--text)'};letter-spacing:.3px">${e.name}</div>
+        <div style="font-size:8px;color:#70f0a8;margin-top:3px">${e.bonus}</div>
+        ${isElsewhere?`<div style="font-size:7px;color:var(--text2);margin-top:2px">目前裝備於 ${SLOT_NAMES[otherSlot]}</div>`:''}
+      </div>
+      ${isCurrent?'<div style="font-size:7px;color:var(--gold);padding:2px 6px;border:1px solid var(--gold);border-radius:3px;flex-shrink:0">裝備中</div>':''}
+    </div>`;
+  }).join('');
+  const currentItem=currentId?c.inventory.find(x=>x.id===currentId):null;
+  _makeOverlay(`
+    <div class="modal-title">${slotType} 更換</div>
+    <div style="font-size:8px;color:var(--text2);margin-bottom:12px;letter-spacing:.5px">${currentItem?'當前：'+currentItem.name:'未裝備'}</div>
+    ${filtered.length===0?'<div style="font-size:9px;color:var(--text2);padding:12px 0;text-align:center">背包中沒有可用的'+slotType+'</div>':''}
+    <div class="sk-pick-item-none" onclick="confirmEquip(${ci},${slotIdx},null)">✕ 卸除裝備</div>
+    <div class="sk-pick-list">${items}</div>
+  `);
+}
+function confirmEquip(ci,slotIdx,eid){
+  CHARS[ci].equippedEquip[slotIdx]=eid;
+  closeModal();
+  if(curPage===0)render();
+}
+
+// ════ SKILL PICKER ════
+// slotIdx=-1 表示「直接裝入第一個空槽」; forceId 是直接指定要裝的技能
+function openSkillPicker(ci,type,slotIdx,forceId){
+  const c=CHARS[ci];
+  const pool=type==='active'?c.activePool:c.passivePool;
+  const equipped=type==='active'?c.equippedActive:c.equippedPassive;
+  const limit=4;
+  if(forceId){
+    // 直接從技能池點擊 → 找空槽或詢問換哪格
+    const emptyIdx=equipped.indexOf(null);
+    const firstEmpty=equipped.findIndex(x=>!x);
+    if(firstEmpty>=0){
+      // 有空槽，直接裝
+      confirmSkill(ci,type,firstEmpty,forceId);
+      return;
+    }
+    // 沒有空槽，讓玩家選要換哪格
+    slotIdx=-2; // 代表「選替換哪格」
+  }
+  if(slotIdx===-2){
+    // 顯示現有4格，讓玩家選要替換哪格
+    const sk=pool.find(x=>x.id===forceId);
+    const slots=Array.from({length:limit},(_,i)=>{
+      const sid=equipped[i]||null;
+      const s=sid?pool.find(x=>x.id===sid):null;
+      return `<div class="sk-pick-item" onclick="confirmSkill(${ci},'${type}',${i},'${forceId}')">
+        <div style="font-family:'Cinzel',serif;font-size:8px;color:var(--text2);width:20px">${i+1}</div>
+        ${s?`<div style="flex:1"><div style="font-size:10px;color:var(--text)">${s.name}</div><div style="font-size:8px;color:var(--text2)">${s.desc.slice(0,24)}…</div></div>`
+           :`<div style="flex:1;font-size:9px;color:var(--border2)">空槽</div>`}
+        <div style="font-size:8px;color:var(--gold)">換入</div>
+      </div>`;
+    }).join('');
+    _makeOverlay(`
+      <div class="modal-title">選擇替換槽位</div>
+      <div style="font-size:9px;color:var(--text);margin-bottom:8px">將裝入：<span style="color:${c.acc}">${sk?.name}</span></div>
+      <div class="sk-pick-list">${slots}</div>
+    `);
+    return;
+  }
+  // 正常：選擇要裝入 slotIdx 的技能
+  const currentId=equipped[slotIdx]||null;
+  const unlocked=pool.filter(s=>s.unlockLv<=c.lv);
+  const items=unlocked.map(sk=>{
+    const isCurrent=sk.id===currentId;
+    const isElsewhere=equipped.includes(sk.id)&&!isCurrent;
+    const isActive=type==='active';
+    const bg=isActive?sk.bg:sk.c;
+    return `<div class="sk-pick-item${isCurrent?' cur':''}" onclick="confirmSkill(${ci},'${type}',${slotIdx},'${sk.id}')">
+      <div class="sk-pool-ico" style="background:${bg}40;border:1px solid ${bg}60">${sk.ico}</div>
+      <div style="flex:1;min-width:0;padding-right:${isCurrent?40:isElsewhere?60:0}px">
+        <div style="font-size:10px;color:${isCurrent?'var(--gold)':c.acc}">${sk.name}</div>
+        <div style="font-size:8px;color:var(--text2);margin-top:1px">${sk.desc}</div>
+        <div style="font-size:7px;color:var(--text2);margin-top:2px">解鎖 Lv.${sk.unlockLv}</div>
+      </div>
+      ${isCurrent?'<div style="font-size:7px;color:var(--gold);padding:1px 5px;border:1px solid var(--gold);border-radius:2px;flex-shrink:0">當前</div>':isElsewhere?'<div style="font-size:7px;color:var(--text2);flex-shrink:0">已裝</div>':''}
+    </div>`;
+  }).join('');
+  _makeOverlay(`
+    <div class="modal-title">${type==='active'?'主動技能':'被動技能'} 槽 ${slotIdx+1}</div>
+    <div style="font-size:8px;color:var(--text2);margin-bottom:10px">Lv.${c.lv} · 已解鎖 ${unlocked.length} 個</div>
+    <div class="sk-pick-item-none" onclick="confirmSkill(${ci},'${type}',${slotIdx},null)">✕ 移除技能</div>
+    <div class="sk-pick-list">${items}</div>
+  `);
+}
+function confirmSkill(ci,type,slotIdx,sid){
+  const arr=type==='active'?CHARS[ci].equippedActive:CHARS[ci].equippedPassive;
+  arr[slotIdx]=sid||null;
+  closeModal();
+  if(curPage===1)render();
+}
+function removeSkill(ci,type,sid){
+  const arr=type==='active'?CHARS[ci].equippedActive:CHARS[ci].equippedPassive;
+  const idx=arr.indexOf(sid);
+  if(idx>=0)arr[idx]=null;
+  closeModal();
+  if(curPage===1)render();
+}
+
+// ════ TRAIT PICKER ════
+function openTraitPicker(ci,slotIdx,forceId){
+  const c=CHARS[ci];
+  const equipped=c.equippedTraits;
+  if(forceId){
+    const firstEmpty=equipped.findIndex(x=>!x);
+    if(firstEmpty>=0){ confirmTrait(ci,firstEmpty,forceId); return; }
+    slotIdx=-2;
+  }
+  if(slotIdx===-2){
+    const tr=c.traitPool.find(x=>x.id===forceId);
+    const slots=Array.from({length:10},(_,i)=>{
+      const tid=equipped[i]||null;
+      const t=tid?c.traitPool.find(x=>x.id===tid):null;
+      return `<div class="sk-pick-item" onclick="confirmTrait(${ci},${i},'${forceId}')">
+        <div style="font-family:'Cinzel',serif;font-size:8px;color:var(--text2);width:20px">${i+1}</div>
+        ${t?`<div style="flex:1"><div style="font-size:10px;color:${t.c}">${t.name}</div></div>`
+           :`<div style="flex:1;font-size:9px;color:var(--border2)">空槽</div>`}
+        <div style="font-size:8px;color:var(--gold)">換入</div>
+      </div>`;
+    }).join('');
+    _makeOverlay(`
+      <div class="modal-title">選擇特性槽位</div>
+      <div style="font-size:9px;color:${tr?.c};margin-bottom:8px">將裝入：${tr?.name}</div>
+      <div class="sk-pick-list">${slots}</div>
+    `);
+    return;
+  }
+  const currentId=equipped[slotIdx]||null;
+  const unlocked=c.traitPool.filter(t=>t.unlocked);
+  const items=unlocked.map(tr=>{
+    const isCurrent=tr.id===currentId;
+    const isElsewhere=equipped.includes(tr.id)&&!isCurrent;
+    return `<div class="sk-pick-item${isCurrent?' cur':''}" onclick="confirmTrait(${ci},${slotIdx},'${tr.id}')">
+      <div class="tr-pool-ico" style="background:${tr.c}30;border:1px solid ${tr.c}60">${tr.ico}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:10px;color:${isCurrent?'var(--gold)':tr.c}">${tr.name}</div>
+        <div style="font-size:8px;color:var(--text2);margin-top:1px">${tr.desc}</div>
+        <div style="font-size:7px;color:var(--text2);margin-top:2px">SP ${tr.spCost}</div>
+      </div>
+      ${isCurrent?'<div style="font-size:7px;color:var(--gold);padding:1px 5px;border:1px solid var(--gold);border-radius:2px;flex-shrink:0">當前</div>':isElsewhere?'<div style="font-size:7px;color:var(--text2);flex-shrink:0">已裝</div>':''}
+    </div>`;
+  }).join('');
+  _makeOverlay(`
+    <div class="modal-title">特性槽 ${slotIdx+1}</div>
+    <div style="font-size:8px;color:var(--text2);margin-bottom:10px">已解鎖 ${unlocked.length} 個</div>
+    <div class="sk-pick-item-none" onclick="confirmTrait(${ci},${slotIdx},null)">✕ 移除特性</div>
+    <div class="sk-pick-list">${items}</div>
+  `);
+}
+function confirmTrait(ci,slotIdx,tid){
+  CHARS[ci].equippedTraits[slotIdx]=tid||null;
+  closeModal();
+  if(curPage===1)render();
+}
+function removeTrait(ci,tid){
+  const idx=CHARS[ci].equippedTraits.indexOf(tid);
+  if(idx>=0)CHARS[ci].equippedTraits[idx]=null;
+  if(curPage===1)render();
+}
+
 function render(){
   const c=CHARS[curChar];
   const main=document.getElementById('main');
-  main.style.display=(curPage>=2)?'flex':'block';
+  main.style.display=(curPage>=2&&curPage!==1)?'flex':'block';
   switch(curPage){
     case 0: main.innerHTML=renderStatus(c); break;
     case 1: main.innerHTML=renderSkillTree(c); break;
