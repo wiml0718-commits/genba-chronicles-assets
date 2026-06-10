@@ -775,6 +775,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
 }
 .dialog-box{
   pointer-events:all;
+  cursor:pointer;
   background:linear-gradient(180deg,rgba(7,9,15,.97),rgba(11,14,28,.98));
   border-top:1px solid var(--border2);
   padding:0;
@@ -1117,6 +1118,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
 }
 .dialog-box{
   pointer-events:all;
+  cursor:pointer;
   background:linear-gradient(180deg,rgba(7,9,15,.97),rgba(11,14,28,.98));
   border-top:1px solid var(--border2);
   padding:0;
@@ -1205,12 +1207,17 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
 /* ══ SHOP STYLES ══ */
 
 .dialog-screen{
-  position:fixed;inset:0;z-index:55;
-  display:flex;flex-direction:column;justify-content:flex-end;
-  background:rgba(0,0,0,.0);
+  position:absolute;inset:0;z-index:55;
+  display:none;
   pointer-events:none;
 }
-.dialog-screen.active{pointer-events:all;}
+.dialog-screen.active{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  background:rgba(0,0,0,.35);
+  pointer-events:all;
+}
 .dialog-backdrop{
   flex:1;
   background:rgba(0,0,0,.35);
@@ -1256,9 +1263,14 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
 
 /* ══ 商店主介面 ══ */
 .shop-screen{
-  position:fixed;inset:0;z-index:60;
-  display:flex;flex-direction:column;
+  position:absolute;inset:0;z-index:60;
+  display:none;
+  flex-direction:column;
   background:var(--bg);
+}
+.shop-screen.visible{
+  display:flex;
+  flex-direction:column;
   animation:fadeIn .25s ease;
 }
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -1355,7 +1367,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
 
 /* ══ 購買確認 modal ══ */
 .confirm-overlay{
-  position:fixed;inset:0;z-index:100;
+  position:fixed;inset:0;z-index:800;
   background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
   display:flex;align-items:flex-end;justify-content:center;
   animation:fadeIn .18s ease;
@@ -1397,7 +1409,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
 /* ══ 結算通知 ══ */
 .toast{
   position:fixed;top:80px;left:50%;transform:translateX(-50%);
-  z-index:200;background:rgba(11,14,28,.95);border:1px solid var(--border2);
+  z-index:900;background:rgba(11,14,28,.95);border:1px solid var(--border2);
   border-radius:8px;padding:8px 16px;font-size:10px;letter-spacing:.5px;
   color:var(--text);white-space:nowrap;
   animation:toastAnim 2s ease forwards;
@@ -1444,12 +1456,17 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
 
 /* ══ 對話系統 ══ */
 .dialog-screen{
-  position:fixed;inset:0;z-index:55;
-  display:flex;flex-direction:column;justify-content:flex-end;
-  background:rgba(0,0,0,.0);
+  position:absolute;inset:0;z-index:55;
+  display:none;
   pointer-events:none;
 }
-.dialog-screen.active{pointer-events:all;}
+.dialog-screen.active{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  background:rgba(0,0,0,.35);
+  pointer-events:all;
+}
 .dialog-backdrop{
   flex:1;
   background:rgba(0,0,0,.35);
@@ -1495,9 +1512,14 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
 
 /* ══ 商店主介面 ══ */
 .shop-screen{
-  position:fixed;inset:0;z-index:60;
-  display:flex;flex-direction:column;
+  position:absolute;inset:0;z-index:60;
+  display:none;
+  flex-direction:column;
   background:var(--bg);
+}
+.shop-screen.visible{
+  display:flex;
+  flex-direction:column;
   animation:fadeIn .25s ease;
 }
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -1594,7 +1616,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
 
 /* ══ 購買確認 modal ══ */
 .confirm-overlay{
-  position:fixed;inset:0;z-index:100;
+  position:fixed;inset:0;z-index:800;
   background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
   display:flex;align-items:flex-end;justify-content:center;
   animation:fadeIn .18s ease;
@@ -1636,7 +1658,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
 /* ══ 結算通知 ══ */
 .toast{
   position:fixed;top:80px;left:50%;transform:translateX(-50%);
-  z-index:200;background:rgba(11,14,28,.95);border:1px solid var(--border2);
+  z-index:900;background:rgba(11,14,28,.95);border:1px solid var(--border2);
   border-radius:8px;padding:8px 16px;font-size:10px;letter-spacing:.5px;
   color:var(--text);white-space:nowrap;
   animation:toastAnim 2s ease forwards;
@@ -1698,7 +1720,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
     </div>
     <div class="hud-right">
       <div class="hud-step" id="hud-step">步數 0</div>
-      <button class="hud-btn" onclick="closeTown()">地圖</button>
+      <button class="hud-btn" id="town-close-btn">地圖</button>
     </div>
   </div>
   <div class="map-viewport" id="viewport">
@@ -1707,48 +1729,27 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
       <div class="minimap-player" id="minimap-player"></div>
     </div>
   </div>
-  <div class="dialog-overlay" id="dialog-overlay" style="display:none">
-    <div class="dialog-box" id="dialog-box">
-      <div class="dialog-inner" id="dialog-inner"></div>
-      <div class="dialog-footer" id="dialog-footer">
-        <div class="dialog-next" id="dialog-next" onclick="dialogNext()">點擊繼續 ▶</div>
-      </div>
-    </div>
-    <div class="dialog-safe"></div>
-  </div>
+  <!-- 對話框改為動態建立 active-dialog -->
   <div class="nav-safe"></div>
 </div>
 
 
 <!-- ══ TOWN OVERLAY ══ -->
-<div id="town-overlay" style="display:none;position:fixed;inset:0;z-index:600;flex-direction:column;background:var(--bg);">
+<div id="town-overlay" style="display:none;position:fixed;inset:0;z-index:600;flex-direction:column;background:#0a0c14;height:100%;">
   <div class="hud">
     <div class="hud-left">
       <div class="hud-location" id="hud-location">夏洛伊王都</div>
       <div class="hud-sub" id="hud-sub">大街</div>
     </div>
     <div class="hud-right">
-      <div class="hud-step" id="hud-step">步數 0</div>
-      <button class="hud-btn" onclick="closeTown()">地圖</button>
+      <button class="hud-btn" id="town-close-btn">地圖</button>
     </div>
   </div>
-  <div class="map-viewport" id="viewport">
-    <div class="map-world" id="map-world"></div>
-    <div class="minimap" id="minimap">
-      <div class="minimap-player" id="minimap-player"></div>
-    </div>
+  <div id="town-scene" style="position:relative;flex:1;overflow:hidden;background:#0a0c14;min-height:0;">
+    <div id="town-hotspots" style="position:absolute;top:0;left:0;right:0;bottom:0;"></div>
   </div>
-  <div class="dialog-screen" id="dialog-screen" style="pointer-events:none">
-    <div class="dialog-backdrop" id="dialog-backdrop" onclick="dialogNext()"></div>
-    <div class="dialog-box" id="dialog-box">
-      <div class="dialog-inner" id="dialog-inner"></div>
-      <div class="dialog-footer" id="dialog-footer">
-        <div class="dialog-next" onclick="dialogNext()">點擊繼續 ▶</div>
-      </div>
-    </div>
-    <div class="dialog-safe"></div>
-  </div>
-  <div class="shop-screen" id="shop-screen" style="display:none">
+  <!-- dialog-screen 改為動態 active-dialog -->
+  <div class="shop-screen" id="shop-screen">
     <div class="shop-header">
       <div class="shop-title-wrap">
         <span class="shop-ico" id="shop-ico">🏪</span>
@@ -1761,14 +1762,14 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
       </div>
     </div>
     <div class="shop-tabs">
-      <button class="shop-tab active" id="tab-buy" onclick="switchTab('buy')">購　買</button>
-      <button class="shop-tab" id="tab-sell" onclick="switchTab('sell')">販　賣</button>
-      <button class="shop-tab" id="tab-bag" onclick="switchTab('bag')">背　包</button>
+      <button class="shop-tab active" id="tab-buy-btn">購　買</button>
+      <button class="shop-tab" id="tab-sell-btn">販　賣</button>
+      <button class="shop-tab" id="tab-bag-btn">背　包</button>
     </div>
     <div class="shop-list" id="shop-list"></div>
     <div class="shop-footer">
       <div class="footer-info">背包：<span id="bag-count">0</span> 件</div>
-      <button class="footer-close" onclick="closeShop()">離開商店</button>
+      <button class="footer-close" id="close-shop-btn">離開商店</button>
     </div>
     <div class="safe-area"></div>
   </div>
@@ -3222,14 +3223,14 @@ function showResult(type){
     '</div>';
   document.body.appendChild(div);
   var rb1 = document.getElementById('rb-restart');
-  var rb2 = document.getElementById('rb-change');
+  var rb2 = document.getElementById('rb-back');
   if(rb1) rb1.addEventListener('click', restartBattle);
   if(rb2) rb2.addEventListener('click', closeBattleOverlay);
 }
 
 function restartBattle(){
-  document.querySelectorAll('.result-overlay,.float-num').forEach(e=>e.remove());
-  const keys = BS.enemies.map(e=>e.id.split('_').slice(0,-1).join('_'));
+  document.querySelectorAll('.result-overlay,.float-num').forEach(function(e){ e.remove(); });
+  var keys = BS.enemies.map(function(e){ return e.id.split('_').slice(0,-1).join('_'); });
   initBattle(keys);
 }
 
@@ -3537,7 +3538,12 @@ function openBattle(enemyKeys, locationName){
   var overlay = document.getElementById('battle-overlay');
   if(!overlay) return;
   overlay.style.display = 'flex';
-  // 避免主介面 ATB 殘留
+  // 記錄 town-overlay 是否開啟中（方便戰鬥結束後恢復）
+  var townOv = document.getElementById('town-overlay');
+  if(townOv && townOv.style.display !== 'none'){
+    townOv.dataset.wasOpen = 'true';
+    townOv.style.display = 'none';
+  }
   if(BS && BS.atbInterval) clearInterval(BS.atbInterval);
   initBattle(enemyKeys, locationName);
 }
@@ -3547,8 +3553,15 @@ function closeBattleOverlay(){
   if(overlay) overlay.style.display = 'none';
   if(BS && BS.atbInterval){ clearInterval(BS.atbInterval); BS.atbInterval = null; }
   BS = null;
-  // 清掉所有 float 飄字和 overlay
   document.querySelectorAll('.float-num,.limit-flash,.battle-start-overlay,.result-overlay').forEach(function(e){ e.remove(); });
+  // 從城鎮觸發的戰鬥，結束後恢復 town-overlay
+  var townOv = document.getElementById('town-overlay');
+  if(townOv && townOv.dataset.wasOpen === 'true'){
+    townOv.style.display = 'flex';
+    townOv.dataset.wasOpen = '';
+    // 重新綁定城鎮按鈕事件
+    if(typeof bindTownButtons === 'function') bindTownButtons();
+  }
 }
 
 // ════════════════════════════════════════
@@ -4029,214 +4042,51 @@ var DS = {
   branchKey:null,
 };
 
+// ── 對話橋接 → 呼叫 Script 4 的 DLG 系統 ──
 function startDialog(obj, branchKey){
   stopMoving();
-  var lines = branchKey && obj.dialogBranch && obj.dialogBranch[branchKey]
+  var rawLines = branchKey && obj.dialogBranch && obj.dialogBranch[branchKey]
     ? obj.dialogBranch[branchKey]
-    : obj.dialog;
-  if(!lines || lines.length===0) return;
+    : (obj.dialog || []);
+  if(!rawLines || rawLines.length === 0) return;
 
-  DS.obj = obj;
-  DS.lines = lines;
-  DS.lineIdx = 0;
-  DS.branchKey = branchKey;
-  GS.dialog = true;
-
-  document.getElementById('dialog-overlay').style.display = 'flex';
-  showDialogLine(0);
-}
-
-function showDialogLine(idx){
-  if(idx >= DS.lines.length){
-    endDialog();
-    return;
-  }
-  DS.lineIdx = idx;
-  var line = DS.lines[idx];
-
-  // 如果有立即觸發戰鬥
-  if(line.triggerBattle){
-    endDialog();
-    setTimeout(function(){ triggerBattle(line.triggerBattle); }, 300);
-    return;
-  }
-
-  var inner = document.getElementById('dialog-inner');
-  var footer = document.getElementById('dialog-footer');
-  var acc = line.acc || '#ccd4f0';
-
-  inner.innerHTML =
-    '<div class="dialog-avatar">' +
-      '<div style="font-size:38px">' + line.ico + '</div>' +
-      '<div class="av-name" style="color:' + acc + '">' + line.speaker + '</div>' +
-    '</div>' +
-    '<div class="dialog-content">' +
-      '<div class="dialog-speaker" style="color:' + acc + '">' + line.speaker + '</div>' +
-      '<div class="dialog-text" id="dialog-text"></div>' +
-    '</div>';
-
-  // 打字機效果
-  typeText(line.text, function(){
-    // 打字完成後顯示選項或繼續提示
-    if(line.choices && line.choices.length > 0){
-      footer.style.display = 'none';
-      var textEl = document.getElementById('dialog-text');
-      var choicesDiv = document.createElement('div');
-      choicesDiv.className = 'dialog-choices';
-      line.choices.forEach(function(c){
-        var btn = document.createElement('button');
-        btn.className = 'dialog-choice';
-        btn.textContent = c.text;
-        var nextKey = c.next;
-        btn.addEventListener('click', function(){
-          if(nextKey === 'end'){
-            endDialog();
-          } else {
-            // 找分支
-            if(DS.obj.dialogBranch && DS.obj.dialogBranch[nextKey]){
-              endDialog();
-              setTimeout(function(){ startDialog(DS.obj, nextKey); }, 200);
-            } else {
-              dialogNext();
-            }
-          }
-        });
-        choicesDiv.appendChild(btn);
-      });
-      textEl.appendChild(choicesDiv);
-    } else {
-      footer.style.display = 'flex';
-    }
+  var lines = rawLines.map(function(l){
+    return {
+      speaker:      l.speaker || obj.name,
+      ico:          l.ico || obj.ico,
+      acc:          l.acc || obj.acc || 'var(--text2)',
+      text:         l.text || '',
+      choices:      l.choices || null,
+      triggerBattle:l.triggerBattle || null,
+    };
   });
-}
 
-function typeText(text, onDone){
-  var el = document.getElementById('dialog-text');
-  if(!el) return;
-  el.innerHTML = '';
-  var i = 0;
-  DS.typing = true;
-  if(DS.typeTimer) clearInterval(DS.typeTimer);
-
-  DS.typeTimer = setInterval(function(){
-    if(i < text.length){
-      el.textContent = text.slice(0,i+1);
-      i++;
-    } else {
-      clearInterval(DS.typeTimer);
-      DS.typing = false;
-      el.innerHTML = text + '<span class="cursor"></span>';
-      if(onDone) onDone();
-    }
-  }, 35);
-}
-
-function dialogNext(){
-  if(DS.typing){
-    // 加速完成打字
-    clearInterval(DS.typeTimer);
-    DS.typing = false;
-    var line = DS.lines[DS.lineIdx];
-    var el = document.getElementById('dialog-text');
-    if(el) el.innerHTML = line.text + '<span class="cursor"></span>';
-    // 觸發完成回調（選項顯示等）
-    if(!line.choices || line.choices.length===0){
-      // 沒有選項，等下次點擊繼續
-    }
-    return;
-  }
-  showDialogLine(DS.lineIdx + 1);
+  GS.dialog = true;
+  openDialog(lines, function(){ GS.dialog = false; });
 }
 
 function endDialog(){
+  // 先恢復場景（最優先，避免後面報錯導致場景卡暗）
+  var scene = document.getElementById('town-scene');
+  if(scene){ scene.style.opacity='1'; scene.style.pointerEvents=''; }
+  var townOv = document.getElementById('town-overlay');
+  if(townOv) townOv.style.pointerEvents = 'all';
+  // 移除對話相關元素
+  ['active-dialog','dlg-continue-btn','choices-overlay'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el && el.parentNode) el.parentNode.removeChild(el);
+  });
   GS.dialog = false;
-  document.getElementById('dialog-overlay').style.display = 'none';
-  if(DS.typeTimer) clearInterval(DS.typeTimer);
-  DS.obj = null;
-  DS.lines = [];
-}
-
-// ════════════════════════════════════════
-// 隨機遭遇
-// ════════════════════════════════════════
-function checkEncounter(){
-  var zone = getZone(GS.player.x, GS.player.y);
-  var zoneData = ZONES[zone];
-  if(!zoneData || !zoneData.encounter) return false;
-
-  GS.encounterCounter++;
-  if(GS.encounterCounter < GS.encounterThreshold) return false;
-  GS.encounterCounter = 0;
-  GS.encounterThreshold = 6 + Math.floor(Math.random()*6); // 6~11步
-
-  if(Math.random() < 0.55){ // 55% 機率
-    stopMoving();
-    setTimeout(function(){
-      var enemies = zone==='square'
-        ? ['shadow_soldier','dark_mage']
-        : ['shadow_soldier','shadow_soldier'];
-      triggerBattle(enemies);
-    }, 200);
-    return true;
+  GS.dialogCooldown = true;
+  setTimeout(function(){ GS.dialogCooldown = false; }, 400);
+  if(typeof DLG !== 'undefined'){
+    DLG.active = false;
+    if(DLG.timer){ clearInterval(DLG.timer); DLG.timer = null; }
   }
-  return false;
-}
-
-function triggerBattle(enemyKeys){
-  // 遭遇閃白
-  var flash = document.createElement('div');
-  flash.className = 'encounter-flash';
-  document.body.appendChild(flash);
-
-  setTimeout(function(){
-    if(flash.parentNode) flash.remove();
-    // 如果主介面有 openBattle，呼叫它；否則跳到獨立戰鬥頁
-    if(typeof openBattle === 'function'){
-      openBattle(enemyKeys, ZONES[GS.zone] ? ZONES[GS.zone].name : '夏洛伊王都');
-    } else {
-      // 獨立測試模式
-      alert('戰鬥觸發！敵人：' + enemyKeys.join(', ') + '\n（整合版才有完整戰鬥）');
-    }
-  }, 400);
-}
-
-// ════════════════════════════════════════
-// 離開城鎮
-// ════════════════════════════════════════
-function exitTown(){
-  if(typeof closeBattleOverlay === 'function') closeBattleOverlay();
-  // 回到世界地圖
-  var townOverlay = document.getElementById('town-overlay');
-  if(townOverlay){
-    townOverlay.style.display = 'none';
-  } else {
-    // 獨立測試模式
-    document.getElementById('hud-sub').textContent = '（返回世界地圖）';
-  }
-}
-
-// ════════════════════════════════════════
-// 初始化
-// ════════════════════════════════════════
-// ════════════════════════════════════════
-// 城鎮整合：開啟/關閉城鎮
-// ════════════════════════════════════════
-function openTown(townKey){
-  var overlay = document.getElementById('town-overlay');
-  if(!overlay) return;
-  overlay.style.display = 'flex';
-  buildMap();
-  showZoneNotice('夏洛伊王都');
-}
-function closeTown(){
-  var overlay = document.getElementById('town-overlay');
-  if(overlay) overlay.style.display = 'none';
-  stopMoving();
-  endDialog();
-}
-
-</script>
-
+  var fn = DLG && DLG.onEnd ? DLG.onEnd : null;
+  if(DLG) DLG.onEnd = null;
+  if(fn){ try { fn(); } catch(e){} }
+}</script>
 <script>
 // ════ TOWN+SHOP ENGINE ════
 // ════════════════════════════════════════
@@ -4278,6 +4128,7 @@ var EQUIPS = {
   iron_ring:    {id:'iron_ring',    name:'鐵戒指',     ico:'💍', slot:'飾品', str:5, mag:5, def:0, spd:0,  buy:120, sell:84,  ch:1, desc:'微弱加成'},
   charm_speed:  {id:'charm_speed',  name:'速度符咒',   ico:'⚡', slot:'飾品', str:0, mag:0, def:0, spd:12, buy:300, sell:210, ch:2, desc:'速度大幅提升'},
   amulet_dark:  {id:'amulet_dark',  name:'暗月護符',   ico:'🌙', slot:'飾品', str:5, mag:10,def:5, spd:5,  buy:600, sell:420, ch:2, desc:'月夜力量'},
+  no_encounter_ring: {id:'no_encounter_ring', name:'隱匿戒指', ico:'🔮', slot:'飾品', str:0, mag:0, def:0, spd:0, buy:0, sell:0, ch:0, noEncounter:true, desc:'裝備後不會遇到敵人'},
 };
 
 // ── 商店庫存（每家店賣不同商品）──
@@ -4338,96 +4189,287 @@ var PLAYER = {
     {id:'potion_hp_s', qty:3},
     {id:'iron_fang',   qty:5},
     {id:'dark_shard',  qty:2},
-    // 一些裝備
     {id:'iron_sword',  qty:1, isEquip:true},
     {id:'cloth_armor', qty:1, isEquip:true},
+    {id:'no_encounter_ring', qty:1, isEquip:true},
   ],
 };
 
 // ════════════════════════════════════════
 // 對話系統
 // ════════════════════════════════════════
-var DLG = {active:false, lines:[], idx:0, typing:false, timer:null, onEnd:null};
+var DLG = {active:false, lines:[], idx:0, typing:false, timer:null, onEnd:null, branches:{}};
 
-function openDialog(lines, onEnd){
+function openDialog(lines, onEnd, branches){
   DLG.active = true;
   DLG.lines = lines;
   DLG.idx = 0;
   DLG.onEnd = onEnd || null;
-  var screen = document.getElementById('dialog-screen');
-  screen.classList.add('active');
-  screen.style.pointerEvents = 'all';
-  document.getElementById('dialog-box').style.display = 'block';
+  DLG.branches = branches || {};
+
+  // 移除舊的
+  var old = document.getElementById('active-dialog');
+  if(old && old.parentNode) old.parentNode.removeChild(old);
+  var oldBtn = document.getElementById('dlg-continue-btn');
+  if(oldBtn && oldBtn.parentNode) oldBtn.parentNode.removeChild(oldBtn);
+
+  // 建立對話框
+  var dlg = document.createElement('div');
+  dlg.id = 'active-dialog';
+  dlg.style.cssText =
+    'position:fixed;left:0;right:0;bottom:0;z-index:1000;' +
+    'background:linear-gradient(180deg,rgba(7,9,15,.98),rgba(11,14,28,.99));' +
+    'border-top:1px solid #28366a;padding-bottom:20px;';
+  // 內容區：頭像 + 文字
+  var inner = document.createElement('div');
+  inner.id = 'dialog-inner';
+  inner.style.cssText = 'display:flex;align-items:flex-start;padding:14px 16px;min-height:70px;';
+  dlg.appendChild(inner);
+  // footer：點擊繼續
+  var footer = document.createElement('div');
+  footer.id = 'dialog-footer';
+  footer.style.cssText = 'display:none;text-align:right;padding:4px 16px 12px;';
+  footer.innerHTML = '<span style="font-size:11px;color:rgba(112,128,176,.8);letter-spacing:2px;">點擊繼續 ▶</span>';
+  dlg.appendChild(footer);
+  document.body.appendChild(dlg);
+
+  // 整個對話框點擊 = 繼續
+  dlg.style.cursor = 'pointer';
+  dlg.addEventListener('click', function(e){
+    if(e.target.classList && e.target.classList.contains('dialog-choice')) return;
+    var p = e.target;
+    while(p && p !== dlg){
+      if(p.classList && p.classList.contains('dialog-choice')) return;
+      p = p.parentNode;
+    }
+    dialogNext();
+  });
+
+  // 淡化場景
+  var scene = document.getElementById('town-scene');
+  if(scene){ scene.style.opacity='0.25'; scene.style.pointerEvents='none'; }
   showLine(0);
+}
+
+
+function endDialog(){
+  // 先恢復場景（最優先，避免後面報錯導致場景卡暗）
+  var scene = document.getElementById('town-scene');
+  if(scene){ scene.style.opacity='1'; scene.style.pointerEvents=''; }
+  var townOv = document.getElementById('town-overlay');
+  if(townOv) townOv.style.pointerEvents = 'all';
+  // 移除對話相關元素
+  ['active-dialog','dlg-continue-btn','choices-overlay'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el && el.parentNode) el.parentNode.removeChild(el);
+  });
+  GS.dialog = false;
+  GS.dialogCooldown = true;
+  setTimeout(function(){ GS.dialogCooldown = false; }, 400);
+  if(typeof DLG !== 'undefined'){
+    DLG.active = false;
+    if(DLG.timer){ clearInterval(DLG.timer); DLG.timer = null; }
+  }
+  var fn = DLG && DLG.onEnd ? DLG.onEnd : null;
+  if(DLG) DLG.onEnd = null;
+  if(fn){ try { fn(); } catch(e){} }
+}
+
+
+function showChoicesOverlay(choices){
+  var old = document.getElementById('choices-overlay');
+  if(old) old.remove();
+
+  var ov = document.createElement('div');
+  ov.id = 'choices-overlay';
+  // 用最簡單的 inline style，確保可點擊
+  ov.style.position = 'fixed';
+  ov.style.left = '0';
+  ov.style.right = '0';
+  ov.style.bottom = '0';
+  ov.style.zIndex = '9999';
+  ov.style.padding = '12px 14px 30px';
+  ov.style.background = 'rgba(7,9,15,.97)';
+  ov.style.display = 'flex';
+  ov.style.flexDirection = 'column';
+  ov.style.gap = '8px';
+  ov.style.pointerEvents = 'all';
+
+  // 只把 viewport 和 HUD 設成不可點擊
+  var townOv = document.getElementById('town-overlay');
+  if(townOv) townOv.style.pointerEvents = 'none';
+  // dialog-screen 已在 body（openDialog 建立時就 append 到 body）
+
+  choices.forEach(function(c, ci){
+    var btn = document.createElement('a');  // 用 <a> 而非 <button>，iOS 更可靠
+    btn.textContent = c.text;
+    btn.href = 'javascript:void(0)';
+    btn.style.display = 'block';
+    btn.style.padding = '14px 16px';
+    btn.style.background = 'rgba(16,21,42,.95)';
+    btn.style.border = '1px solid rgba(40,54,106,.9)';
+    btn.style.borderRadius = '8px';
+    btn.style.color = '#ccd4f0';
+    btn.style.fontSize = '13px';
+    btn.style.letterSpacing = '.5px';
+    btn.style.fontFamily = 'Noto Serif TC,serif';
+    btn.style.textDecoration = 'none';
+    btn.style.pointerEvents = 'all';
+    btn.style.webkitTapHighlightColor = 'rgba(200,168,74,.4)';
+
+    (function(ch){
+      function doChoice(){
+        var tw = document.getElementById('town-overlay');
+        if(tw){ tw.style.pointerEvents = ''; }
+        var o = document.getElementById('choices-overlay');
+        if(o) o.remove();
+        // next branch
+        if(ch.next && ch.next !== 'end'){
+          var branch = DLG.branches && DLG.branches[ch.next];
+          if(branch && Array.isArray(branch)){
+            DLG.lines = branch;
+            DLG.idx = 0;
+            showLine(0);
+          } else if(branch && typeof branch === 'function'){
+            endDialog();
+            setTimeout(branch, 200);
+          } else {
+            // check for _end callback
+            var endCb = DLG.branches && DLG.branches[ch.next + '_end'];
+            if(endCb && typeof endCb === 'function'){
+              endDialog();
+              setTimeout(endCb, 200);
+            } else {
+              endDialog();
+            }
+          }
+        } else if(ch.action){
+          ch.action();
+        } else {
+          endDialog();
+        }
+      }
+      btn.addEventListener('click', doChoice, {once:true});
+    })(c);
+    ov.appendChild(btn);
+  });
+
+  document.body.appendChild(ov);
 }
 
 function showLine(idx){
   if(idx >= DLG.lines.length){ endDialog(); return; }
   DLG.idx = idx;
   var line = DLG.lines[idx];
+  // triggerBattle 處理
+  if(line.triggerBattle){
+    endDialog();
+    setTimeout(function(){ triggerBattle(line.triggerBattle); }, 200);
+    return;
+  }
   var acc = line.acc || 'var(--text2)';
 
-  document.getElementById('dialog-inner').innerHTML =
-    '<div class="dialog-av">' +
-      '<div class="dialog-av-ico">' + (line.ico||'💬') + '</div>' +
-      '<div class="dialog-av-name" style="color:'+acc+'">' + (line.speaker||'') + '</div>' +
-    '</div>' +
-    '<div class="dialog-body">' +
-      '<div class="dialog-speaker" style="color:'+acc+'">' + (line.speaker||'') + '</div>' +
-      '<div class="dialog-text" id="dlg-text"></div>' +
-    '</div>';
+  var inner = document.getElementById('dialog-inner');
+  if(inner){
+    var faceMap = {licarise:'licarise_face.jpg',anei:'anei_face.jpg',fira:'fira_face.jpg',elweis:'elweis_face.jpg'};
+    var faceKey = line.face || '';
+    var faceFile = faceMap[faceKey] || '';
+    var avatarHtml = '';
+    if(faceFile){
+      avatarHtml =
+        '<div style="flex-shrink:0;width:64px;margin-right:10px;">' +
+          '<img src="https://raw.githubusercontent.com/wiml0718-commits/genba-chronicles-assets/main/' + faceFile + '" ' +
+          'style="width:64px;height:64px;object-fit:cover;object-position:top;border-radius:8px;border:2px solid ' + acc + ';" />' +
+          '<div style="font-size:10px;margin-top:4px;color:' + acc + ';text-align:center;">' + (line.speaker||'') + '</div>' +
+        '</div>';
+    } else {
+      avatarHtml =
+        '<div style="flex-shrink:0;width:64px;text-align:center;margin-right:10px;">' +
+          '<div style="font-size:34px;line-height:1;">' + (line.ico||'💬') + '</div>' +
+          '<div style="font-size:10px;margin-top:4px;color:' + acc + ';">' + (line.speaker||'') + '</div>' +
+        '</div>';
+    }
+    inner.innerHTML =
+      avatarHtml +
+      '<div style="flex:1;padding-top:2px;">' +
+        '<div style="font-size:12px;font-weight:bold;margin-bottom:6px;color:' + acc + ';letter-spacing:1px;">' + (line.speaker||'') + '</div>' +
+        '<div style="font-size:15px;line-height:1.6;color:#ccd4f0;">' + (line.text||'') + '</div>' +
+      '</div>';
+  }
 
   var footer = document.getElementById('dialog-footer');
 
-  typeText(line.text, function(){
-    if(line.choices && line.choices.length > 0){
-      footer.style.display = 'none';
-      var el = document.getElementById('dlg-text');
-      var div = document.createElement('div');
-      div.className = 'dialog-choices';
-      line.choices.forEach(function(c){
-        var btn = document.createElement('button');
-        btn.className = 'dialog-choice';
-        btn.textContent = c.text;
-        btn.addEventListener('click', function(){
-          if(c.action) c.action();
-          else endDialog();
-        });
-        div.appendChild(btn);
-      });
-      el.appendChild(div);
-    } else {
-      footer.style.display = 'flex';
-    }
-  });
+  // 強制 active-dialog 可見
+  var adlg = document.getElementById('active-dialog');
+  if(adlg){
+    adlg.style.display = 'block';
+    adlg.style.position = 'fixed';
+    adlg.style.left = '0';
+    adlg.style.right = '0';
+    adlg.style.bottom = '0';
+    adlg.style.zIndex = '1000';
+  }
+
+  DLG.typing = false;
+  if(line.choices && line.choices.length > 0){
+    if(footer) footer.style.display = 'none';
+    showChoicesOverlay(line.choices);
+  } else {
+    if(footer) footer.style.display = 'block';
+  }
 }
 
 function typeText(text, onDone){
   var el = document.getElementById('dlg-text');
-  if(!el) return;
-  el.textContent = '';
-  var i = 0;
-  DLG.typing = true;
-  if(DLG.timer) clearInterval(DLG.timer);
-  DLG.timer = setInterval(function(){
-    if(i < text.length){ el.textContent = text.slice(0, ++i); }
-    else {
-      clearInterval(DLG.timer);
-      DLG.typing = false;
-      el.innerHTML = text + '<span class="dialog-cursor"></span>';
-      if(onDone) onDone();
-    }
-  }, 32);
+  if(!el){
+    if(onDone) onDone();
+    return;
+  }
+  DLG.typing = false;
+  el.innerHTML = text + '<span class="dialog-cursor"></span>';
+  if(onDone) onDone();
 }
 
 function dialogNext(){
   if(DLG.typing){
+    // 打字中：立刻完成打字，然後直接前進
     clearInterval(DLG.timer);
     DLG.typing = false;
     var line = DLG.lines[DLG.idx];
     var el = document.getElementById('dlg-text');
     if(el) el.innerHTML = line.text + '<span class="dialog-cursor"></span>';
-    if(!line.choices) document.getElementById('dialog-footer').style.display = 'flex';
+    if(line.choices && line.choices.length > 0){
+      // 有選項：顯示選項，不前進
+      var footer = document.getElementById('dialog-footer');
+      if(footer) footer.style.display = 'none';
+      var dlgEl = document.getElementById('dlg-text');
+      if(dlgEl){
+        var div = document.createElement('div');
+        div.className = 'dialog-choices';
+        line.choices.forEach(function(c){
+          var btn = document.createElement('button');
+          btn.className = 'dialog-choice';
+          btn.textContent = c.text;
+          (function(action){
+            function doAct(e){
+              e.preventDefault();
+              e.stopImmediatePropagation();
+              btn.removeEventListener('touchstart', doAct);
+              btn.removeEventListener('click', doAct);
+              if(action) action();
+              else endDialog();
+            }
+            btn.addEventListener('touchstart', doAct, {passive:false});
+            btn.addEventListener('click', doAct);
+          })(c.action);
+          div.appendChild(btn);
+        });
+        dlgEl.appendChild(div);
+      }
+    } else {
+      // 沒有選項：直接前進到下一行
+      showLine(DLG.idx + 1);
+    }
     return;
   }
   showLine(DLG.idx + 1);
@@ -4448,46 +4490,72 @@ function openShop(shopKey){
   SHOP.current = shopKey;
   SHOP.tab = 'buy';
   SHOP.filter = 'all';
-
-  // 先跑打招呼對話
-  var lines = shop.greeting.map(function(l){
-    return {speaker:shop.npc.name, ico:shop.npc.ico, acc:shop.npc.acc, text:l.text};
-  });
-  openDialog(lines, function(){
-    showShopScreen(shop);
-  });
+  showShopScreen(shop);
 }
 
 function showShopScreen(shop){
-  // 確保對話框隱藏
-  var dlgScreen = document.getElementById('dialog-screen');
-  if(dlgScreen){ dlgScreen.classList.remove('active'); dlgScreen.style.pointerEvents = 'none'; }
+  // 確保對話框已關閉
+  var activeDlg = document.getElementById('active-dialog');
+  if(activeDlg && activeDlg.parentNode) activeDlg.parentNode.removeChild(activeDlg);
+  var cb = document.getElementById('dlg-continue-btn');
+  if(cb && cb.parentNode) cb.parentNode.removeChild(cb);
   if(typeof DLG !== 'undefined'){ DLG.active = false; }
+  // 恢復地圖淡化
+  var vp = document.getElementById('viewport');
+  var mm = document.getElementById('minimap');
+  if(vp){ vp.style.opacity='1'; vp.style.pointerEvents=''; }
+  if(mm) mm.style.opacity='1';
+  // town-overlay 恢復 pointer-events
+  var townOv = document.getElementById('town-overlay');
+  if(townOv) townOv.style.pointerEvents = 'all';
+
+  var shopEl = document.getElementById('shop-screen');
+  if(!shopEl) return;
+
+  // 把 shop-screen 移到 body（確保在最頂層，不受 town-overlay stacking context 影響）
+  document.body.appendChild(shopEl);
+  shopEl.setAttribute('style',
+    'display:flex;position:fixed;top:0;left:0;right:0;bottom:0;' +
+    'z-index:700;flex-direction:column;background:var(--bg);');
+
+  // 設商店資訊
   document.getElementById('shop-ico').textContent = shop.ico;
   document.getElementById('shop-name').textContent = shop.name;
   document.getElementById('shop-sub').textContent = shop.sub;
-  document.getElementById('shop-screen').style.display = 'flex';
   updateGilDisplay();
   switchTab('buy');
+  bindShopButtons();
+}
+
+function bindShopButtons(){
+  var tabBuy = document.getElementById('tab-buy-btn');
+  if(tabBuy){ tabBuy.onclick = function(){ switchTab('buy'); }; }
+  var tabSell = document.getElementById('tab-sell-btn');
+  if(tabSell){ tabSell.onclick = function(){ switchTab('sell'); }; }
+  var tabBag = document.getElementById('tab-bag-btn');
+  if(tabBag){ tabBag.onclick = function(){ switchTab('bag'); }; }
+  var closeBtn = document.getElementById('close-shop-btn');
+  if(closeBtn){ closeBtn.onclick = closeShop; }
 }
 
 function closeShop(){
-  document.getElementById('shop-screen').style.display = 'none';
-  var shop = SHOP_STOCK[SHOP.current];
-  if(!shop) return;
-  // 跑道別對話
-  var lines = shop.bye.map(function(l){
-    return {speaker:shop.npc.name, ico:shop.npc.ico, acc:shop.npc.acc, text:l.text};
-  });
+  var shopEl = document.getElementById('shop-screen');
+  if(shopEl){
+    shopEl.setAttribute('style','display:none;');
+    shopEl.classList.remove('visible');
+    // 移回 town-overlay
+    var townOv = document.getElementById('town-overlay');
+    if(townOv) townOv.appendChild(shopEl);
+  }
   SHOP.current = null;
-  openDialog(lines, null);
 }
 
 function switchTab(tab){
   SHOP.tab = tab;
   SHOP.filter = 'all';
   document.querySelectorAll('.shop-tab').forEach(function(b){ b.classList.remove('active'); });
-  document.getElementById('tab-'+tab).classList.add('active');
+  var tabEl = document.getElementById('tab-'+tab+'-btn') || document.getElementById('tab-'+tab);
+  if(tabEl) tabEl.classList.add('active');
   renderShopList();
 }
 
@@ -4511,31 +4579,23 @@ function renderShopList(){
 
 // ── 購買分頁 ──
 function renderBuyList(list, shop){
-  // 過濾按鈕
-  var filterRow = document.createElement('div');
-  filterRow.className = 'shop-filter';
-  var filters = [{k:'all',l:'全部'},{k:'consume',l:'道具'},{k:'武器',l:'武器'},{k:'防具',l:'防具'},{k:'頭飾',l:'頭飾'},{k:'鞋子',l:'鞋子'},{k:'飾品',l:'飾品'}];
-  filters.forEach(function(f){
-    var btn = document.createElement('button');
-    btn.className = 'filter-btn' + (SHOP.filter===f.k?' active':'');
-    btn.textContent = f.l;
-    btn.addEventListener('click', function(){ SHOP.filter=f.k; renderShopList(); });
-    filterRow.appendChild(btn);
-  });
-  list.appendChild(filterRow);
+  var allItems = shop.items.map(function(id){
+    return {id:id, data:ITEMS[id], isEquip:false};
+  }).concat(shop.equips.map(function(id){
+    return {id:id, data:EQUIPS[id], isEquip:true};
+  }));
 
-  // 商品
-  var allItems = shop.items.map(function(id){ return {id:id, data:ITEMS[id], isEquip:false}; })
-    .concat(shop.equips.map(function(id){ return {id:id, data:EQUIPS[id], isEquip:true}; }));
+  if(allItems.length === 0){
+    var empty = document.createElement('div');
+    empty.style.cssText = 'text-align:center;padding:40px 0;font-size:10px;color:var(--text2);';
+    empty.textContent = '— 本店暫無販售商品 —';
+    list.appendChild(empty);
+    return;
+  }
 
   allItems.forEach(function(entry){
     var d = entry.data;
     if(!d) return;
-    // 過濾
-    if(SHOP.filter !== 'all'){
-      if(SHOP.filter === 'consume' && d.type !== 'consume') return;
-      if(SHOP.filter !== 'consume' && SHOP.filter !== 'all' && d.slot !== SHOP.filter) return;
-    }
 
     var card = document.createElement('div');
     card.className = 'item-card' + (PLAYER.gil < d.buy ? ' cant-afford' : '');
@@ -4570,23 +4630,20 @@ function renderBuyList(list, shop){
     });
     list.appendChild(card);
   });
-
-  if(list.children.length === 1) {
-    var empty = document.createElement('div');
-    empty.style.cssText = 'text-align:center;padding:30px 0;font-size:10px;color:var(--text2);letter-spacing:1px;';
-    empty.textContent = '— 此類別無商品 —';
-    list.appendChild(empty);
-  }
 }
 
-// ── 販賣分頁 ──
 function renderSellList(list){
   var info = document.createElement('div');
   info.style.cssText = 'font-size:8px;color:var(--text2);letter-spacing:1px;padding:6px 2px 10px;';
   info.textContent = '販賣價格為買入價的 70%';
   list.appendChild(info);
 
-  if(PLAYER.bag.length === 0){
+  var sellable = PLAYER.bag.filter(function(slot){
+    var d = ITEMS[slot.id] || EQUIPS[slot.id];
+    return d && d.sell && d.sell > 0;
+  });
+
+  if(sellable.length === 0){
     var empty = document.createElement('div');
     empty.style.cssText = 'text-align:center;padding:40px 0;font-size:10px;color:var(--text2);';
     empty.textContent = '— 背包空空如也 —';
@@ -4594,14 +4651,12 @@ function renderSellList(list){
     return;
   }
 
-  PLAYER.bag.forEach(function(slot, idx){
+  sellable.forEach(function(slot){
     var d = ITEMS[slot.id] || EQUIPS[slot.id];
     if(!d) return;
-    if(d.sell === undefined || d.sell <= 0) return; // 不可賣
 
     var card = document.createElement('div');
     card.className = 'item-card';
-
     card.innerHTML =
       '<div class="item-ico">'+d.ico+'</div>' +
       '<div class="item-body">' +
@@ -4615,13 +4670,14 @@ function renderSellList(list){
       '</div>';
 
     var itemId = slot.id;
-    var isEquip = !!slot.isEquip;
-    card.addEventListener('click', function(){ showSellConfirm(itemId, d, isEquip, idx); });
+    card.style.cursor = 'pointer';
+    card.onclick = function(){
+      showSellConfirm(itemId, d, !!slot.isEquip);
+    };
     list.appendChild(card);
   });
 }
 
-// ── 背包分頁 ──
 function renderBagList(list){
   if(PLAYER.bag.length === 0){
     var empty = document.createElement('div');
@@ -4758,9 +4814,11 @@ function showSellConfirm(id, d, isEquip, bagIdx){
       '</div>' +
     '</div>';
   document.body.appendChild(sheet);
-  document.getElementById('confirm-cancel').addEventListener('click', closeConfirm);
-  document.getElementById('confirm-ok').addEventListener('click', executeSell);
-  sheet.addEventListener('click', function(e){ if(e.target===sheet) closeConfirm(); });
+  var cc = document.getElementById('confirm-cancel');
+  var co2 = document.getElementById('confirm-ok');
+  if(cc) cc.onclick = closeConfirm;
+  if(co2) co2.onclick = executeSell;
+  sheet.onclick = function(e){ if(e.target===sheet) closeConfirm(); };
 }
 
 function executeSell(){
@@ -4927,7 +4985,11 @@ var OBJECTS = [
      {speaker:'莉卡莉絲',ico:'🍷',acc:'#d46050',text:'歡迎光臨緋色酒館。你就是傑特說的那個人？'},
      {speaker:'莉卡莉絲',ico:'🍷',acc:'#d46050',text:'小聲點。這裡耳目眾多。我有你需要的情報。',
       choices:[
-        {text:'告訴我情報', action:function(){showLine(2);}},
+        {text:'告訴我情報', action:function(){
+          var co=document.getElementById('choices-overlay'); if(co) co.remove();
+          var tw=document.getElementById('town-overlay'); if(tw) tw.style.pointerEvents='all';
+          showLine(2);
+        }},
         {text:'先喝一杯',   action:function(){endDialog();openShop('inn');}},
       ]},
      {speaker:'莉卡莉絲',ico:'🍷',acc:'#d46050',text:'王城地底有個祭壇。大人正在準備某個儀式——先去替我處理廣場那幾個礙事的士兵。'},
@@ -5242,6 +5304,7 @@ function onNpcClick(idx){
 
 // 城鎮對話橋接到 DLG 系統
 function startDialog(obj, branchKey){
+  if(GS.dialogCooldown) return;
   stopMoving();
   var rawLines = branchKey && obj.dialogBranch && obj.dialogBranch[branchKey]
     ? obj.dialogBranch[branchKey] : (obj.dialog || []);
@@ -5265,19 +5328,6 @@ function startDialog(obj, branchKey){
   });
 }
 
-function endDialog(){
-  GS.dialog = false;
-  if(typeof DLG !== 'undefined'){
-    DLG.active = false;
-    if(DLG.timer){ clearInterval(DLG.timer); DLG.timer = null; }
-  }
-  // 一定隱藏對話框（不管 DLG.active 狀態）
-  var screen = document.getElementById('dialog-screen');
-  if(screen){ screen.classList.remove('active'); screen.style.pointerEvents = 'none'; }
-  var fn = DLG.onEnd;
-  DLG.onEnd = null;
-  if(fn) fn();
-}
 
 // 舊的 DS 系統（備用）
 var DS = {obj:null, lines:[], lineIdx:0, typing:false, typeTimer:null, branchKey:null};
@@ -5290,6 +5340,13 @@ function showDialogLine(idx){ /* 由 DLG 系統接管 */ }
 // 隨機遭遇
 // ════════════════════════════════════════
 function checkEncounter(){
+  // 檢查是否裝備了隱匿戒指
+  if(typeof PLAYER !== 'undefined' && PLAYER.bag){
+    var hasNoEnc = PLAYER.bag.some(function(s){
+      return s.id === 'no_encounter_ring' && s.isEquip;
+    });
+    if(hasNoEnc) return false;
+  }
   var zone = getZone(GS.player.x, GS.player.y);
   var zoneData = ZONES[zone];
   if(!zoneData || !zoneData.encounter) return false;
@@ -5345,21 +5402,213 @@ function exitTown(){
   }
 }
 // ════ TOWN CONTROL ════
+// ── 夏洛伊場景互動點定義 ──
+var SHALLOI_SPOTS = [
+  {
+    id:'spot_inn',
+    label:'緋色酒館',
+    ico:'🍺',
+    // 圖片中左側酒館位置（百分比）
+    left:'2%', top:'18%', width:'28%', height:'55%',
+    action: function(){
+      openDialog([
+        {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050',
+         text:'歡迎光臨緋色酒館。你就是傑特說的那個人？'},
+        {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050',
+         text:'小聲點。這裡耳目眾多。我有你需要的情報——但不是免費的。',
+         choices:[
+           {text:'告訴我情報',next:'lika_info'},
+           {text:'先喝一杯',next:'open_inn_shop'},
+         ]},
+      ], null, {
+        lika_info:[
+          {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050',
+           text:'乾脆。王城地底有個祭壇。大人正在準備什麼儀式——'},
+          {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050',
+           text:'但詳情，要等我確認你值得信任。先去處理掉廣場那幾個礙事的士兵。'},
+        ],
+        open_inn_shop:[
+          {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050',
+           text:'（笑）好，先招待你一杯。'},
+        ],
+        open_inn_shop_end: function(){ openShop('inn'); }
+      });
+    }
+  },
+  {
+    id:'spot_weapon',
+    label:'武器店',
+    ico:'⚔️',
+    left:'32%', top:'8%', width:'18%', height:'40%',
+    action: function(){
+      openDialog([
+        {speaker:'鑄劍師葛雷',face:'npc',acc:'#a08060',
+         text:'沒錢就別進來。'},
+        {speaker:'鑄劍師葛雷',face:'npc',acc:'#a08060',
+         text:'……有錢？那歡迎。',
+         choices:[
+           {text:'進入商店',next:'go_shop'},
+           {text:'改天再說',next:'end'},
+         ]},
+      ], null, {
+        go_shop_end: function(){ openShop('weapon'); }
+      });
+    }
+  },
+  {
+    id:'spot_armor',
+    label:'防具店',
+    ico:'🛡️',
+    left:'50%', top:'8%', width:'16%', height:'40%',
+    action: function(){
+      openDialog([
+        {speaker:'防具師',face:'npc',acc:'#6080a0',
+         text:'請進，我這裡有最好的防具。'},
+        {speaker:'防具師',face:'npc',acc:'#6080a0',
+         text:'需要什麼防護？',
+         choices:[
+           {text:'進入商店',next:'go_shop'},
+           {text:'不了謝謝',next:'end'},
+         ]},
+      ], null, {
+        go_shop_end: function(){ openShop('armor'); }
+      });
+    }
+  },
+  {
+    id:'spot_grocery',
+    label:'雜貨店',
+    ico:'🏪',
+    left:'67%', top:'10%', width:'16%', height:'38%',
+    action: function(){
+      openDialog([
+        {speaker:'店主',face:'npc',acc:'#80a060',
+         text:'歡迎歡迎！道具、補給品，應有盡有。'},
+        {speaker:'店主',face:'npc',acc:'#80a060',
+         text:'需要什麼？',
+         choices:[
+           {text:'進入商店',next:'go_shop'},
+           {text:'不了謝謝',next:'end'},
+         ]},
+      ], null, {
+        go_shop_end: function(){ openShop('grocery'); }
+      });
+    }
+  },
+  {
+    id:'spot_castle',
+    label:'王城',
+    ico:'🏰',
+    left:'36%', top:'0%', width:'26%', height:'20%',
+    action: function(){
+      openDialog([
+        {speaker:'王城衛兵',face:'npc',acc:'#8090b0',
+         text:'此處乃夏洛伊王城禁地，閒人不得入內。'},
+        {speaker:'王城衛兵',face:'npc',acc:'#8090b0',
+         text:'若要拜見大人，需持有通行令牌。'},
+      ], null);
+    }
+  },
+  {
+    id:'spot_fountain',
+    label:'中央噴泉',
+    ico:'⛲',
+    left:'42%', top:'42%', width:'16%', height:'22%',
+    action: function(){
+      openDialog([
+        {speaker:'路人',face:'npc',acc:'#7090a0',
+         text:'這座噴泉據說是百年前王室建造的。'},
+        {speaker:'路人',face:'npc',acc:'#7090a0',
+         text:'……自從大人來了之後，水都變渾濁了。'},
+      ], null);
+    }
+  },
+];
+
 function openTown(townKey){
+  alert('openTown called: ' + townKey);
   var ov = document.getElementById('town-overlay');
-  if(!ov) return;
+  if(!ov){ alert('town-overlay not found'); return; }
   ov.style.display = 'flex';
-  // 重設城鎮狀態
-  GS.player = {x:9,y:13};
-  GS.steps = 0;
-  GS.moving = false;
-  GS.movePath = [];
+  var scene = document.getElementById('town-scene');
+  if(scene){
+    scene.style.cssText = 'position:relative;flex:1;min-height:0;overflow:hidden;background:#223344;';
+    // DEBUG 文字
+    var dbg = document.createElement('div');
+    dbg.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:20px;z-index:99;';
+    dbg.textContent = 'JS OK - loading image...';
+    scene.appendChild(dbg);
+    // 動態建立背景圖
+    var oldBg = document.getElementById('town-bg');
+    if(oldBg) oldBg.parentNode.removeChild(oldBg);
+    var bg = document.createElement('img');
+    bg.id = 'town-bg';
+    bg.src = 'https://raw.githubusercontent.com/wiml0718-commits/genba-chronicles-assets/main/IMG_0271.png';
+    bg.setAttribute('style',
+      'position:absolute;top:0;left:0;width:100%;height:100%;' +
+      'object-fit:cover;object-position:center top;display:block;');
+    scene.insertBefore(bg, scene.firstChild);
+  }
   GS.dialog = false;
-  GS.encounterCounter = 0;
-  GS.encounterThreshold = 8;
-  buildMap();
+  buildSceneHotspots();
   showZoneNotice('夏洛伊王都');
+  var closeBtn = document.getElementById('town-close-btn');
+  if(closeBtn){ closeBtn.onclick = null; closeBtn.addEventListener('click', closeTown); }
 }
+
+function buildSceneHotspots(){
+  var container = document.getElementById('town-hotspots');
+  if(!container) return;
+  container.innerHTML = '';
+  for(var i=0;i<SHALLOI_SPOTS.length;i++){
+    (function(spot){
+      var btn = document.createElement('div');
+      btn.id = spot.id;
+      btn.setAttribute('style',
+        'position:absolute;' +
+        'left:' + spot.left + ';' +
+        'top:' + spot.top + ';' +
+        'width:' + spot.width + ';' +
+        'height:' + spot.height + ';' +
+        'cursor:pointer;' +
+        'border:2px solid rgba(200,168,74,0);' +
+        'border-radius:8px;' +
+        'transition:border-color 0.2s;' +
+        'display:flex;align-items:flex-end;justify-content:center;' +
+        'padding-bottom:4px;'
+      );
+      var label = document.createElement('div');
+      label.setAttribute('style',
+        'background:rgba(0,0,0,0.65);' +
+        'color:#c8a84a;' +
+        'font-size:11px;' +
+        'padding:2px 6px;' +
+        'border-radius:4px;' +
+        'pointer-events:none;' +
+        'opacity:0;' +
+        'transition:opacity 0.2s;' +
+        'white-space:nowrap;'
+      );
+      label.textContent = spot.ico + ' ' + spot.label;
+      btn.appendChild(label);
+      btn.addEventListener('touchstart', function(){
+        btn.style.borderColor = 'rgba(200,168,74,0.8)';
+        label.style.opacity = '1';
+      }, {passive:true});
+      btn.addEventListener('touchend', function(){
+        btn.style.borderColor = 'rgba(200,168,74,0)';
+        label.style.opacity = '0';
+        spot.action();
+      }, {passive:true});
+      btn.addEventListener('click', function(){
+        spot.action();
+      });
+      container.appendChild(btn);
+    })(SHALLOI_SPOTS[i]);
+  }
+}
+
+
 function closeTown(){
   stopMoving();
   endDialog();
@@ -5368,7 +5617,6 @@ function closeTown(){
   var ov = document.getElementById('town-overlay');
   if(ov) ov.style.display = 'none';
 }
-
 </script>
 </body>
 </html>
