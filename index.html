@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,viewport-fit=cover">
-<title>幻刃紀 v3 — 角色面板</title>
+<title>幻刃紀 v3.1 — 角色面板</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;700;900&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -4378,7 +4378,7 @@ function showLine(idx){
     if(faceFile){
       avatarHtml =
         '<div style="flex-shrink:0;width:64px;margin-right:10px;">' +
-          '<img src="https://raw.githubusercontent.com/wiml0718-commits/genba-chronicles-assets/main/' + faceFile + '" ' +
+          '<img src="https://wiml0718-commits.github.io/genba-chronicles-assets/' + faceFile + '" ' +
           'style="width:64px;height:64px;object-fit:cover;object-position:top;border-radius:8px;border:2px solid ' + acc + ';" />' +
           '<div style="font-size:10px;margin-top:4px;color:' + acc + ';text-align:center;">' + (line.speaker||'') + '</div>' +
         '</div>';
@@ -5526,35 +5526,47 @@ var SHALLOI_SPOTS = [
 ];
 
 function openTown(townKey){
-  alert('openTown called: ' + townKey);
   var ov = document.getElementById('town-overlay');
-  if(!ov){ alert('town-overlay not found'); return; }
-  ov.style.display = 'flex';
-  var scene = document.getElementById('town-scene');
-  if(scene){
-    scene.style.cssText = 'position:relative;flex:1;min-height:0;overflow:hidden;background:#223344;';
-    // DEBUG 文字
-    var dbg = document.createElement('div');
-    dbg.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:20px;z-index:99;';
-    dbg.textContent = 'JS OK - loading image...';
-    scene.appendChild(dbg);
-    // 動態建立背景圖
-    var oldBg = document.getElementById('town-bg');
-    if(oldBg) oldBg.parentNode.removeChild(oldBg);
-    var bg = document.createElement('img');
-    bg.id = 'town-bg';
-    bg.src = 'https://raw.githubusercontent.com/wiml0718-commits/genba-chronicles-assets/main/IMG_0271.png';
-    bg.setAttribute('style',
-      'position:absolute;top:0;left:0;width:100%;height:100%;' +
-      'object-fit:cover;object-position:center top;display:block;');
-    scene.insertBefore(bg, scene.firstChild);
+  if(!ov) return;
+
+  // 強制顯示 overlay
+  ov.setAttribute('style',
+    'display:block;position:fixed;top:0;left:0;width:100%;height:100%;' +
+    'z-index:600;background:#0a0c14;'
+  );
+
+  // HUD 固定在頂部
+  var hud = ov.querySelector('.hud');
+  if(hud){
+    hud.setAttribute('style',
+      'position:absolute;top:0;left:0;right:0;z-index:2;' +
+      'background:linear-gradient(180deg,rgba(7,9,15,.98),rgba(11,14,28,.95));' +
+      'border-bottom:1px solid #28366a;padding:8px 14px;' +
+      'display:flex;align-items:center;justify-content:space-between;'
+    );
   }
+
+  // scene 填滿 HUD 下方
+  var scene = ov.querySelector('#town-scene');
+  if(!scene){
+    scene = document.createElement('div');
+    scene.id = 'town-scene';
+    ov.appendChild(scene);
+  }
+  scene.setAttribute('style',
+    'position:absolute;top:50px;left:0;right:0;bottom:0;overflow:hidden;' +
+    'background-color:#223344;' +
+    "background-image:url('https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0271.png');" +
+    'background-size:cover;background-position:center top;background-repeat:no-repeat;'
+  );
+
   GS.dialog = false;
   buildSceneHotspots();
   showZoneNotice('夏洛伊王都');
   var closeBtn = document.getElementById('town-close-btn');
   if(closeBtn){ closeBtn.onclick = null; closeBtn.addEventListener('click', closeTown); }
 }
+
 
 function buildSceneHotspots(){
   var container = document.getElementById('town-hotspots');
