@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,viewport-fit=cover">
-<title>幻刃紀 v3.1 — 角色面板</title>
+<title>幻刃紀 v3.2 — 角色面板</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;700;900&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -450,6 +450,12 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
 .cost-mp-t{color:#70a8f0;}
 .cost-atb-t{color:var(--gold-l);}
 .cost-lmt-t{color:#f07878;}
+.cost-rb-t{color:#e89060;}
+.pm-stats-num{margin:4px 0;}
+.pm-stat-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;line-height:1.5;padding:0 2px;}
+.pm-stat-lbl{font-weight:bold;font-size:10px;}
+.pm-stat-val{color:var(--text);font-family:Cinzel,monospace;font-size:11px;}
+.skill-btn.rb-ready{border-color:rgba(232,144,96,0.6);box-shadow:0 0 8px rgba(232,144,96,0.2);}
 
 /* 目標選擇提示 */
 .target-prompt{font-size:9px;color:var(--gold);text-align:center;letter-spacing:2px;
@@ -2004,6 +2010,24 @@ function img(src,alt,cls,style){
   return `<img src="${src}" crossorigin="anonymous" alt="${alt}" class="${cls||''}" style="${style||''}" onerror="this.style.opacity='.2'">`;
 }
 function renderStatus(c){
+  // 從戰鬥持久狀態 PARTY_STATE 同步即時數值
+  if(typeof PARTY_STATE !== 'undefined' && typeof getPartyState === 'function'){
+    var st = getPartyState(c.key);
+    if(st){
+      var def = (typeof PARTY_DEF !== 'undefined') ? PARTY_DEF.find(function(d){return d.key===c.key;}) : null;
+      if(def){
+        c.lv = st.lv;
+        c.maxHp = maxHpFor(def, st);
+        c.maxMp = maxMpFor(def, st);
+        c.hp = Math.min(Math.round(st.hp), c.maxHp);
+        c.mp = Math.min(Math.round(st.mp), c.maxMp);
+        c.rb = Math.round(st.rb);
+        c.maxRb = def.baseRb;
+        c.exp = st.exp;
+        c.nextExp = st.expNext;
+      }
+    }
+  }
   const acc=c.acc;
   const ci=curChar;
   // 裝備槽固定6格，從 equippedEquip（id 陣列）渲染
@@ -2036,8 +2060,8 @@ function renderStatus(c){
     </div>`;
   }).join('');
   // 技能顯示移至技能頁管理
-  const rbLabel=c.rb>=100?`${c.rb}% ⚡`:`${c.rb}%`;
-  const rbColor=c.rb>=100?'#f07050':'var(--text2)';
+  const rbLabel=c.rb>=c.maxRb?`${c.rb}/${c.maxRb} ⚡`:`${c.rb}/${c.maxRb}`;
+  const rbColor=c.rb>=c.maxRb?'#f07050':'var(--text2)';
   const ailHTML=c.statusAilments.length
     ?c.statusAilments.map(s=>`<div style="font-size:22px" title="${s.name}">${s.ico}</div>`).join('')
     :`<div class="status-none">— 正常 —</div>`;
@@ -2700,42 +2724,67 @@ render();
 // ════════════════════════════════════════
 const PARTY_DEF = [
   {key:'anei',nameEn:'Anei',nameZh:'暗影',acc:'#9b7fd4',
-   baseHp:1600,baseMp:700,baseRb:100,initRb:65,
+   baseHp:1600,baseMp:700,baseRb:500,initRb:0,
    str:62,mag:78,def:44,spd:95,lv:15,
    skills:[
      {id:'sk_a1',ico:'⚡',name:'影步',mpCost:12,type:'single',power:1.4,attr:'dark',desc:'單體暗屬斬擊'},
      {id:'sk_a3',ico:'♟',name:'落子無悔',mpCost:18,type:'single',power:1.8,pierceDef:0.3,attr:'dark',desc:'無視防禦30%'},
-     {id:'sk_a5',ico:'⊞',name:'縱橫之局',mpCost:0,atbCost:3,type:'all',power:1.2,attr:'dark',desc:'全體攻擊'},
+     {id:'sk_a5',ico:'⊞',name:'縱橫之局',mpCost:0,rbCost:300,type:'all',power:1.2,attr:'dark',desc:'消耗300 RB 全體攻擊'},
      {id:'sk_a6',ico:'🌑',name:'復國之誓',mpCost:0,isLimit:true,type:'all',power:3.5,attr:'dark',desc:'LIMIT 全體暗屬爆發'},
    ]},
   {key:'lika',nameEn:'Licarise',nameZh:'莉卡莉絲',acc:'#d46050',
-   baseHp:1400,baseMp:900,baseRb:100,initRb:40,
+   baseHp:1400,baseMp:900,baseRb:500,initRb:0,
    str:45,mag:94,def:38,spd:72,lv:14,
    skills:[
      {id:'lk_a1',ico:'💊',name:'緋紅治癒',mpCost:35,type:'heal_single',power:1.5,desc:'回復單體HP'},
-     {id:'lk_a2',ico:'🩸',name:'妖刀斬',mpCost:0,atbCost:2,type:'single',power:1.6,drain:true,desc:'吸收MP'},
+     {id:'lk_a2',ico:'🩸',name:'妖刀斬',mpCost:0,rbCost:200,type:'single',power:1.6,drain:true,desc:'吸收MP'},
      {id:'lk_a3',ico:'🔥',name:'火炎術',mpCost:22,type:'single',power:1.7,attr:'fire',dot:'burn',desc:'燃燒3回合'},
      {id:'lk_a6',ico:'🐉',name:'赤鬼覺醒',mpCost:0,isLimit:true,type:'all',power:2.8,attr:'fire',desc:'LIMIT 全體火焰'},
    ]},
   {key:'fira',nameEn:'Fira',nameZh:'菲拉',acc:'#d47040',
-   baseHp:1800,baseMp:500,baseRb:100,initRb:80,
+   baseHp:1800,baseMp:500,baseRb:500,initRb:0,
    str:88,mag:42,def:62,spd:98,lv:13,
    skills:[
      {id:'fi_a1',ico:'🔪',name:'月影連斬',mpCost:22,type:'single',power:2.2,hits:3,desc:'三連擊'},
-     {id:'fi_a2',ico:'⚡',name:'雷步突刺',mpCost:0,atbCost:2,type:'single',power:1.9,pierceDef:0.5,desc:'穿透防禦50%'},
+     {id:'fi_a2',ico:'⚡',name:'雷步突刺',mpCost:0,rbCost:200,type:'single',power:1.9,pierceDef:0.5,desc:'穿透防禦50%'},
      {id:'fi_a3',ico:'🌙',name:'月影亂舞',mpCost:35,type:'all',power:1.3,hits:2,desc:'全體二連擊'},
      {id:'fi_a5',ico:'🌙',name:'暗殺令',mpCost:0,isLimit:true,type:'all',power:0,halfHp:true,desc:'LIMIT 全體HP減半'},
    ]},
   {key:'elweis',nameEn:'Elweis',nameZh:'艾爾薇斯',acc:'#7090c8',
-   baseHp:2500,baseMp:800,baseRb:100,initRb:20,
+   baseHp:2500,baseMp:800,baseRb:500,initRb:0,
    str:95,mag:68,def:88,spd:70,lv:20,
    skills:[
      {id:'el_a1',ico:'🌙',name:'暗月斬',mpCost:30,type:'single',power:2.0,attr:'moon',desc:'月光穿透攻擊'},
-     {id:'el_a2',ico:'⚔️',name:'雙刃颶風',mpCost:0,atbCost:3,type:'all',power:1.5,desc:'全體旋風'},
-     {id:'el_a5',ico:'🌕',name:'月之力覺醒',mpCost:0,atbCost:4,type:'buff_all',buffAtk:1.3,buffDur:3,desc:'全隊攻擊+30% 3回合'},
+     {id:'el_a2',ico:'⚔️',name:'雙刃颶風',mpCost:0,rbCost:300,type:'all',power:1.5,desc:'全體旋風'},
+     {id:'el_a5',ico:'🌕',name:'月之力覺醒',mpCost:0,rbCost:400,type:'buff_all',buffAtk:1.3,buffDur:3,desc:'全隊攻擊+30% 3回合'},
      {id:'el_a6',ico:'🐺',name:'月之眼覺醒',mpCost:0,isLimit:true,type:'all',power:3.0,attr:'moon',desc:'LIMIT 召喚月狼'},
    ]},
 ];
+
+// ── 持久角色狀態（戰鬥間保留 HP/MP/RB/Lv/Exp）──
+function expNeeded(lv){ return Math.round(100 + lv*lv*18); }
+
+var PARTY_STATE = PARTY_DEF.map(function(p){
+  return {
+    key: p.key,
+    lv: p.lv,
+    exp: 0,
+    expNext: expNeeded(p.lv),
+    hp: p.baseHp,
+    mp: p.baseMp,
+    rb: p.initRb || 0,
+  };
+});
+
+function getPartyState(key){
+  for(var i=0;i<PARTY_STATE.length;i++){ if(PARTY_STATE[i].key===key) return PARTY_STATE[i]; }
+  return null;
+}
+
+// 依等級計算成長後的最大值（每級 +3% 基礎）
+function maxHpFor(def, st){ return Math.round(def.baseHp * (1 + (st.lv - def.lv)*0.06)); }
+function maxMpFor(def, st){ return Math.round(def.baseMp * (1 + (st.lv - def.lv)*0.05)); }
+
 
 // ── 敵人定義 ──
 const ENEMY_DEFS = {
@@ -2748,6 +2797,7 @@ const ENEMY_DEFS = {
       {name:'嘲諷',type:'taunt',prob:0.1,desc:''},
     ],
     exp:120,gold:45,
+    drops:[{id:'potion_hp_s',rate:0.5,qty:1},{id:'iron_fang',rate:0.3,qty:1},{id:'dark_shard',rate:0.15,qty:1}],
   },
   dark_mage:{
     name:'黑暗術士',ico:'🧙',
@@ -2758,6 +2808,7 @@ const ENEMY_DEFS = {
       {name:'詛咒之霧',type:'all',power:0.9,dot:'poison',prob:0.2},
     ],
     exp:150,gold:60,
+    drops:[{id:'potion_mp_s',rate:0.5,qty:1},{id:'dark_shard',rate:0.4,qty:1},{id:'potion_mp_m',rate:0.1,qty:1}],
   },
   captain_heartless:{
     name:'無心之魔將',ico:'👹',
@@ -2772,6 +2823,7 @@ const ENEMY_DEFS = {
       {name:'絕望之刃',type:'single',power:3.0,prob:0.15},
     ],
     exp:800,gold:300,
+    drops:[{id:'potion_hp_m',rate:1.0,qty:2},{id:'dark_shard',rate:1.0,qty:3},{id:'silver_rod',rate:0.3,qty:1}],
   },
 };
 
@@ -2782,20 +2834,26 @@ let BS = null; // BattleState
 
 function initBattle(enemyKeys, locationName){
   // 初始化隊伍
-  const party = PARTY_DEF.map(p=>({
-    ...p,
-    hp: p.baseHp,
-    maxHp: p.baseHp,
-    mp: p.baseMp,
-    maxMp: p.baseMp,
-    rb: p.initRb||0,
-    maxRb: p.baseRb,
-    atb: Math.random()*200, // 初始 ATB 隨機分散
-    maxAtb: 1000,
-    ailments: [], // {type, turns}
-    buffs: [],    // {type, val, turns}
-    alive: true,
-  }));
+  const party = PARTY_DEF.map(p=>{
+    var st = getPartyState(p.key);
+    var mHp = maxHpFor(p, st);
+    var mMp = maxMpFor(p, st);
+    return {
+      ...p,
+      lv: st.lv,
+      hp: Math.min(st.hp, mHp),
+      maxHp: mHp,
+      mp: Math.min(st.mp, mMp),
+      maxMp: mMp,
+      rb: st.rb,           // 保留上場戰鬥的 RB
+      maxRb: p.baseRb,     // 500
+      atb: Math.random()*200,
+      maxAtb: 1000,
+      ailments: [],
+      buffs: [],
+      alive: st.hp > 0,
+    };
+  });
 
   const enemies = enemyKeys.map((k,i)=>{
     const def = ENEMY_DEFS[k];
@@ -2870,6 +2928,8 @@ function atbTick(){
     BS.pendingActor = {unit, isParty};
 
     if(isParty){
+      unit.defending = false; // 新回合解除防禦姿態
+      BS.actionMenu = 'main';  // 重置選單到主層
       pauseAtb();
       renderAll();
     } else {
@@ -2894,9 +2954,9 @@ function selectSkill(skillId){
   if(skill.mpCost && actor.mp < skill.mpCost){
     addLog('MP 不足，無法使用 '+skill.name, 'system'); return;
   }
-  // 檢查 ATB cost（暫用 rb 代表累積）
-  if(skill.atbCost && actor.rb < skill.atbCost*100*0.3){
-    addLog('需要更多 RB 值才能使用 '+skill.name, 'system'); return;
+  // 檢查 RB cost（縱橫之局等技能消耗 RB 槽）
+  if(skill.rbCost && actor.rb < skill.rbCost){
+    addLog('RB 值不足（需 '+skill.rbCost+'），無法使用 '+skill.name, 'system'); return;
   }
   // 檢查 LIMIT
   if(skill.isLimit && actor.rb < actor.maxRb){
@@ -2935,6 +2995,11 @@ function selectTarget(targetId){
   }
 
   BS.selectingTarget = false;
+  // 道具使用走獨立流程
+  if(skill.isItem){
+    useItemOnTarget(target);
+    return;
+  }
   executeSkill(actor, skill, target);
 }
 
@@ -2944,6 +3009,7 @@ function executeSkill(actor, skill, target){
 
   // 扣 MP / RB
   if(skill.mpCost) actor.mp = Math.max(0, actor.mp - skill.mpCost);
+  if(skill.rbCost) actor.rb = Math.max(0, actor.rb - skill.rbCost);
   if(skill.isLimit){ actor.rb = 0; limitFlashEffect(); }
 
   var actorName = actor.nameZh || actor.name;
@@ -2969,8 +3035,10 @@ function executeSkill(actor, skill, target){
     applyDamage(actor, targets, skill);
   }
 
-  // 增加 RB（受傷或攻擊都增加）
-  actor.rb = Math.min(actor.maxRb, actor.rb + 12);
+  // 增加 RB（只有普通攻擊累積）
+  if(skill.isBasic){
+    actor.rb = Math.min(actor.maxRb, actor.rb + 60);
+  }
 
   finishActorTurn();
 }
@@ -3126,8 +3194,13 @@ function applyEnemyDamage(enemy, targets, skill){
       const isCrit = Math.random() < 0.08;
       if(isCrit) dmg = Math.round(dmg*1.5);
 
+      // 防禦減傷 50%
+      if(target.defending){
+        dmg = Math.max(1, Math.round(dmg * 0.5));
+      }
+
       target.hp = Math.max(0, target.hp - dmg);
-      target.rb = Math.min(target.maxRb, target.rb + 10);
+      target.rb = Math.min(target.maxRb, target.rb + 35);
 
       if(skill.dot && Math.random()<0.5){
         target.ailments.push({type:skill.dot,turns:3,power:Math.round(dmg*0.12)});
@@ -3208,12 +3281,112 @@ function checkBattleEnd(){
   renderAll();
 }
 
+function rollDrops(){
+  // 計算所有敵人掉落，合併同 id
+  var dropMap = {};
+  BS.enemies.forEach(function(e){
+    var drops = e.drops || [];
+    drops.forEach(function(d){
+      if(Math.random() <= d.rate){
+        dropMap[d.id] = (dropMap[d.id]||0) + (d.qty||1);
+      }
+    });
+  });
+  return dropMap;
+}
+
+function getItemInfo(id){
+  // 從 ITEMS 或 EQUIPS 找名稱與圖示
+  if(typeof ITEMS !== 'undefined' && ITEMS[id]) return {name:ITEMS[id].name, ico:ITEMS[id].ico||'📦'};
+  if(typeof EQUIPS !== 'undefined' && EQUIPS[id]) return {name:EQUIPS[id].name, ico:EQUIPS[id].ico||'⚔️'};
+  return {name:id, ico:'📦'};
+}
+
+function addDropsToBag(dropMap){
+  if(typeof PLAYER === 'undefined' || !PLAYER.bag) return;
+  Object.keys(dropMap).forEach(function(id){
+    var qty = dropMap[id];
+    var isEq = (typeof EQUIPS !== 'undefined' && EQUIPS[id]);
+    if(isEq){
+      // 裝備每個獨立加入
+      for(var i=0;i<qty;i++){
+        PLAYER.bag.push({id:id, qty:1, isEquip:true});
+      }
+    } else {
+      var existing = null;
+      for(var j=0;j<PLAYER.bag.length;j++){
+        if(PLAYER.bag[j].id===id && !PLAYER.bag[j].isEquip){ existing = PLAYER.bag[j]; break; }
+      }
+      if(existing) existing.qty += qty;
+      else PLAYER.bag.push({id:id, qty:qty});
+    }
+  });
+}
+
 function showResult(type){
   const div = document.createElement('div');
   div.className = 'result-overlay';
   const expTotal = type==='win' ? BS.enemies.reduce((a,e)=>a+(e.exp||0),0) : 0;
   const goldTotal = type==='win' ? BS.enemies.reduce((a,e)=>a+(e.gold||0),0) : 0;
-  var winInfo = type==='win' ? '<div style="font-size:10px;color:var(--text2);margin-bottom:16px;line-height:2">EXP +'+expTotal+'<br>Gil +'+goldTotal+'</div>' : '';
+
+  // 將戰鬥後 HP/MP/RB 存回持久狀態
+  BS.party.forEach(function(p){
+    var st = getPartyState(p.key);
+    if(!st) return;
+    st.hp = p.alive ? p.hp : 0;
+    st.mp = p.mp;
+    st.rb = p.rb; // RB 保留到下場（存著打 boss）
+  });
+
+  // 升級處理
+  var levelUpLines = [];
+  if(type==='win'){
+    BS.party.forEach(function(p){
+      if(!p.alive) return; // 倒下的不獲得經驗
+      var st = getPartyState(p.key);
+      if(!st) return;
+      st.exp += expTotal;
+      var leveled = false;
+      while(st.exp >= st.expNext){
+        st.exp -= st.expNext;
+        st.lv += 1;
+        st.expNext = expNeeded(st.lv);
+        leveled = true;
+      }
+      if(leveled){
+        // 升級回復滿 HP/MP（RB 保留）
+        var def = PARTY_DEF.find(function(d){ return d.key===p.key; });
+        st.hp = maxHpFor(def, st);
+        st.mp = maxMpFor(def, st);
+        levelUpLines.push(p.nameZh + ' → Lv.' + st.lv);
+      }
+    });
+  }
+
+  // 掉落處理
+  var dropHtml = '';
+  if(type==='win'){
+    var dropMap = rollDrops();
+    addDropsToBag(dropMap);
+    // 加金錢進 PLAYER
+    if(typeof PLAYER !== 'undefined') PLAYER.gil = (PLAYER.gil||0) + goldTotal;
+    var dropKeys = Object.keys(dropMap);
+    if(dropKeys.length > 0){
+      var dropItems = dropKeys.map(function(id){
+        var info = getItemInfo(id);
+        return '<div style="font-size:11px;color:var(--text);margin:2px 0">'+info.ico+' '+info.name+' ×'+dropMap[id]+'</div>';
+      }).join('');
+      dropHtml = '<div style="margin:8px 0 14px;padding:8px 12px;background:rgba(200,168,74,0.08);border:1px solid rgba(200,168,74,0.3);border-radius:8px"><div style="font-size:10px;color:var(--gold);margin-bottom:4px;letter-spacing:1px">獲得物品</div>'+dropItems+'</div>';
+    }
+  }
+
+  var lvHtml = '';
+  if(levelUpLines && levelUpLines.length > 0){
+    lvHtml = '<div style="margin:8px 0 4px;padding:8px 12px;background:rgba(200,168,74,0.12);border:1px solid rgba(200,168,74,0.5);border-radius:8px"><div style="font-size:11px;color:var(--gold);letter-spacing:1px;margin-bottom:4px">⬆ LEVEL UP</div>' +
+      levelUpLines.map(function(l){ return '<div style="font-size:12px;color:var(--gold-l,#e8cc80)">'+l+'</div>'; }).join('') +
+      '<div style="font-size:9px;color:var(--text2);margin-top:4px">HP / MP 已回復</div></div>';
+  }
+  var winInfo = type==='win' ? '<div style="font-size:10px;color:var(--text2);margin-bottom:8px;line-height:2">EXP +'+expTotal+'<br>Gil +'+goldTotal+'</div>'+lvHtml+dropHtml : '';
   div.innerHTML = '<div class="result-panel">' +
     '<div class="result-title '+type+'">'+(type==='win'?'VICTORY':'DEFEAT')+'</div>' +
     '<div class="result-sub">'+(type==='win'?'戰鬥勝利！':'全員倒下……')+'</div>' +
@@ -3230,6 +3403,11 @@ function showResult(type){
 
 function restartBattle(){
   document.querySelectorAll('.result-overlay,.float-num').forEach(function(e){ e.remove(); });
+  // 再戰：回復全隊 HP/MP（RB 保留），避免帶著瀕死狀態重來
+  PARTY_STATE.forEach(function(st){
+    var def = PARTY_DEF.find(function(d){ return d.key===st.key; });
+    if(def){ st.hp = maxHpFor(def, st); st.mp = maxMpFor(def, st); }
+  });
   var keys = BS.enemies.map(function(e){ return e.id.split('_').slice(0,-1).join('_'); });
   initBattle(keys);
 }
@@ -3410,17 +3588,27 @@ function renderPartyList(){
     const mpPct = Math.round(p.mp/p.maxMp*100);
     const rbPct = Math.round(p.rb/p.maxRb*100);
     const atbPct = Math.round(p.atb/p.maxAtb*100);
+    var hpNum = Math.round(p.hp)+'/'+p.maxHp;
+    var mpNum = Math.round(p.mp)+'/'+p.maxMp;
+    var rbNum = Math.round(p.rb)+'/'+p.maxRb;
     const atbColor = isActive ? 'var(--gold)' : p.acc;
     const ails = (p.ailments||[]).map(function(a){
       return '<span class="pm-ail">'+(a.type==='burn'?'🔥':a.type==='poison'?'☠️':'🩸')+'</span>';
     }).join('');
 
+    var faceFileMap = {anei:'anei_face.jpg',lika:'licarise_face.jpg',fira:'fira_face.jpg',elweis:'elweis_face.jpg'};
+    var faceFile = faceFileMap[p.key] || '';
+    var avatarHtml = faceFile
+      ? '<img src="https://wiml0718-commits.github.io/genba-chronicles-assets/'+faceFile+'" class="pm-avatar" style="width:38px;height:38px;border-radius:8px;object-fit:cover;object-position:top;border:2px solid '+(isActive?'var(--gold)':p.acc)+';display:block;margin:0 auto 4px;" />'
+      : '';
+
     member.innerHTML =
-      '<div class="pm-name" style="color:'+p.acc+'">'+p.nameZh+'</div>' +
-      '<div class="pm-bars">' +
-        '<div class="pm-bar"><div class="pm-bar-lbl" style="color:#38c878">HP</div><div class="pm-bar-track"><div class="pm-bar-fill fill-hp" style="width:'+hpPct+'%"></div></div></div>' +
-        '<div class="pm-bar"><div class="pm-bar-lbl" style="color:#3878c8">MP</div><div class="pm-bar-track"><div class="pm-bar-fill fill-mp" style="width:'+mpPct+'%"></div></div></div>' +
-        '<div class="pm-bar"><div class="pm-bar-lbl" style="color:#c83838">RB</div><div class="pm-bar-track"><div class="pm-bar-fill fill-rb" style="width:'+rbPct+'%"></div></div></div>' +
+      avatarHtml +
+      '<div class="pm-name" style="color:'+p.acc+'">'+p.nameZh+' <span style="font-size:9px;color:var(--text2)">Lv.'+(p.lv||1)+'</span></div>' +
+      '<div class="pm-stats-num">' +
+        '<div class="pm-stat-row"><span class="pm-stat-lbl" style="color:#38c878">HP</span><span class="pm-stat-val">'+hpNum+'</span></div>' +
+        '<div class="pm-stat-row"><span class="pm-stat-lbl" style="color:#3878c8">MP</span><span class="pm-stat-val">'+mpNum+'</span></div>' +
+        '<div class="pm-stat-row"><span class="pm-stat-lbl" style="color:#e89060">RB</span><span class="pm-stat-val" style="color:#e8b080">'+rbNum+'</span></div>' +
       '</div>' +
       '<div class="pm-atb-wrap">' +
         '<div class="pm-atb-track"><div class="pm-atb-fill" style="width:'+atbPct+'%;background:'+atbColor+'"></div></div>' +
@@ -3437,10 +3625,10 @@ function renderPartyBars(){
   BS.party.forEach(p=>{
     const el = document.getElementById('party_'+p.key);
     if(!el) return;
-    const fills = el.querySelectorAll('.pm-bar-fill');
-    if(fills[0]) fills[0].style.width = Math.round(p.hp/p.maxHp*100)+'%';
-    if(fills[1]) fills[1].style.width = Math.round(p.mp/p.maxMp*100)+'%';
-    if(fills[2]) fills[2].style.width = Math.round(p.rb/p.maxRb*100)+'%';
+    const vals = el.querySelectorAll('.pm-stat-val');
+    if(vals[0]) vals[0].textContent = Math.round(p.hp)+'/'+p.maxHp;
+    if(vals[1]) vals[1].textContent = Math.round(p.mp)+'/'+p.maxMp;
+    if(vals[2]) vals[2].textContent = Math.round(p.rb)+'/'+p.maxRb;
     const atbFill = el.querySelector('.pm-atb-fill');
     if(atbFill) atbFill.style.width = Math.round(p.atb/p.maxAtb*100)+'%';
   });
@@ -3483,23 +3671,64 @@ function renderActionArea(){
   label.textContent = actor.nameZh + ' — 選擇行動';
   area.appendChild(label);
 
-  // 技能格
+  var menu = BS.actionMenu || 'main';
+
+  // ── 技能子選單 ──
+  if(menu === 'skill'){
+    renderSkillSubmenu(area, actor);
+    return;
+  }
+  // ── 道具子選單 ──
+  if(menu === 'item'){
+    renderItemSubmenu(area, actor);
+    return;
+  }
+
+  // ── 主選單：攻擊/技能/防禦/道具 ──
+  const grid = document.createElement('div');
+  grid.className = 'skill-grid';
+
+  var mainCmds = [
+    {ico:'⚔️', name:'攻擊', sub:'普通攻擊', act:function(){ BS.pendingSkill={id:'basic_atk',name:'普通攻擊',type:'single',power:1.0,isBasic:true}; BS.selectingTarget='enemy'; renderActionArea(); }},
+    {ico:'✨', name:'技能', sub:'消耗 MP/RB', act:function(){ BS.actionMenu='skill'; renderActionArea(); }},
+    {ico:'🛡️', name:'防禦', sub:'減傷+回MP', act:function(){ doDefend(actor); }},
+    {ico:'🎒', name:'道具', sub:'使用道具', act:function(){ BS.actionMenu='item'; renderActionArea(); }},
+  ];
+
+  mainCmds.forEach(function(cmd){
+    const btn = document.createElement('button');
+    btn.className = 'skill-btn';
+    btn.innerHTML =
+      '<div class="skill-btn-ico">'+cmd.ico+'</div>' +
+      '<div class="skill-btn-body">' +
+        '<div class="skill-btn-name" style="color:'+actor.acc+'">'+cmd.name+'</div>' +
+        '<div class="skill-btn-cost" style="color:var(--text2)">'+cmd.sub+'</div>' +
+      '</div>';
+    btn.addEventListener('click', cmd.act);
+    grid.appendChild(btn);
+  });
+  area.appendChild(grid);
+}
+
+function renderSkillSubmenu(area, actor){
   const grid = document.createElement('div');
   grid.className = 'skill-grid';
 
   actor.skills.forEach(function(sk){
     const noMp = sk.mpCost && actor.mp < sk.mpCost;
     const noLimit = sk.isLimit && actor.rb < actor.maxRb;
-    const disabled = noMp || noLimit;
+    const noRb = sk.rbCost && actor.rb < sk.rbCost;
+    const disabled = noMp || noLimit || noRb;
 
     const btn = document.createElement('button');
     const btnCls = ['skill-btn'];
     if(sk.isLimit && !noLimit) btnCls.push('limit-ready');
+    if(sk.rbCost && !noRb) btnCls.push('rb-ready');
     btn.className = btnCls.join(' ');
     if(disabled) btn.disabled = true;
 
-    const costType = sk.isLimit ? 'cost-lmt-t' : sk.mpCost ? 'cost-mp-t' : 'cost-atb-t';
-    const costText = sk.isLimit ? 'LIMIT' : sk.mpCost ? (sk.mpCost+' MP') : ('ATB×'+sk.atbCost);
+    const costType = sk.isLimit ? 'cost-lmt-t' : sk.rbCost ? 'cost-rb-t' : sk.mpCost ? 'cost-mp-t' : 'cost-atb-t';
+    const costText = sk.isLimit ? 'LIMIT' : sk.rbCost ? (sk.rbCost+' RB') : sk.mpCost ? (sk.mpCost+' MP') : '—';
     const nameColor = disabled ? 'var(--text2)' : actor.acc;
 
     btn.innerHTML =
@@ -3508,7 +3737,6 @@ function renderActionArea(){
         '<div class="skill-btn-name" style="color:'+nameColor+'">'+sk.name+'</div>' +
         '<div class="skill-btn-cost '+costType+'">'+costText+'</div>' +
       '</div>';
-
     if(!disabled){
       (function(skId){ btn.addEventListener('click', function(){ selectSkill(skId); }); })(sk.id);
     }
@@ -3516,16 +3744,129 @@ function renderActionArea(){
   });
   area.appendChild(grid);
 
-  // 等待按鈕
-  const extraRow = document.createElement('div');
-  extraRow.className = 'extra-btns';
-  extraRow.style.marginTop = '6px';
-  const skipBtn = document.createElement('button');
-  skipBtn.className = 'extra-btn';
-  skipBtn.textContent = '等待';
-  skipBtn.addEventListener('click', skipTurn);
-  extraRow.appendChild(skipBtn);
-  area.appendChild(extraRow);
+  // 返回按鈕
+  const backRow = document.createElement('div');
+  backRow.className = 'extra-btns';
+  backRow.style.marginTop = '6px';
+  const backBtn = document.createElement('button');
+  backBtn.className = 'extra-btn';
+  backBtn.textContent = '← 返回';
+  backBtn.addEventListener('click', function(){ BS.actionMenu='main'; renderActionArea(); });
+  backRow.appendChild(backBtn);
+  area.appendChild(backRow);
+}
+
+function renderItemSubmenu(area, actor){
+  const grid = document.createElement('div');
+  grid.className = 'skill-grid';
+
+  // 只顯示可在戰鬥使用的消耗品（hp/mp/cure/all）
+  var usable = [];
+  if(typeof PLAYER !== 'undefined' && PLAYER.bag){
+    PLAYER.bag.forEach(function(slot){
+      if(slot.isEquip) return;
+      var info = (typeof ITEMS !== 'undefined') ? ITEMS[slot.id] : null;
+      if(info && info.type==='consume' && (slot.qty||0) > 0){
+        usable.push({id:slot.id, info:info, qty:slot.qty});
+      }
+    });
+  }
+
+  if(usable.length === 0){
+    const empty = document.createElement('div');
+    empty.style.cssText = 'font-size:11px;color:var(--text2);padding:12px;text-align:center';
+    empty.textContent = '沒有可用的道具';
+    area.appendChild(empty);
+  } else {
+    usable.forEach(function(it){
+      const btn = document.createElement('button');
+      btn.className = 'skill-btn';
+      btn.innerHTML =
+        '<div class="skill-btn-ico">'+(it.info.ico||'📦')+'</div>' +
+        '<div class="skill-btn-body">' +
+          '<div class="skill-btn-name" style="color:var(--text)">'+it.info.name+' ×'+it.qty+'</div>' +
+          '<div class="skill-btn-cost" style="color:var(--text2)">'+(it.info.desc||'')+'</div>' +
+        '</div>';
+      (function(item){ btn.addEventListener('click', function(){ selectItem(item); }); })(it);
+      grid.appendChild(btn);
+    });
+  }
+  area.appendChild(grid);
+
+  const backRow = document.createElement('div');
+  backRow.className = 'extra-btns';
+  backRow.style.marginTop = '6px';
+  const backBtn = document.createElement('button');
+  backBtn.className = 'extra-btn';
+  backBtn.textContent = '← 返回';
+  backBtn.addEventListener('click', function(){ BS.actionMenu='main'; renderActionArea(); });
+  backRow.appendChild(backBtn);
+  area.appendChild(backRow);
+}
+
+// ── 防禦：減傷50% + 回15%MP ──
+function doDefend(actor){
+  actor.mp = Math.min(actor.maxMp, actor.mp + Math.round(actor.maxMp * 0.15));
+  actor.defending = true; // applyEnemyDamage 會檢查並在下次受傷後清除
+  addLog('🛡️ ' + (actor.nameZh||actor.name) + ' 進入防禦姿態 — 減傷 50%，回復 MP', 'system');
+  floatText('DEFEND', 'party_'+actor.key, '#80b0e0');
+  BS.actionMenu = 'main';
+  finishActorTurn();
+}
+
+// ── 道具：選擇後決定目標 ──
+function selectItem(item){
+  BS.pendingItem = item;
+  var eff = item.info.effect;
+  // 回復/解除類 → 選隊友（含自己）；目前道具都是對我方
+  BS.selectingTarget = 'party';
+  BS.pendingSkill = {id:'use_item', name:item.info.name, type:'item', isItem:true};
+  renderActionArea();
+}
+
+function useItemOnTarget(target){
+  var item = BS.pendingItem;
+  var actor = BS.pendingActor.unit;
+  if(!item || !target){ BS.actionMenu='main'; renderActionArea(); return; }
+  var info = item.info;
+  var msg = '';
+
+  if(info.effect==='hp'){
+    var healed = Math.min(target.maxHp, target.hp + info.val) - target.hp;
+    target.hp += healed;
+    msg = '回復 '+healed+' HP';
+    floatText('+'+healed, 'party_'+target.key, '#70f0a8', 'heal');
+  } else if(info.effect==='mp'){
+    var mphealed = Math.min(target.maxMp, target.mp + info.val) - target.mp;
+    target.mp += mphealed;
+    msg = '回復 '+mphealed+' MP';
+    floatText('+'+mphealed, 'party_'+target.key, '#70a8f0', 'heal');
+  } else if(info.effect==='all'){
+    target.hp = target.maxHp; target.mp = target.maxMp;
+    msg = '完全回復';
+    floatText('FULL', 'party_'+target.key, '#e8cc80', 'heal');
+  } else if(info.effect==='cure'){
+    target.ailments = (target.ailments||[]).filter(function(a){ return a.type !== info.cureType; });
+    msg = '解除' + (info.cureType==='poison'?'中毒':'燃燒');
+    floatText('CURE', 'party_'+target.key, '#80f0c0', 'heal');
+  }
+
+  // 扣除背包道具
+  if(typeof PLAYER !== 'undefined' && PLAYER.bag){
+    for(var i=0;i<PLAYER.bag.length;i++){
+      if(PLAYER.bag[i].id===item.id && !PLAYER.bag[i].isEquip){
+        PLAYER.bag[i].qty -= 1;
+        if(PLAYER.bag[i].qty <= 0) PLAYER.bag.splice(i,1);
+        break;
+      }
+    }
+  }
+
+  addLog('🎒 ' + (actor.nameZh||actor.name) + ' 對 ' + (target.nameZh||target.name) + ' 使用【'+info.name+'】— '+msg, 'heal');
+  BS.pendingItem = null;
+  BS.selectingTarget = false;
+  BS.actionMenu = 'main';
+  finishActorTurn();
 }
 
 // ════════════════════════════════════════
