@@ -3382,6 +3382,9 @@ function showResult(type){
     }
   }
 
+  // 自動存檔（戰鬥結算）
+  if(typeof saveGame==='function') saveGame(true);
+
   var lvHtml = '';
   if(levelUpLines && levelUpLines.length > 0){
     lvHtml = '<div style="margin:8px 0 4px;padding:8px 12px;background:rgba(200,168,74,0.12);border:1px solid rgba(200,168,74,0.5);border-radius:8px"><div style="font-size:11px;color:var(--gold);letter-spacing:1px;margin-bottom:4px">⬆ LEVEL UP</div>' +
@@ -4561,6 +4564,76 @@ var PLAYER = {
 };
 
 // ════════════════════════════════════════
+// 存檔系統（localStorage 單一存檔槽）
+// ════════════════════════════════════════
+var SAVE_KEY = 'genba_save_v1';
+
+function saveGame(showMsg){
+  try {
+    var party = [];
+    if(typeof PARTY_STATE !== 'undefined' && PARTY_STATE){
+      for(var i=0;i<PARTY_STATE.length;i++){
+        var st = PARTY_STATE[i];
+        party.push({ key:st.key, lv:st.lv, exp:st.exp, expNext:st.expNext, hp:st.hp, mp:st.mp, rb:st.rb });
+      }
+    }
+    var data = {
+      v: 1,
+      ts: Date.now(),
+      party: party,
+      gil: (typeof PLAYER !== 'undefined' && PLAYER) ? (PLAYER.gil||0) : 0,
+      bag:  (typeof PLAYER !== 'undefined' && PLAYER && PLAYER.bag) ? PLAYER.bag : []
+    };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    if(showMsg && typeof showToast === 'function') showToast('已存檔', 'success');
+    return true;
+  } catch(e){
+    if(showMsg && typeof showToast === 'function') showToast('存檔失敗（瀏覽器限制）', 'error');
+    return false;
+  }
+}
+
+function hasSave(){
+  try { return !!localStorage.getItem(SAVE_KEY); } catch(e){ return false; }
+}
+
+function loadGame(){
+  var raw = null;
+  try { raw = localStorage.getItem(SAVE_KEY); } catch(e){ return false; }
+  if(!raw) return false;
+  var data;
+  try { data = JSON.parse(raw); } catch(e){ return false; }
+  if(!data) return false;
+  if(data.party && typeof PARTY_STATE !== 'undefined' && PARTY_STATE){
+    for(var i=0;i<data.party.length;i++){
+      var sv = data.party[i];
+      var st = getPartyState(sv.key);
+      if(!st) continue;
+      if(typeof sv.lv==='number')      st.lv = sv.lv;
+      if(typeof sv.exp==='number')     st.exp = sv.exp;
+      if(typeof sv.expNext==='number') st.expNext = sv.expNext;
+      if(typeof sv.hp==='number')      st.hp = sv.hp;
+      if(typeof sv.mp==='number')      st.mp = sv.mp;
+      if(typeof sv.rb==='number')      st.rb = sv.rb;
+    }
+  }
+  if(typeof PLAYER !== 'undefined' && PLAYER){
+    if(typeof data.gil === 'number') PLAYER.gil = data.gil;
+    if(data.bag && data.bag.length !== undefined) PLAYER.bag = data.bag;
+  }
+  return true;
+}
+
+function clearSave(){
+  try { localStorage.removeItem(SAVE_KEY); } catch(e){}
+}
+
+function newGame(){
+  clearSave();
+  try { location.reload(); } catch(e){}
+}
+
+// ════════════════════════════════════════
 // 對話系統
 // ════════════════════════════════════════
 var DLG = {active:false, lines:[], idx:0, typing:false, timer:null, onEnd:null, branches:{}};
@@ -5154,6 +5227,7 @@ function executeBuy(){
   updateGilDisplay();
   showToast('購入 ' + cd.d.name + (confirmQty>1?' × '+confirmQty:'') + ' ！', 'success');
   renderShopList();
+  if(typeof saveGame==='function') saveGame();
 }
 
 // ── 販賣確認 ──
@@ -5194,6 +5268,7 @@ function executeSell(){
   updateGilDisplay();
   showToast('賣出 '+cd.d.name+' + '+cd.d.sell+' Gil', 'success');
   renderShopList();
+  if(typeof saveGame==='function') saveGame();
 }
 
 function closeConfirm(){
@@ -5933,7 +6008,8 @@ function openTown(townKey){
   }
   scene.setAttribute('style',
     'position:absolute;top:50px;left:0;right:0;bottom:0;overflow:hidden;' +
-    'background:#0a0c14;'
+    'background:#0a0c14;' +
+    'transition:opacity 0.35s ease;'
   );
 
   // frame = 16:9 圖片容器，hotspots 對齊它
@@ -6026,7 +6102,177 @@ function closeTown(){
   if(shopSc) shopSc.style.display = 'none';
   var ov = document.getElementById('town-overlay');
   if(ov) ov.style.display = 'none';
+  if(typeof saveGame==='function') saveGame(true);
 }
+
+// ════════════════════════════════════════
+// 標題畫面（繼續 / 新遊戲）
+// ════════════════════════════════════════
+function confirmNewGame(container, onConfirm){
+  var old = document.getElementById('title-confirm');
+  if(old && old.parentNode) old.parentNode.removeChild(old);
+  var box = document.createElement('div');
+  box.id = 'title-confirm';
+  box.setAttribute('style',
+    'margin-top:2px;margin-bottom:14px;padding:14px;border-radius:6px;' +
+    'border:1px solid rgba(212,96,80,0.5);background:rgba(212,96,80,0.08);');
+  var msg = document.createElement('div');
+  msg.textContent = '開始新遊戲會清除目前存檔，確定嗎？';
+  msg.setAttribute('style',
+    "font-family:'Noto Serif TC',serif;font-size:13px;color:#e8c9c4;text-align:center;" +
+    'letter-spacing:1px;margin-bottom:12px;line-height:1.6;');
+  box.appendChild(msg);
+  var row = document.createElement('div');
+  row.setAttribute('style','display:flex;');
+  var no = document.createElement('div');
+  no.textContent = '取消';
+  no.setAttribute('style',
+    "flex:1;text-align:center;cursor:pointer;padding:11px 0;border-radius:5px;font-size:13px;letter-spacing:2px;margin-right:10px;" +
+    "font-family:'Noto Serif TC',serif;color:#ccd4f0;border:1px solid rgba(112,128,176,0.5);background:rgba(112,128,176,0.08);");
+  no.addEventListener('click', function(){ if(box.parentNode) box.parentNode.removeChild(box); });
+  var yes = document.createElement('div');
+  yes.textContent = '清除並開始';
+  yes.setAttribute('style',
+    "flex:1;text-align:center;cursor:pointer;padding:11px 0;border-radius:5px;font-size:13px;letter-spacing:2px;" +
+    "font-family:'Noto Serif TC',serif;color:#f0d6d2;border:1px solid rgba(212,96,80,0.8);background:rgba(212,96,80,0.14);");
+  yes.addEventListener('click', function(){ onConfirm(); });
+  row.appendChild(no); row.appendChild(yes);
+  box.appendChild(row);
+  container.appendChild(box);
+}
+
+function showTitleScreen(){
+  var old = document.getElementById('title-screen');
+  if(old && old.parentNode) old.parentNode.removeChild(old);
+
+  if(!document.getElementById('gc-title-style')){
+    var stl = document.createElement('style');
+    stl.id = 'gc-title-style';
+    stl.textContent =
+      '@keyframes gcBreath{0%,100%{opacity:.35;transform:scale(1)}50%{opacity:.62;transform:scale(1.09)}}' +
+      '@keyframes gcRise{0%{opacity:0;transform:translateY(16px)}100%{opacity:1;transform:translateY(0)}}' +
+      '@media (prefers-reduced-motion: reduce){#title-screen *{animation:none !important}}';
+    document.head.appendChild(stl);
+  }
+
+  var ov = document.createElement('div');
+  ov.id = 'title-screen';
+  ov.setAttribute('style',
+    'position:fixed;top:0;left:0;right:0;bottom:0;z-index:5000;' +
+    'background:radial-gradient(120% 80% at 50% 38%, #10131f 0%, #07090f 60%, #04050a 100%);' +
+    'display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;' +
+    'transition:opacity 0.35s ease;');
+
+  var glow = document.createElement('div');
+  glow.setAttribute('style',
+    'position:absolute;top:34%;left:50%;width:360px;height:360px;margin-left:-180px;margin-top:-180px;' +
+    'border-radius:50%;pointer-events:none;' +
+    'background:radial-gradient(circle, rgba(200,168,74,0.30) 0%, rgba(200,168,74,0) 70%);' +
+    'animation:gcBreath 6s ease-in-out infinite;');
+  ov.appendChild(glow);
+
+  var box = document.createElement('div');
+  box.setAttribute('style',
+    'position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;' +
+    'width:100%;max-width:360px;padding:0 30px;animation:gcRise 0.9s ease-out both;');
+
+  var ruleTop = document.createElement('div');
+  ruleTop.setAttribute('style','width:64px;height:1px;background:rgba(200,168,74,0.55);margin-bottom:20px;');
+  box.appendChild(ruleTop);
+
+  var title = document.createElement('div');
+  title.textContent = '幻刃紀';
+  title.setAttribute('style',
+    "font-family:'Noto Serif TC',serif;font-weight:700;color:#e7d9a8;" +
+    'font-size:60px;letter-spacing:16px;text-indent:16px;line-height:1.1;' +
+    'text-shadow:0 0 20px rgba(200,168,74,0.45),0 2px 5px rgba(0,0,0,0.6);');
+  box.appendChild(title);
+
+  var sub = document.createElement('div');
+  sub.textContent = 'GENBA CHRONICLES';
+  sub.setAttribute('style',
+    "font-family:'Cinzel',serif;color:#c8a84a;font-size:13px;letter-spacing:6px;text-indent:6px;" +
+    'margin-top:16px;opacity:0.92;');
+  box.appendChild(sub);
+
+  var ruleBot = document.createElement('div');
+  ruleBot.setAttribute('style','width:64px;height:1px;background:rgba(200,168,74,0.55);margin-top:20px;margin-bottom:44px;');
+  box.appendChild(ruleBot);
+
+  var btns = document.createElement('div');
+  btns.setAttribute('style','width:100%;display:flex;flex-direction:column;align-items:stretch;');
+  box.appendChild(btns);
+
+  function makeBtn(label, primary){
+    var b = document.createElement('div');
+    var idle =
+      "font-family:'Cinzel','Noto Serif TC',serif;text-align:center;cursor:pointer;" +
+      'padding:15px 0;margin-bottom:14px;border-radius:6px;letter-spacing:5px;text-indent:5px;font-size:16px;' +
+      'color:#e7d9a8;background:rgba(200,168,74,0.06);' +
+      'border:1px solid rgba(200,168,74,' + (primary ? '0.85' : '0.4') + ');' +
+      (primary ? 'box-shadow:0 0 16px rgba(200,168,74,0.22);' : '') +
+      'transition:border-color 0.2s,background 0.2s,box-shadow 0.2s;';
+    b.setAttribute('style', idle);
+    b.textContent = label;
+    b.addEventListener('touchstart', function(){
+      b.style.background = 'rgba(200,168,74,0.16)';
+      b.style.borderColor = 'rgba(200,168,74,1)';
+    }, {passive:true});
+    b.addEventListener('touchend', function(){
+      b.style.background = 'rgba(200,168,74,0.06)';
+      b.style.borderColor = primary ? 'rgba(200,168,74,0.85)' : 'rgba(200,168,74,0.4)';
+    }, {passive:true});
+    return b;
+  }
+
+  function hideTitle(){
+    var t = document.getElementById('title-screen');
+    if(!t) return;
+    t.style.opacity = '0';
+    t.style.pointerEvents = 'none';
+    setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); }, 360);
+  }
+
+  function startContinue(){
+    try { loadGame(); } catch(e){}
+    if(typeof render === 'function'){ try { render(); } catch(e){} }
+    hideTitle();
+  }
+  function startNew(){
+    try { clearSave(); } catch(e){}
+    if(typeof render === 'function'){ try { render(); } catch(e){} }
+    hideTitle();
+  }
+
+  if(hasSave()){
+    var cont = makeBtn('繼續遊戲', true);
+    cont.addEventListener('click', startContinue);
+    btns.appendChild(cont);
+    var nw = makeBtn('新遊戲', false);
+    nw.addEventListener('click', function(){ confirmNewGame(btns, startNew); });
+    btns.appendChild(nw);
+  } else {
+    var startBtn = makeBtn('開始遊戲', true);
+    startBtn.addEventListener('click', startNew);
+    btns.appendChild(startBtn);
+  }
+
+  ov.appendChild(box);
+
+  var foot = document.createElement('div');
+  foot.textContent = '東西交會・和魔之刃';
+  foot.setAttribute('style',
+    'position:absolute;bottom:26px;left:0;right:0;text-align:center;z-index:2;' +
+    "font-family:'Noto Serif TC',serif;font-size:11px;letter-spacing:4px;text-indent:4px;color:rgba(112,128,176,0.6);");
+  ov.appendChild(foot);
+
+  document.body.appendChild(ov);
+}
+
+// ── 啟動：顯示標題畫面 ──
+(function(){
+  try { showTitleScreen(); } catch(e){}
+})();
 </script>
 </body>
 </html>
