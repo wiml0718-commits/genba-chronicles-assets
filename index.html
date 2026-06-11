@@ -5408,7 +5408,7 @@ var SHALLOI_SPOTS = [
     id:'spot_inn',
     label:'緋色酒館',
     ico:'🍺',
-    left:'1%', top:'30%', width:'22%', height:'40%',
+    left:'5%', top:'30%', width:'22%', height:'40%',
     action: function(){
       openDialog([
         {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050',
@@ -5434,7 +5434,7 @@ var SHALLOI_SPOTS = [
     id:'spot_grocery',
     label:'雜貨店',
     ico:'🏪',
-    left:'25%', top:'30%', width:'16%', height:'25%',
+    left:'29%', top:'30%', width:'16%', height:'25%',
     action: function(){
       openDialog([
         {speaker:'店主',face:'npc',acc:'#80a060',
@@ -5454,7 +5454,7 @@ var SHALLOI_SPOTS = [
     id:'spot_weapon',
     label:'武器店',
     ico:'⚔️',
-    left:'42%', top:'25%', width:'17%', height:'25%',
+    left:'48%', top:'25%', width:'16%', height:'24%',
     action: function(){
       openDialog([
         {speaker:'鑄劍師葛雷',face:'npc',acc:'#a08060',
@@ -5474,7 +5474,7 @@ var SHALLOI_SPOTS = [
     id:'spot_castle',
     label:'王城',
     ico:'🏰',
-    left:'48%', top:'2%', width:'30%', height:'22%',
+    left:'52%', top:'2%', width:'30%', height:'22%',
     action: function(){
       openDialog([
         {speaker:'王城衛兵',face:'npc',acc:'#8090b0',
@@ -5488,7 +5488,7 @@ var SHALLOI_SPOTS = [
     id:'spot_armor',
     label:'防具店',
     ico:'🛡️',
-    left:'68%', top:'28%', width:'18%', height:'25%',
+    left:'72%', top:'28%', width:'18%', height:'25%',
     action: function(){
       openDialog([
         {speaker:'防具師',face:'npc',acc:'#6080a0',
@@ -5508,7 +5508,7 @@ var SHALLOI_SPOTS = [
     id:'spot_fountain',
     label:'中央噴泉',
     ico:'⛲',
-    left:'42%', top:'52%', width:'18%', height:'25%',
+    left:'50%', top:'52%', width:'16%', height:'24%',
     action: function(){
       openDialog([
         {speaker:'路人',face:'npc',acc:'#7090a0',
@@ -5548,7 +5548,7 @@ function openTown(townKey){
   }
   scene.setAttribute('style',
     'position:absolute;top:50px;left:0;right:0;bottom:0;overflow:hidden;' +
-    'background:#0a0c14;display:flex;align-items:center;justify-content:center;'
+    'background:#0a0c14;display:flex;align-items:flex-start;justify-content:center;'
   );
 
   // frame = 16:9 圖片容器，hotspots 對齊它
@@ -5559,7 +5559,7 @@ function openTown(townKey){
     scene.appendChild(frame);
   }
   frame.setAttribute('style',
-    'position:relative;width:100%;aspect-ratio:1408/768;max-height:100%;' +
+    'position:relative;width:100%;aspect-ratio:1408/768;' +
     "background-image:url('https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0271.png');" +
     'background-size:contain;background-position:center;background-repeat:no-repeat;'
   );
