@@ -4178,7 +4178,20 @@ var SHOP_STOCK = {
       {text:'保重。這世道不容易。'},
     ],
     items:[],
-    equips:['cloth_armor','leather_vest','chain_mail','cloth_hat','iron_helm','silver_tiara','cloth_shoes','leather_boot','swift_boot','iron_ring','charm_speed'],
+    equips:['cloth_armor','leather_vest','chain_mail','cloth_hat','iron_helm','silver_tiara','cloth_shoes','leather_boot','swift_boot'],
+  },
+  accessory:{
+    ico:'💍', name:'飾品店', sub:'夏洛伊王都',
+    npc:{name:'飾品商人', ico:'💍', acc:'#c8a84a'},
+    greeting:[
+      {text:'歡迎，旅人。這裡有護身的戒指與符飾。'},
+      {text:'有些可不只是裝飾品喔，仔細看看。'},
+    ],
+    bye:[
+      {text:'願這些飾品護佑你的旅途。'},
+    ],
+    items:[],
+    equips:['iron_ring','charm_speed'],
   },
 };
 
@@ -5408,7 +5421,7 @@ var SHALLOI_SPOTS = [
     id:'spot_inn',
     label:'緋色酒館',
     ico:'🍺',
-    left:'5%', top:'30%', width:'22%', height:'40%',
+    left:'8%', top:'26%', width:'38%', height:'20%',
     action: function(){
       openDialog([
         {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050',
@@ -5431,30 +5444,10 @@ var SHALLOI_SPOTS = [
     }
   },
   {
-    id:'spot_grocery',
-    label:'雜貨店',
-    ico:'🏪',
-    left:'29%', top:'30%', width:'16%', height:'25%',
-    action: function(){
-      openDialog([
-        {speaker:'店主',face:'npc',acc:'#80a060',
-         text:'歡迎歡迎！道具、補給品，應有盡有。'},
-        {speaker:'店主',face:'npc',acc:'#80a060',
-         text:'需要什麼？',
-         choices:[
-           {text:'進入商店',next:'go_shop'},
-           {text:'不了謝謝',next:'end'},
-         ]},
-      ], null, {
-        go_shop_end: function(){ openShop('grocery'); }
-      });
-    }
-  },
-  {
     id:'spot_weapon',
     label:'武器店',
     ico:'⚔️',
-    left:'48%', top:'25%', width:'16%', height:'24%',
+    left:'68%', top:'36%', width:'28%', height:'18%',
     action: function(){
       openDialog([
         {speaker:'鑄劍師葛雷',face:'npc',acc:'#a08060',
@@ -5471,29 +5464,15 @@ var SHALLOI_SPOTS = [
     }
   },
   {
-    id:'spot_castle',
-    label:'王城',
-    ico:'🏰',
-    left:'52%', top:'2%', width:'30%', height:'22%',
-    action: function(){
-      openDialog([
-        {speaker:'王城衛兵',face:'npc',acc:'#8090b0',
-         text:'此處乃夏洛伊王城禁地，閒人不得入內。'},
-        {speaker:'王城衛兵',face:'npc',acc:'#8090b0',
-         text:'若要拜見大人，需持有通行令牌。'},
-      ], null);
-    }
-  },
-  {
     id:'spot_armor',
     label:'防具店',
     ico:'🛡️',
-    left:'72%', top:'28%', width:'18%', height:'25%',
+    left:'2%', top:'68%', width:'30%', height:'18%',
     action: function(){
       openDialog([
-        {speaker:'防具師',face:'npc',acc:'#6080a0',
-         text:'請進，我這裡有最好的防具。'},
-        {speaker:'防具師',face:'npc',acc:'#6080a0',
+        {speaker:'女鎧甲師',face:'npc',acc:'#6080a0',
+         text:'防具比武器更重要——活著才能打仗。'},
+        {speaker:'女鎧甲師',face:'npc',acc:'#6080a0',
          text:'需要什麼防護？',
          choices:[
            {text:'進入商店',next:'go_shop'},
@@ -5505,10 +5484,64 @@ var SHALLOI_SPOTS = [
     }
   },
   {
+    id:'spot_grocery',
+    label:'雜貨店',
+    ico:'🏪',
+    left:'4%', top:'52%', width:'26%', height:'16%',
+    action: function(){
+      openDialog([
+        {speaker:'店主阿德',face:'npc',acc:'#80a060',
+         text:'歡迎歡迎！道具、補給品，應有盡有。'},
+        {speaker:'店主阿德',face:'npc',acc:'#80a060',
+         text:'需要什麼？',
+         choices:[
+           {text:'進入商店',next:'go_shop'},
+           {text:'不了謝謝',next:'end'},
+         ]},
+      ], null, {
+        go_shop_end: function(){ openShop('grocery'); }
+      });
+    }
+  },
+  {
+    id:'spot_accessory',
+    label:'飾品店',
+    ico:'💍',
+    left:'62%', top:'62%', width:'34%', height:'18%',
+    action: function(){
+      openDialog([
+        {speaker:'飾品商人',face:'npc',acc:'#c8a84a',
+         text:'歡迎，旅人。這裡有護身的戒指與符飾。'},
+        {speaker:'飾品商人',face:'npc',acc:'#c8a84a',
+         text:'有些可不只是裝飾品喔。',
+         choices:[
+           {text:'進入商店',next:'go_shop'},
+           {text:'不了謝謝',next:'end'},
+         ]},
+      ], null, {
+        go_shop_end: function(){ openShop('accessory'); }
+      });
+    }
+  },
+  {
+    id:'spot_castle',
+    label:'王城',
+    ico:'🏰',
+    left:'36%', top:'8%', width:'34%', height:'20%',
+    action: function(){
+      openDialog([
+        {speaker:'王城衛兵',face:'npc',acc:'#8090b0',
+         text:'此處乃夏洛伊王城禁地，閒人不得入內。'},
+        {speaker:'王城衛兵',face:'npc',acc:'#8090b0',
+         text:'若要拜見大人，需持有通行令牌。'},
+      ], null);
+    }
+  },
+  {
     id:'spot_fountain',
     label:'中央噴泉',
     ico:'⛲',
-    left:'50%', top:'52%', width:'16%', height:'24%',
+    left:'42%', top:'48%', width:'20%', height:'16%',
     action: function(){
       openDialog([
         {speaker:'路人',face:'npc',acc:'#7090a0',
@@ -5560,22 +5593,9 @@ function openTown(townKey){
   }
   // frame 維持 16:9，寬度撐滿 scene，垂直置中（少量左右裁切，下方少量黑邊）
   frame.setAttribute('style',
-    'position:absolute;top:0;left:0;width:100%;aspect-ratio:1408/768;' +
-    "background-image:url('https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0271.png');" +
-    'background-size:contain;background-position:center;background-repeat:no-repeat;'
-  );
-
-  // 底部漸層融合黑邊
-  var fade = document.getElementById('town-fade');
-  if(!fade){
-    fade = document.createElement('div');
-    fade.id = 'town-fade';
-    scene.appendChild(fade);
-  }
-  if(fade.parentNode !== scene) scene.appendChild(fade);
-  fade.setAttribute('style',
-    'position:absolute;left:0;right:0;bottom:0;height:35%;z-index:3;pointer-events:none;' +
-    'background:linear-gradient(180deg,rgba(10,12,20,0),rgba(10,12,20,1) 60%);'
+    'position:absolute;top:0;left:0;width:100%;height:100%;' +
+    "background-image:url('https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0347.png');" +
+    'background-size:cover;background-position:center top;background-repeat:no-repeat;'
   );
 
   // hotspots 放進 frame
@@ -5609,7 +5629,7 @@ function buildSceneHotspots(){
         'width:' + spot.width + ';' +
         'height:' + spot.height + ';' +
         'cursor:pointer;' +
-        'border:2px solid rgba(200,168,74,0);' +
+        'border:2px solid rgba(255,80,80,0.9);' +
         'border-radius:8px;' +
         'transition:border-color 0.2s;' +
         'display:flex;align-items:flex-end;justify-content:center;' +
@@ -5623,7 +5643,7 @@ function buildSceneHotspots(){
         'padding:2px 6px;' +
         'border-radius:4px;' +
         'pointer-events:none;' +
-        'opacity:0;' +
+        'opacity:1;' +
         'transition:opacity 0.2s;' +
         'white-space:nowrap;'
       );
