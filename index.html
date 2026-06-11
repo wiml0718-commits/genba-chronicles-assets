@@ -368,6 +368,8 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
 .enemy-hp-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#c83838,#f07050);
   transition:width .5s ease;}
 .enemy-hp-text{font-size:7px;color:var(--text2);}
+.enemy-atb-bar{height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-top:3px;}
+.enemy-atb-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#5878b0,#80a0d0);transition:width .12s linear;}
 .enemy-ailments{display:flex;gap:3px;justify-content:center;margin-top:5px;min-height:16px;}
 .ailment-badge{font-size:11px;}
 
@@ -3555,11 +3557,13 @@ function renderEnemies(){
       return '<span class="ailment-badge">'+(a.type==='burn'?'🔥':a.type==='poison'?'☠️':'🩸')+'</span>';
     }).join('');
 
+    var eAtbPct = Math.round((e.atb||0)/(e.maxAtb||1000)*100);
     card.innerHTML = arrow +
       '<span class="enemy-ico">'+(e.alive?e.ico:'💀')+'</span>' +
       '<div class="enemy-name">'+e.name+(e.phase2?' ⚠️Ⅱ':'')+'</div>' +
       '<div class="enemy-hp-bar"><div class="enemy-hp-fill" style="width:'+Math.round(e.hp/e.maxHp*100)+'%"></div></div>' +
       '<div class="enemy-hp-text">'+e.hp+' / '+e.maxHp+'</div>' +
+      '<div class="enemy-atb-bar"><div class="enemy-atb-fill" style="width:'+eAtbPct+'%"></div></div>' +
       '<div class="enemy-ailments">'+ails+'</div>';
 
     cont.appendChild(card);
@@ -3631,6 +3635,13 @@ function renderPartyBars(){
     if(vals[2]) vals[2].textContent = Math.round(p.rb)+'/'+p.maxRb;
     const atbFill = el.querySelector('.pm-atb-fill');
     if(atbFill) atbFill.style.width = Math.round(p.atb/p.maxAtb*100)+'%';
+  });
+  // 同步更新敵人 ATB 條（每幀）
+  BS.enemies.forEach(function(e){
+    const ec = document.getElementById('enemy_'+e.id);
+    if(!ec) return;
+    const ef = ec.querySelector('.enemy-atb-fill');
+    if(ef) ef.style.width = Math.round((e.atb||0)/(e.maxAtb||1000)*100)+'%';
   });
 }
 
