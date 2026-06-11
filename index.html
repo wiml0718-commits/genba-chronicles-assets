@@ -5548,7 +5548,7 @@ function openTown(townKey){
   }
   scene.setAttribute('style',
     'position:absolute;top:50px;left:0;right:0;bottom:0;overflow:hidden;' +
-    'background:#0a0c14;display:flex;align-items:flex-start;justify-content:center;'
+    'background:#0a0c14;'
   );
 
   // frame = 16:9 圖片容器，hotspots 對齊它
@@ -5558,8 +5558,10 @@ function openTown(townKey){
     frame.id = 'town-frame';
     scene.appendChild(frame);
   }
+  // frame 維持 16:9，高度撐滿 scene，寬度按比例（會超出左右，scene overflow:hidden 裁切）
   frame.setAttribute('style',
-    'position:relative;width:100%;aspect-ratio:1408/768;' +
+    'position:absolute;top:0;left:50%;transform:translateX(-50%);' +
+    'height:100%;aspect-ratio:1408/768;' +
     "background-image:url('https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0271.png');" +
     'background-size:contain;background-position:center;background-repeat:no-repeat;'
   );
