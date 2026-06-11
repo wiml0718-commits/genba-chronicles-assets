@@ -5558,12 +5558,24 @@ function openTown(townKey){
     frame.id = 'town-frame';
     scene.appendChild(frame);
   }
-  // frame 維持 16:9，高度撐滿 scene，寬度按比例（會超出左右，scene overflow:hidden 裁切）
+  // frame 維持 16:9，寬度撐滿 scene，垂直置中（少量左右裁切，下方少量黑邊）
   frame.setAttribute('style',
-    'position:absolute;top:0;left:50%;transform:translateX(-50%);' +
-    'height:100%;aspect-ratio:1408/768;' +
+    'position:absolute;top:0;left:0;width:100%;aspect-ratio:1408/768;' +
     "background-image:url('https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0271.png');" +
     'background-size:contain;background-position:center;background-repeat:no-repeat;'
+  );
+
+  // 底部漸層融合黑邊
+  var fade = document.getElementById('town-fade');
+  if(!fade){
+    fade = document.createElement('div');
+    fade.id = 'town-fade';
+    scene.appendChild(fade);
+  }
+  if(fade.parentNode !== scene) scene.appendChild(fade);
+  fade.setAttribute('style',
+    'position:absolute;left:0;right:0;bottom:0;height:120px;z-index:3;pointer-events:none;' +
+    'background:linear-gradient(180deg,rgba(10,12,20,0),rgba(10,12,20,1));'
   );
 
   // hotspots 放進 frame
@@ -5597,7 +5609,7 @@ function buildSceneHotspots(){
         'width:' + spot.width + ';' +
         'height:' + spot.height + ';' +
         'cursor:pointer;' +
-        'border:2px solid rgba(255,80,80,0.9);' +
+        'border:2px solid rgba(200,168,74,0);' +
         'border-radius:8px;' +
         'transition:border-color 0.2s;' +
         'display:flex;align-items:flex-end;justify-content:center;' +
@@ -5611,7 +5623,7 @@ function buildSceneHotspots(){
         'padding:2px 6px;' +
         'border-radius:4px;' +
         'pointer-events:none;' +
-        'opacity:1;' +
+        'opacity:0;' +
         'transition:opacity 0.2s;' +
         'white-space:nowrap;'
       );
