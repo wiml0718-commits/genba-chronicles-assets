@@ -5555,6 +5555,17 @@ function openTown(townKey){
     'background-size:cover;background-position:center top;background-repeat:no-repeat;'
   );
 
+  // 確保 hotspots 容器存在於 scene 內
+  var hotspots = document.getElementById('town-hotspots');
+  if(!hotspots){
+    hotspots = document.createElement('div');
+    hotspots.id = 'town-hotspots';
+    scene.appendChild(hotspots);
+  } else if(hotspots.parentNode !== scene){
+    scene.appendChild(hotspots);
+  }
+  hotspots.setAttribute('style', 'position:absolute;top:0;left:0;right:0;bottom:0;z-index:5;');
+
   GS.dialog = false;
   buildSceneHotspots();
   showZoneNotice('夏洛伊王都');
