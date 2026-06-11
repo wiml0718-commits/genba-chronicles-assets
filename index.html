@@ -5408,8 +5408,7 @@ var SHALLOI_SPOTS = [
     id:'spot_inn',
     label:'緋色酒館',
     ico:'🍺',
-    // 圖片中左側酒館位置（百分比）
-    left:'2%', top:'18%', width:'28%', height:'55%',
+    left:'0%', top:'28%', width:'22%', height:'30%',
     action: function(){
       openDialog([
         {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050',
@@ -5427,51 +5426,7 @@ var SHALLOI_SPOTS = [
           {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050',
            text:'但詳情，要等我確認你值得信任。先去處理掉廣場那幾個礙事的士兵。'},
         ],
-        open_inn_shop:[
-          {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050',
-           text:'（笑）好，先招待你一杯。'},
-        ],
         open_inn_shop_end: function(){ openShop('inn'); }
-      });
-    }
-  },
-  {
-    id:'spot_weapon',
-    label:'武器店',
-    ico:'⚔️',
-    left:'32%', top:'8%', width:'18%', height:'40%',
-    action: function(){
-      openDialog([
-        {speaker:'鑄劍師葛雷',face:'npc',acc:'#a08060',
-         text:'沒錢就別進來。'},
-        {speaker:'鑄劍師葛雷',face:'npc',acc:'#a08060',
-         text:'……有錢？那歡迎。',
-         choices:[
-           {text:'進入商店',next:'go_shop'},
-           {text:'改天再說',next:'end'},
-         ]},
-      ], null, {
-        go_shop_end: function(){ openShop('weapon'); }
-      });
-    }
-  },
-  {
-    id:'spot_armor',
-    label:'防具店',
-    ico:'🛡️',
-    left:'50%', top:'8%', width:'16%', height:'40%',
-    action: function(){
-      openDialog([
-        {speaker:'防具師',face:'npc',acc:'#6080a0',
-         text:'請進，我這裡有最好的防具。'},
-        {speaker:'防具師',face:'npc',acc:'#6080a0',
-         text:'需要什麼防護？',
-         choices:[
-           {text:'進入商店',next:'go_shop'},
-           {text:'不了謝謝',next:'end'},
-         ]},
-      ], null, {
-        go_shop_end: function(){ openShop('armor'); }
       });
     }
   },
@@ -5479,7 +5434,7 @@ var SHALLOI_SPOTS = [
     id:'spot_grocery',
     label:'雜貨店',
     ico:'🏪',
-    left:'67%', top:'10%', width:'16%', height:'38%',
+    left:'24%', top:'42%', width:'24%', height:'22%',
     action: function(){
       openDialog([
         {speaker:'店主',face:'npc',acc:'#80a060',
@@ -5496,10 +5451,30 @@ var SHALLOI_SPOTS = [
     }
   },
   {
+    id:'spot_weapon',
+    label:'武器店',
+    ico:'⚔️',
+    left:'52%', top:'38%', width:'22%', height:'22%',
+    action: function(){
+      openDialog([
+        {speaker:'鑄劍師葛雷',face:'npc',acc:'#a08060',
+         text:'沒錢就別進來。'},
+        {speaker:'鑄劍師葛雷',face:'npc',acc:'#a08060',
+         text:'……有錢？那歡迎。',
+         choices:[
+           {text:'進入商店',next:'go_shop'},
+           {text:'改天再說',next:'end'},
+         ]},
+      ], null, {
+        go_shop_end: function(){ openShop('weapon'); }
+      });
+    }
+  },
+  {
     id:'spot_castle',
     label:'王城',
     ico:'🏰',
-    left:'36%', top:'0%', width:'26%', height:'20%',
+    left:'62%', top:'14%', width:'36%', height:'24%',
     action: function(){
       openDialog([
         {speaker:'王城衛兵',face:'npc',acc:'#8090b0',
@@ -5510,10 +5485,30 @@ var SHALLOI_SPOTS = [
     }
   },
   {
+    id:'spot_armor',
+    label:'防具店',
+    ico:'🛡️',
+    left:'74%', top:'40%', width:'18%', height:'20%',
+    action: function(){
+      openDialog([
+        {speaker:'防具師',face:'npc',acc:'#6080a0',
+         text:'請進，我這裡有最好的防具。'},
+        {speaker:'防具師',face:'npc',acc:'#6080a0',
+         text:'需要什麼防護？',
+         choices:[
+           {text:'進入商店',next:'go_shop'},
+           {text:'不了謝謝',next:'end'},
+         ]},
+      ], null, {
+        go_shop_end: function(){ openShop('armor'); }
+      });
+    }
+  },
+  {
     id:'spot_fountain',
     label:'中央噴泉',
     ico:'⛲',
-    left:'42%', top:'42%', width:'16%', height:'22%',
+    left:'48%', top:'58%', width:'24%', height:'22%',
     action: function(){
       openDialog([
         {speaker:'路人',face:'npc',acc:'#7090a0',
@@ -5583,7 +5578,7 @@ function buildSceneHotspots(){
         'width:' + spot.width + ';' +
         'height:' + spot.height + ';' +
         'cursor:pointer;' +
-        'border:2px solid rgba(200,168,74,0);' +
+        'border:2px solid rgba(255,80,80,0.9);' +
         'border-radius:8px;' +
         'transition:border-color 0.2s;' +
         'display:flex;align-items:flex-end;justify-content:center;' +
@@ -5597,7 +5592,7 @@ function buildSceneHotspots(){
         'padding:2px 6px;' +
         'border-radius:4px;' +
         'pointer-events:none;' +
-        'opacity:0;' +
+        'opacity:1;' +
         'transition:opacity 0.2s;' +
         'white-space:nowrap;'
       );
