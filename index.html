@@ -2767,7 +2767,7 @@ function render(){
     case 1: main.innerHTML=renderSkillTree(c); break;
     case 2: main.innerHTML=renderMap(c); break;
     case 3: main.innerHTML=renderJournal(c); break;
-    case 4: main.innerHTML=renderPlaceholder('系統設定','⚙️'); break;
+    case 4: main.innerHTML=(typeof renderSettings==='function')?renderSettings():renderPlaceholder('系統設定','⚙️'); break;
   }
 }
 render();
@@ -4802,55 +4802,38 @@ var PLAYER = {
 // ════════════════════════════════════════
 var SAVE_KEY = 'genba_save_v1';
 
-function saveGame(showMsg){
-  try {
-    var party = [];
-    if(typeof PARTY_STATE !== 'undefined' && PARTY_STATE){
-      for(var i=0;i<PARTY_STATE.length;i++){
-        var st = PARTY_STATE[i];
-        party.push({ key:st.key, lv:st.lv, exp:st.exp, expNext:st.expNext, hp:st.hp, mp:st.mp, rb:st.rb });
-      }
+function buildSaveData(){
+  var party = [];
+  if(typeof PARTY_STATE !== 'undefined' && PARTY_STATE){
+    for(var i=0;i<PARTY_STATE.length;i++){
+      var st = PARTY_STATE[i];
+      party.push({ key:st.key, lv:st.lv, exp:st.exp, expNext:st.expNext, hp:st.hp, mp:st.mp, rb:st.rb });
     }
-    var chars = {};
-    if(typeof CHARS !== 'undefined'){
-      for(var ci=0; ci<CHARS.length; ci++){
-        var cc = CHARS[ci];
-        chars[cc.key] = {
-          inventory: cc.inventory || [],
-          equippedEquip: cc.equippedEquip || [],
-          unlocked: (cc.unlocked === false) ? false : true
-        };
-      }
-    }
-    var data = {
-      v: 2,
-      ts: Date.now(),
-      party: party,
-      gil: (typeof PLAYER !== 'undefined' && PLAYER) ? (PLAYER.gil||0) : 0,
-      bag:  (typeof PLAYER !== 'undefined' && PLAYER && PLAYER.bag) ? PLAYER.bag : [],
-      story: (typeof STORY !== 'undefined') ? STORY : null,
-      chars: chars,
-      gearUid: (typeof GEAR_UID !== 'undefined') ? GEAR_UID : 0
-    };
-    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-    if(showMsg && typeof showToast === 'function') showToast('已存檔', 'success');
-    return true;
-  } catch(e){
-    if(showMsg && typeof showToast === 'function') showToast('存檔失敗（瀏覽器限制）', 'error');
-    return false;
   }
+  var chars = {};
+  if(typeof CHARS !== 'undefined'){
+    for(var ci=0; ci<CHARS.length; ci++){
+      var cc = CHARS[ci];
+      chars[cc.key] = {
+        inventory: cc.inventory || [],
+        equippedEquip: cc.equippedEquip || [],
+        unlocked: (cc.unlocked === false) ? false : true
+      };
+    }
+  }
+  return {
+    v: 2,
+    ts: Date.now(),
+    party: party,
+    gil: (typeof PLAYER !== 'undefined' && PLAYER) ? (PLAYER.gil||0) : 0,
+    bag:  (typeof PLAYER !== 'undefined' && PLAYER && PLAYER.bag) ? PLAYER.bag : [],
+    story: (typeof STORY !== 'undefined') ? STORY : null,
+    chars: chars,
+    gearUid: (typeof GEAR_UID !== 'undefined') ? GEAR_UID : 0
+  };
 }
 
-function hasSave(){
-  try { return !!localStorage.getItem(SAVE_KEY); } catch(e){ return false; }
-}
-
-function loadGame(){
-  var raw = null;
-  try { raw = localStorage.getItem(SAVE_KEY); } catch(e){ return false; }
-  if(!raw) return false;
-  var data;
-  try { data = JSON.parse(raw); } catch(e){ return false; }
+function applySaveData(data){
   if(!data) return false;
   if(data.party && typeof PARTY_STATE !== 'undefined' && PARTY_STATE){
     for(var i=0;i<data.party.length;i++){
@@ -4869,12 +4852,10 @@ function loadGame(){
     if(typeof data.gil === 'number') PLAYER.gil = data.gil;
     if(data.bag && data.bag.length !== undefined) PLAYER.bag = data.bag;
   }
-  // STORY 旗標
   if(data.story && typeof STORY !== 'undefined'){
     if(typeof data.story.firaMet === 'boolean') STORY.firaMet = data.story.firaMet;
     if(typeof data.story.shalloiTestDone === 'boolean') STORY.shalloiTestDone = data.story.shalloiTestDone;
   }
-  // 角色裝備庫 + 解鎖
   if(data.chars && typeof findCharByKey === 'function'){
     for(var ckey in data.chars){
       if(!data.chars.hasOwnProperty(ckey)) continue;
@@ -4886,11 +4867,101 @@ function loadGame(){
       if(typeof sv2.unlocked === 'boolean') cc2.unlocked = sv2.unlocked;
     }
   }
-  // 裝備唯一 id 計數器
   if(typeof data.gearUid === 'number' && typeof GEAR_UID !== 'undefined' && data.gearUid > GEAR_UID){ GEAR_UID = data.gearUid; }
-  // 重繪角色頁籤（解鎖可能改變）
   if(typeof renderTabs === 'function'){ try { renderTabs(); } catch(e){} }
   return true;
+}
+
+var SAVE_SLOTS = ['genba_slot_1','genba_slot_2','genba_slot_3'];
+
+function writeSlot(key, showMsg){
+  try {
+    localStorage.setItem(key, JSON.stringify(buildSaveData()));
+    if(showMsg && typeof showToast === 'function') showToast('已存檔', 'success');
+    return true;
+  } catch(e){
+    if(showMsg && typeof showToast === 'function') showToast('存檔失敗（瀏覽器限制）', 'error');
+    return false;
+  }
+}
+function readSlot(key){
+  var raw=null;
+  try { raw = localStorage.getItem(key); } catch(e){ return false; }
+  if(!raw) return false;
+  var data;
+  try { data = JSON.parse(raw); } catch(e){ return false; }
+  return applySaveData(data);
+}
+function slotMeta(key){
+  try {
+    var raw = localStorage.getItem(key);
+    if(!raw) return null;
+    var d = JSON.parse(raw);
+    var lv = 0;
+    if(d.party){ for(var i=0;i<d.party.length;i++){ if(d.party[i].key==='anei'){ lv=d.party[i].lv; break; } } }
+    return { ts: d.ts||0, gil: d.gil||0, lv: lv };
+  } catch(e){ return null; }
+}
+
+function saveGame(showMsg){ return writeSlot(SAVE_KEY, showMsg); }
+function hasSave(){ try { return !!localStorage.getItem(SAVE_KEY); } catch(e){ return false; } }
+function loadGame(){ return readSlot(SAVE_KEY); }
+
+// ── 設定頁：手動存讀檔 UI ──
+function _slotBtn(label, fn, col){
+  var c = col || 'var(--gold)';
+  return '<button onclick="'+fn+'" style="flex:1;padding:9px 0;border-radius:5px;font-size:12px;letter-spacing:2px;background:rgba(200,168,74,0.06);border:1px solid '+c+';color:'+c+';cursor:pointer">'+label+'</button>';
+}
+function renderSettings(){
+  var rows = '';
+  for(var i=0;i<SAVE_SLOTS.length;i++){
+    var m = slotMeta(SAVE_SLOTS[i]);
+    var info, actions;
+    if(m){
+      var dt = new Date(m.ts);
+      var p2 = function(n){ return ('0'+n).slice(-2); };
+      var dstr = dt.getFullYear()+'/'+p2(dt.getMonth()+1)+'/'+p2(dt.getDate())+' '+p2(dt.getHours())+':'+p2(dt.getMinutes());
+      info = '<div style="font-size:12px;color:var(--text)">暗影 Lv.'+m.lv+'　'+m.gil+' Gil</div>'+
+             '<div style="font-size:9px;color:var(--text2);margin-top:3px;letter-spacing:.5px">'+dstr+'</div>';
+      actions = _slotBtn('存檔','settingsSave('+i+')')+_slotBtn('讀檔','settingsLoad('+i+')')+_slotBtn('刪除','settingsDelete('+i+')','#d45a5a');
+    } else {
+      info = '<div style="font-size:12px;color:var(--text2)">— 空存檔格 —</div>';
+      actions = _slotBtn('存檔','settingsSave('+i+')');
+    }
+    rows += '<div style="border:1px solid var(--border);border-radius:8px;padding:13px 14px;margin-bottom:12px;background:var(--panel)">'+
+      '<div style="font-family:Cinzel,serif;font-size:11px;letter-spacing:3px;color:var(--gold);margin-bottom:8px">SLOT '+(i+1)+'</div>'+
+      info+
+      '<div style="display:flex;gap:8px;margin-top:11px">'+actions+'</div>'+
+    '</div>';
+  }
+  return '<div style="padding:16px 16px 28px">'+
+    '<div style="font-family:Cinzel,serif;font-size:14px;letter-spacing:4px;color:var(--gold);margin-bottom:16px">存檔 ・ 讀檔</div>'+
+    rows+
+    '<div style="font-size:9px;color:var(--text2);margin-top:8px;line-height:1.7;letter-spacing:.3px">遊戲會在戰鬥結算、商店交易、離開城鎮時自動存檔，標題畫面「繼續」即讀取自動存檔。此處為獨立的手動存讀檔格。</div>'+
+  '</div>';
+}
+function settingsSave(i){
+  var key = SAVE_SLOTS[i];
+  if(slotMeta(key) && !window.confirm('覆蓋存檔格 '+(i+1)+'？')) return;
+  if(writeSlot(key, true)){ if(typeof render==='function') render(); }
+}
+function settingsLoad(i){
+  var key = SAVE_SLOTS[i];
+  if(!slotMeta(key)) return;
+  if(!window.confirm('讀取存檔格 '+(i+1)+'？目前未儲存的進度將遺失。')) return;
+  if(readSlot(key)){
+    if(typeof showToast==='function') showToast('已讀檔', 'success');
+    if(typeof switchPage==='function') switchPage(0); else if(typeof render==='function') render();
+  } else {
+    if(typeof showToast==='function') showToast('讀檔失敗', 'error');
+  }
+}
+function settingsDelete(i){
+  var key = SAVE_SLOTS[i];
+  if(!slotMeta(key)) return;
+  if(!window.confirm('刪除存檔格 '+(i+1)+'？此動作無法復原。')) return;
+  try { localStorage.removeItem(key); } catch(e){}
+  if(typeof render==='function') render();
 }
 
 function clearSave(){
@@ -6518,6 +6589,89 @@ function confirmNewGame(container, onConfirm){
   container.appendChild(box);
 }
 
+// ── 標題：讀取存檔選單（自動存檔 + 手動槽）──
+function anySave(){
+  try {
+    if(localStorage.getItem(SAVE_KEY)) return true;
+    if(typeof SAVE_SLOTS !== 'undefined'){
+      for(var i=0;i<SAVE_SLOTS.length;i++){ if(localStorage.getItem(SAVE_SLOTS[i])) return true; }
+    }
+  } catch(e){}
+  return false;
+}
+
+function doLoadFrom(key){
+  var ok = (typeof readSlot === 'function') ? readSlot(key) : false;
+  if(!ok){ if(typeof showToast === 'function') showToast('讀檔失敗', 'error'); return; }
+  var lm = document.getElementById('title-load-menu'); if(lm && lm.parentNode) lm.parentNode.removeChild(lm);
+  var ts = document.getElementById('title-screen'); if(ts && ts.parentNode) ts.parentNode.removeChild(ts);
+  if(typeof switchPage === 'function') switchPage(0); else if(typeof render === 'function') render();
+}
+
+function showLoadMenu(){
+  var old = document.getElementById('title-load-menu');
+  if(old && old.parentNode) old.parentNode.removeChild(old);
+
+  var entries = [];
+  try { if(localStorage.getItem(SAVE_KEY)) entries.push({key:SAVE_KEY, label:'自動存檔'}); } catch(e){}
+  if(typeof SAVE_SLOTS !== 'undefined'){
+    for(var i=0;i<SAVE_SLOTS.length;i++){
+      if(slotMeta(SAVE_SLOTS[i])) entries.push({key:SAVE_SLOTS[i], label:'SLOT '+(i+1)});
+    }
+  }
+
+  var ov = document.createElement('div');
+  ov.id = 'title-load-menu';
+  ov.setAttribute('style',
+    'position:fixed;top:0;left:0;right:0;bottom:0;z-index:5100;background:rgba(4,5,10,0.96);' +
+    'display:flex;flex-direction:column;align-items:center;justify-content:center;overflow-y:auto;' +
+    'opacity:0;transition:opacity 0.3s ease;');
+
+  var box = document.createElement('div');
+  box.setAttribute('style','width:100%;max-width:360px;padding:30px 28px;');
+
+  var title = document.createElement('div');
+  title.textContent = '讀取存檔';
+  title.setAttribute('style',"font-family:'Cinzel','Noto Serif TC',serif;font-size:16px;letter-spacing:5px;text-indent:5px;color:#c8a84a;text-align:center;margin-bottom:22px;");
+  box.appendChild(title);
+
+  function p2(n){ return ('0'+n).slice(-2); }
+  function makeEntry(e){
+    var m = slotMeta(e.key);
+    var card = document.createElement('div');
+    card.setAttribute('style','border:1px solid rgba(200,168,74,0.4);border-radius:8px;padding:14px 16px;margin-bottom:12px;background:rgba(200,168,74,0.05);cursor:pointer;transition:border-color .2s,background .2s;');
+    var dt = new Date(m.ts);
+    var dstr = dt.getFullYear()+'/'+p2(dt.getMonth()+1)+'/'+p2(dt.getDate())+' '+p2(dt.getHours())+':'+p2(dt.getMinutes());
+    card.innerHTML =
+      '<div style="font-family:Cinzel,serif;font-size:12px;letter-spacing:2px;color:#e7d9a8;margin-bottom:6px">'+e.label+'</div>'+
+      '<div style="font-size:12px;color:#cfd6ee">暗影 Lv.'+m.lv+'　'+m.gil+' Gil</div>'+
+      '<div style="font-size:9px;color:rgba(180,190,225,0.6);margin-top:3px">'+dstr+'</div>';
+    card.addEventListener('touchstart', function(){ card.style.borderColor='rgba(200,168,74,1)'; card.style.background='rgba(200,168,74,0.14)'; }, {passive:true});
+    card.addEventListener('touchend', function(){ card.style.borderColor='rgba(200,168,74,0.4)'; card.style.background='rgba(200,168,74,0.05)'; }, {passive:true});
+    card.addEventListener('click', function(){ doLoadFrom(e.key); });
+    return card;
+  }
+
+  if(entries.length === 0){
+    var none = document.createElement('div');
+    none.textContent = '— 沒有可用的存檔 —';
+    none.setAttribute('style','text-align:center;color:rgba(180,190,225,0.6);font-size:12px;margin-bottom:18px;');
+    box.appendChild(none);
+  } else {
+    for(var k=0;k<entries.length;k++){ box.appendChild(makeEntry(entries[k])); }
+  }
+
+  var back = document.createElement('div');
+  back.textContent = '返回';
+  back.setAttribute('style','text-align:center;cursor:pointer;padding:12px 0;margin-top:8px;border-radius:6px;border:1px solid rgba(112,128,176,0.5);color:#ccd4f0;font-family:"Noto Serif TC",serif;font-size:13px;letter-spacing:3px;text-indent:3px;');
+  back.addEventListener('click', function(){ var t=document.getElementById('title-load-menu'); if(t&&t.parentNode) t.parentNode.removeChild(t); });
+  box.appendChild(back);
+
+  ov.appendChild(box);
+  document.body.appendChild(ov);
+  setTimeout(function(){ ov.style.opacity = '1'; }, 20);
+}
+
 function showTitleScreen(){
   var old = document.getElementById('title-screen');
   if(old && old.parentNode) old.parentNode.removeChild(old);
@@ -6622,9 +6776,9 @@ function showTitleScreen(){
     setTimeout(function(){ if(typeof playPrologue === 'function'){ try { playPrologue(); } catch(e){} } }, 420);
   }
 
-  if(hasSave()){
+  if(anySave()){
     var cont = makeBtn('繼續遊戲', true);
-    cont.addEventListener('click', startContinue);
+    cont.addEventListener('click', showLoadMenu);
     btns.appendChild(cont);
     var nw = makeBtn('新遊戲', false);
     nw.addEventListener('click', function(){ confirmNewGame(btns, startNew); });
