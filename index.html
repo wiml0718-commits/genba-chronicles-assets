@@ -1819,7 +1819,7 @@ let curChar=0, curPage=0;
 const CHARS=[
   {key:"anei",nameEn:"Anei",nameZh:"暗　影",cls:"影刃刺客・前王國公主",lv:15,acc:"#9b7fd4",
    bg:"radial-gradient(ellipse at 30% 50%,rgba(80,40,140,.25),transparent 70%)",
-   hp:1240,maxHp:1600,mp:580,maxMp:700,rb:65,maxRb:100,exp:2400,nextExp:3200,
+   hp:1000,maxHp:1000,mp:200,maxMp:200,rb:65,maxRb:100,exp:2400,nextExp:3200,
    str:62,mag:78,def:44,spd:95,
    traits:[{l:"暗屬性",c:"#7040a0"},{l:"刺客",c:"#504080"},{l:"棋局之心",c:"#806080"}],
    statusAilments:[],
@@ -1835,39 +1835,43 @@ const CHARS=[
    equippedEquip:['anei_blade','anei_armor','anei_hat','anei_boot','anei_mask','anei_crest'],
    // ── 技能 ──
    activePool:[
-     {id:'sk_a1',ico:"⚡",bg:"#302060",name:"影步",desc:"瞬間移位至敵後方",cost:"12 MP",cc:"cost-mp",unlockLv:1},
-     {id:'sk_a2',ico:"🗡️",bg:"#401840",name:"暗刃",desc:"單體斬擊，暗屬傷害×1.8",cost:"18 MP",cc:"cost-mp",unlockLv:1},
-     {id:'sk_a3',ico:"♟",bg:"#302060",name:"落子無悔",desc:"快速斬擊，無視防禦30%",cost:"18 MP",cc:"cost-mp",unlockLv:5},
-     {id:'sk_a4',ico:"🌑",bg:"#1a0830",name:"月蝕刃",desc:"蓄力大斬，暗+物理雙屬",cost:"28 MP",cc:"cost-mp",unlockLv:8},
-     {id:'sk_a5',ico:"⊞",bg:"#602030",name:"縱橫之局",desc:"棋盤範圍攻擊，全列敵人",cost:"ATB×3",cc:"cost-atb",unlockLv:12},
-     {id:'sk_a6',ico:"🌑",bg:"#1a0830",name:"復國之誓・黑刃",desc:"【LIMIT】亡國之痛化為力量，全場暗屬爆發",cost:"LIMIT",cc:"cost-lmt",unlockLv:15},
+     {id:'sk_a1',ico:"⚡",bg:"#302060",name:"影步",desc:"瞬間移位至敵後方，單體暗屬斬擊",cost:"12 MP",cc:"cost-mp",unlockLv:5},
+     {id:'sk_a2',ico:"🗡️",bg:"#401840",name:"暗刃",desc:"單體斬擊，暗屬傷害×1.8",cost:"18 MP",cc:"cost-mp",unlockLv:10},
+     {id:'sk_a3',ico:"♟",bg:"#302060",name:"落子無悔",desc:"快速斬擊，無視防禦30%",cost:"18 MP",cc:"cost-mp",unlockLv:15},
+     {id:'sk_a4',ico:"🌑",bg:"#1a0830",name:"月蝕刃",desc:"蓄力大斬，暗+物理雙屬",cost:"28 MP",cc:"cost-mp",unlockLv:20},
+     {id:'sk_a5',ico:"⊞",bg:"#602030",name:"縱橫之局",desc:"棋盤範圍攻擊，全列敵人",cost:"ATB×3",cc:"cost-atb",unlockLv:25},
+     {id:'sk_a6',ico:"🌑",bg:"#1a0830",name:"復國之誓・黑刃",desc:"【LIMIT】亡國之痛化為力量，全場暗屬爆發",cost:"LIMIT",cc:"cost-lmt",unlockLv:30},
    ],
    passivePool:[
-     {id:'sk_p1',ico:"🌸",name:"梅影",desc:"夜間場景攻擊+20%",lv:"Lv.1",unlockLv:1,c:"#7040a0"},
-     {id:'sk_p2',ico:"⚔️",name:"雙持適性",desc:"雙刀時追加一擊",lv:"Lv.1",unlockLv:3,c:"#504080"},
-     {id:'sk_p3',ico:"♟",name:"棋士之眼",desc:"戰鬥開始看穿敵方行動",lv:"Lv.1",unlockLv:6,c:"#806080"},
-     {id:'sk_p4',ico:"🛡️",name:"影避",desc:"被動：迴避率+12%",lv:"Lv.1",unlockLv:9,c:"#7040a0"},
-     {id:'sk_p5',ico:"👁",name:"觀心術",desc:"看穿敵人弱點，暴擊+25%",lv:"Lv.1",unlockLv:13,c:"#504080"},
+     {id:'sk_p1',ico:"⚔️",name:"暗刃本能",desc:"爆擊率+10%",lv:"Lv.5",unlockLv:5,c:"#7040a0"},
+     {id:'sk_p2',ico:"💨",name:"影速反應",desc:"被攻擊後速度提升30（持續3回合）",lv:"Lv.10",unlockLv:10,c:"#504080"},
+     {id:'sk_p3',ico:"♟",name:"棋士之眼",desc:"看穿敵人弱點，暴擊+25%",lv:"Lv.15",unlockLv:15,c:"#806080"},
+     {id:'sk_p4',ico:"🛡️",name:"影避",desc:"迴避率+12%",lv:"Lv.20",unlockLv:20,c:"#7040a0"},
+     {id:'sk_p5',ico:"👁",name:"觀心術",desc:"連續暴擊累積，下一擊必定暴擊",lv:"Lv.25",unlockLv:25,c:"#504080"},
    ],
-   equippedActive:['sk_a1','sk_a3','sk_a5','sk_a6'],
-   equippedPassive:['sk_p1','sk_p2','sk_p3','sk_p4'],
+   equippedActive:['sk_a1','sk_a2',null,null],
+   equippedPassive:['sk_p1','sk_p2',null,null],
+   sp:0,
    // ── 特性 ──
    traitPool:[
-     {id:'tr1',ico:"🌑",name:"暗影適性",desc:"暗屬技能消耗MP-15%，暗屬傷害+10%",spCost:15,unlocked:true,c:"#7040a0"},
-     {id:'tr2',ico:"♟",name:"棋局之心",desc:"戰鬥開始時有30%機率預判敵方攻擊",spCost:20,unlocked:true,c:"#504080"},
-     {id:'tr3',ico:"🌙",name:"殘月之力",desc:"HP低於30%時，暗屬傷害+35%",spCost:25,unlocked:true,c:"#806080"},
-     {id:'tr4',ico:"⚡",name:"疾影步法",desc:"每場戰鬥開始，速度+15（三回合）",spCost:18,unlocked:true,c:"#7040a0"},
-     {id:'tr5',ico:"🩸",name:"出血專精",desc:"暴擊時附加流血狀態，持續3回合",spCost:22,unlocked:true,c:"#504080"},
-     {id:'tr6',ico:"🎯",name:"暗殺者之眼",desc:"對HP 50%以上的敵人，傷害+20%",spCost:30,unlocked:false,c:"#806080"},
-     {id:'tr7',ico:"🌸",name:"月華庇護",desc:"復仇值滿時，自動回復15% HP",spCost:28,unlocked:false,c:"#7040a0"},
-     {id:'tr8',ico:"♛",name:"棋局終局",desc:"連續攻擊三次後，下一擊必定暴擊",spCost:35,unlocked:false,c:"#504080"},
+     {id:'tr_init',ico:"⚡",name:"先手",baseDesc:"戰鬥開始ATB即滿",desc:"戰鬥開始ATB即滿",
+      spCost:20,unlocked:false,level:0,maxLevel:1,upgradeCosts:[20],c:"#c8a84a"},
+     {id:'tr_iron',ico:"🛡️",name:"鐵壁",baseDesc:"HP 40%以下，防禦力提升",desc:"HP 40%以下，防禦力提升",
+      levelDescs:["","DEF+5%","DEF+10%","DEF+15%"],
+      spCost:5,unlocked:false,level:0,maxLevel:3,upgradeCosts:[5,50,100],c:"#4080c0"},
+     {id:'tr_fight',ico:"⚔️",name:"鬥爭心",baseDesc:"HP 40%以下，攻擊力提升",desc:"HP 40%以下，攻擊力提升",
+      levelDescs:["","ATK+5%","ATK+10%","ATK+15%"],
+      spCost:5,unlocked:false,level:0,maxLevel:3,upgradeCosts:[5,50,100],c:"#c04040"},
+     {id:'tr_quick',ico:"💨",name:"快攻",baseDesc:"HP 40%以下，速度提升",desc:"HP 40%以下，速度提升",
+      levelDescs:["","SPD+5%","SPD+10%","SPD+15%"],
+      spCost:5,unlocked:false,level:0,maxLevel:3,upgradeCosts:[5,50,100],c:"#40c080"},
    ],
-   equippedTraits:['tr1','tr2','tr3','tr4','tr5'],
+   equippedTraits:[null,null,null,null,null,null,null,null,null,null],
   },
 
   {key:"lika",unlocked:false,nameEn:"Licarise",nameZh:"莉卡莉絲",cls:"酒館術師・情報商人",lv:14,acc:"#d46050",
    bg:"radial-gradient(ellipse at 30% 50%,rgba(140,40,30,.2),transparent 70%)",
-   hp:1080,maxHp:1400,mp:820,maxMp:900,rb:40,maxRb:100,exp:1800,nextExp:2800,
+   hp:1000,maxHp:1000,mp:200,maxMp:200,rb:40,maxRb:100,exp:1800,nextExp:2800,
    str:45,mag:94,def:38,spd:72,
    traits:[{l:"火屬性",c:"#a03020"},{l:"回復",c:"#804030"},{l:"酒館之主",c:"#906040"}],
    statusAilments:[],
@@ -1882,35 +1886,41 @@ const CHARS=[
    ],
    equippedEquip:['lika_e1','lika_e2','lika_e3','lika_e4','lika_e5','lika_e6'],
    activePool:[
-     {id:'lk_a1',ico:"💊",bg:"#206040",name:"緋紅治癒",desc:"回復單體HP，附帶解毒",cost:"35 MP",cc:"cost-mp",unlockLv:1},
-     {id:'lk_a2',ico:"🩸",bg:"#802020",name:"妖刀赤鬼斬",desc:"斬擊後吸收敵方MP",cost:"ATB×2",cc:"cost-atb",unlockLv:1},
-     {id:'lk_a3',ico:"🔥",bg:"#602010",name:"火炎術",desc:"單體火焰魔法，燃燒3回合",cost:"22 MP",cc:"cost-mp",unlockLv:4},
-     {id:'lk_a4',ico:"🌊",bg:"#402010",name:"火海",desc:"範圍火焰，全體敵人燃燒",cost:"40 MP",cc:"cost-mp",unlockLv:9},
-     {id:'lk_a5',ico:"💉",bg:"#204040",name:"強化治癒",desc:"回復量+50%，附加護盾",cost:"50 MP",cc:"cost-mp",unlockLv:12},
-     {id:'lk_a6',ico:"🐉",bg:"#601010",name:"赤鬼覺醒・千劍",desc:"【LIMIT】釋放全部封印之力",cost:"LIMIT",cc:"cost-lmt",unlockLv:14},
+     {id:'lk_a1',ico:"💊",bg:"#206040",name:"緋紅治癒",desc:"回復單體HP，附帶解毒",cost:"35 MP",cc:"cost-mp",unlockLv:5},
+     {id:'lk_a2',ico:"🩸",bg:"#802020",name:"妖刀赤鬼斬",desc:"斬擊後吸收敵方MP",cost:"ATB×2",cc:"cost-atb",unlockLv:10},
+     {id:'lk_a3',ico:"🔥",bg:"#602010",name:"火炎術",desc:"單體火焰魔法，燃燒3回合",cost:"22 MP",cc:"cost-mp",unlockLv:15},
+     {id:'lk_a4',ico:"🌊",bg:"#402010",name:"火海",desc:"範圍火焰，全體敵人燃燒",cost:"40 MP",cc:"cost-mp",unlockLv:20},
+     {id:'lk_a5',ico:"💉",bg:"#204040",name:"強化治癒",desc:"回復量大幅提升",cost:"50 MP",cc:"cost-mp",unlockLv:25},
+     {id:'lk_a6',ico:"🐉",bg:"#601010",name:"赤鬼覺醒・千劍",desc:"【LIMIT】釋放全部封印之力",cost:"LIMIT",cc:"cost-lmt",unlockLv:30},
    ],
    passivePool:[
-     {id:'lk_p1',ico:"🍷",name:"酒館情報",desc:"戰後額外獲得情報點",lv:"Lv.1",unlockLv:1,c:"#a03020"},
-     {id:'lk_p2',ico:"🔥",name:"焰術師",desc:"火屬性魔法傷害+18%",lv:"Lv.1",unlockLv:4,c:"#804030"},
-     {id:'lk_p3',ico:"💊",name:"妙手回春",desc:"每回合自動回復5% HP",lv:"Lv.1",unlockLv:8,c:"#906040"},
-     {id:'lk_p4',ico:"🍀",name:"幸運體質",desc:"暴擊率+10%，獲得道具機率+15%",lv:"Lv.1",unlockLv:11,c:"#a03020"},
+     {id:'lk_p1',ico:"🔥",name:"赤焰之觸",desc:"普攻附加燃燒（每回合3%HP，最多5層）",lv:"Lv.5",unlockLv:5,c:"#a03020"},
+     {id:'lk_p2',ico:"🛡️",name:"焰盾反擊",desc:"被攻擊時50%機率對敵方附加燃燒（最多5層）",lv:"Lv.10",unlockLv:10,c:"#804030"},
+     {id:'lk_p3',ico:"💊",name:"妙手回春",desc:"每回合自動回復5% HP",lv:"Lv.15",unlockLv:15,c:"#906040"},
+     {id:'lk_p4',ico:"🍀",name:"幸運體質",desc:"暴擊率+10%，獲得道具機率+15%",lv:"Lv.20",unlockLv:20,c:"#a03020"},
    ],
-   equippedActive:['lk_a1','lk_a2','lk_a3','lk_a6'],
-   equippedPassive:['lk_p1','lk_p2','lk_p3','lk_p4'],
+   equippedActive:['lk_a1','lk_a2',null,null],
+   equippedPassive:['lk_p1','lk_p2',null,null],
+   sp:0,
    traitPool:[
-     {id:'lk_t1',ico:"🍷",name:"酒館人脈",desc:"戰鬥勝利後有機會獲得情報碎片",spCost:12,unlocked:true,c:"#a03020"},
-     {id:'lk_t2',ico:"🔥",name:"焰術天賦",desc:"火屬性傷害+15%，燃燒持續+1回合",spCost:18,unlocked:true,c:"#804030"},
-     {id:'lk_t3',ico:"🩸",name:"吸血妖術",desc:"魔法攻擊後回復傷害10%的HP",spCost:22,unlocked:true,c:"#a03020"},
-     {id:'lk_t4',ico:"💊",name:"急救本能",desc:"隊友HP低於20%時，自動施放治癒",spCost:28,unlocked:true,c:"#804030"},
-     {id:'lk_t5',ico:"🎲",name:"賭徒氣質",desc:"每次行動有15%機率免費使用技能",spCost:25,unlocked:false,c:"#906040"},
-     {id:'lk_t6',ico:"🐉",name:"龍族血契",desc:"LIMIT技能冷卻回合-2",spCost:35,unlocked:false,c:"#a03020"},
+     {id:'tr_init',ico:"⚡",name:"先手",baseDesc:"戰鬥開始ATB即滿",desc:"戰鬥開始ATB即滿",
+      spCost:20,unlocked:false,level:0,maxLevel:1,upgradeCosts:[20],c:"#c8a84a"},
+     {id:'tr_iron',ico:"🛡️",name:"鐵壁",baseDesc:"HP 40%以下，防禦力提升",desc:"HP 40%以下，防禦力提升",
+      levelDescs:["","DEF+5%","DEF+10%","DEF+15%"],
+      spCost:5,unlocked:false,level:0,maxLevel:3,upgradeCosts:[5,50,100],c:"#4080c0"},
+     {id:'tr_fight',ico:"⚔️",name:"鬥爭心",baseDesc:"HP 40%以下，攻擊力提升",desc:"HP 40%以下，攻擊力提升",
+      levelDescs:["","ATK+5%","ATK+10%","ATK+15%"],
+      spCost:5,unlocked:false,level:0,maxLevel:3,upgradeCosts:[5,50,100],c:"#c04040"},
+     {id:'tr_quick',ico:"💨",name:"快攻",baseDesc:"HP 40%以下，速度提升",desc:"HP 40%以下，速度提升",
+      levelDescs:["","SPD+5%","SPD+10%","SPD+15%"],
+      spCost:5,unlocked:false,level:0,maxLevel:3,upgradeCosts:[5,50,100],c:"#40c080"},
    ],
-   equippedTraits:['lk_t1','lk_t2','lk_t3','lk_t4'],
+   equippedTraits:[null,null,null,null,null,null,null,null,null,null],
   },
 
   {key:"fira",unlocked:false,nameEn:"Fira",nameZh:"菲　拉",cls:"傭兵・月之眼第二小隊長",lv:13,acc:"#d47040",
    bg:"radial-gradient(ellipse at 30% 50%,rgba(140,60,20,.2),transparent 70%)",
-   hp:1560,maxHp:1800,mp:380,maxMp:500,rb:80,maxRb:100,exp:1200,nextExp:2200,
+   hp:1000,maxHp:1000,mp:200,maxMp:200,rb:80,maxRb:100,exp:1200,nextExp:2200,
    str:88,mag:42,def:62,spd:98,
    traits:[{l:"雷屬性",c:"#806020"},{l:"雙持",c:"#704020"},{l:"月之眼",c:"#504040"}],
    statusAilments:[],
@@ -1938,19 +1948,26 @@ const CHARS=[
    ],
    equippedActive:['fi_a1','fi_a2','fi_a3','fi_a5'],
    equippedPassive:['fi_p1','fi_p2','fi_p3','fi_p4'],
+   sp:0,
    traitPool:[
-     {id:'fi_t1',ico:"⚡",name:"雷電體質",desc:"雷屬技能暴擊率+20%，被雷屬攻擊傷害-10%",spCost:15,unlocked:true,c:"#806020"},
-     {id:'fi_t2',ico:"🔪",name:"雙刃本能",desc:"雙持攻擊時，有25%機率追加一擊",spCost:20,unlocked:true,c:"#704020"},
-     {id:'fi_t3',ico:"🎯",name:"暗殺適性",desc:"背後攻擊傷害+40%",spCost:25,unlocked:true,c:"#504040"},
-     {id:'fi_t4',ico:"🌙",name:"月夜戰士",desc:"夜間場景全屬性+12%",spCost:22,unlocked:false,c:"#806020"},
-     {id:'fi_t5',ico:"⚡",name:"雷霆覺醒",desc:"HP低於25%時，雷屬技能傷害+50%",spCost:30,unlocked:false,c:"#704020"},
+     {id:'tr_init',ico:"⚡",name:"先手",baseDesc:"戰鬥開始ATB即滿",desc:"戰鬥開始ATB即滿",
+      spCost:20,unlocked:false,level:0,maxLevel:1,upgradeCosts:[20],c:"#c8a84a"},
+     {id:'tr_iron',ico:"🛡️",name:"鐵壁",baseDesc:"HP 40%以下，防禦力提升",desc:"HP 40%以下，防禦力提升",
+      levelDescs:["","DEF+5%","DEF+10%","DEF+15%"],
+      spCost:5,unlocked:false,level:0,maxLevel:3,upgradeCosts:[5,50,100],c:"#4080c0"},
+     {id:'tr_fight',ico:"⚔️",name:"鬥爭心",baseDesc:"HP 40%以下，攻擊力提升",desc:"HP 40%以下，攻擊力提升",
+      levelDescs:["","ATK+5%","ATK+10%","ATK+15%"],
+      spCost:5,unlocked:false,level:0,maxLevel:3,upgradeCosts:[5,50,100],c:"#c04040"},
+     {id:'tr_quick',ico:"💨",name:"快攻",baseDesc:"HP 40%以下，速度提升",desc:"HP 40%以下，速度提升",
+      levelDescs:["","SPD+5%","SPD+10%","SPD+15%"],
+      spCost:5,unlocked:false,level:0,maxLevel:3,upgradeCosts:[5,50,100],c:"#40c080"},
    ],
-   equippedTraits:['fi_t1','fi_t2','fi_t3'],
+   equippedTraits:[null,null,null,null,null,null,null,null,null,null],
   },
 
   {key:"elweis",unlocked:false,nameEn:"Elweis",nameZh:"艾爾薇斯",cls:"傭兵團長・月之眼首領",lv:20,acc:"#7090c8",
    bg:"radial-gradient(ellipse at 30% 50%,rgba(30,50,120,.2),transparent 70%)",
-   hp:2200,maxHp:2500,mp:650,maxMp:800,rb:20,maxRb:100,exp:3600,nextExp:5000,
+   hp:1000,maxHp:1000,mp:200,maxMp:200,rb:20,maxRb:100,exp:3600,nextExp:5000,
    str:95,mag:68,def:88,spd:70,
    traits:[{l:"月屬性",c:"#304080"},{l:"領袖",c:"#404070"},{l:"雙劍士",c:"#305060"}],
    statusAilments:[],
@@ -1981,20 +1998,60 @@ const CHARS=[
    ],
    equippedActive:['el_a1','el_a2','el_a5','el_a6'],
    equippedPassive:['el_p1','el_p2','el_p3','el_p4'],
+   sp:0,
    traitPool:[
-     {id:'el_t1',ico:"👑",name:"統率者",desc:"戰鬥開始時全隊攻擊+10%，HP低於30%不恐慌",spCost:25,unlocked:true,c:"#304080"},
-     {id:'el_t2',ico:"🌙",name:"月夜契約",desc:"夜間場景全屬性+12%，月屬技能消耗MP-20%",spCost:20,unlocked:true,c:"#404070"},
-     {id:'el_t3',ico:"🐺",name:"月狼同盟",desc:"召喚技能傷害+25%，召喚物HP+30%",spCost:28,unlocked:true,c:"#305060"},
-     {id:'el_t4',ico:"❄️",name:"冰月融合",desc:"冰屬性與月屬性技能傷害互相加成10%",spCost:22,unlocked:true,c:"#304080"},
-     {id:'el_t5',ico:"🛡️",name:"守護者意志",desc:"隊友HP低於15%時，強制吸引敵方攻擊",spCost:30,unlocked:true,c:"#404070"},
-     {id:'el_t6',ico:"♾",name:"不滅意志",desc:"HP歸零時，以1HP復活（每場戰鬥一次）",spCost:40,unlocked:false,c:"#305060"},
-     {id:'el_t7',ico:"🌕",name:"皓月斬魂",desc:"滿月之力效果期間，攻擊附加魂奪效果",spCost:35,unlocked:false,c:"#304080"},
+     {id:'tr_init',ico:"⚡",name:"先手",baseDesc:"戰鬥開始ATB即滿",desc:"戰鬥開始ATB即滿",
+      spCost:20,unlocked:false,level:0,maxLevel:1,upgradeCosts:[20],c:"#c8a84a"},
+     {id:'tr_iron',ico:"🛡️",name:"鐵壁",baseDesc:"HP 40%以下，防禦力提升",desc:"HP 40%以下，防禦力提升",
+      levelDescs:["","DEF+5%","DEF+10%","DEF+15%"],
+      spCost:5,unlocked:false,level:0,maxLevel:3,upgradeCosts:[5,50,100],c:"#4080c0"},
+     {id:'tr_fight',ico:"⚔️",name:"鬥爭心",baseDesc:"HP 40%以下，攻擊力提升",desc:"HP 40%以下，攻擊力提升",
+      levelDescs:["","ATK+5%","ATK+10%","ATK+15%"],
+      spCost:5,unlocked:false,level:0,maxLevel:3,upgradeCosts:[5,50,100],c:"#c04040"},
+     {id:'tr_quick',ico:"💨",name:"快攻",baseDesc:"HP 40%以下，速度提升",desc:"HP 40%以下，速度提升",
+      levelDescs:["","SPD+5%","SPD+10%","SPD+15%"],
+      spCost:5,unlocked:false,level:0,maxLevel:3,upgradeCosts:[5,50,100],c:"#40c080"},
    ],
-   equippedTraits:['el_t1','el_t2','el_t3','el_t4','el_t5'],
+   equippedTraits:[null,null,null,null,null,null,null,null,null,null],
   },
 ];
 var SUB_LABEL_A = {crit:'爆擊率',critdmg:'爆擊傷害',lifesteal:'吸血',instakill:'即死',confuse:'混亂',poison:'中毒',counter:'反擊'};
 function findCharByKey(key){ for(var i=0;i<CHARS.length;i++){ if(CHARS[i].key===key) return CHARS[i]; } return null; }
+function hasPassive(key,pid){
+  var c=findCharByKey(key);
+  return !!(c && c.equippedPassive && c.equippedPassive.indexOf(pid)>=0);
+}
+function unlockTrait(ci,tid){
+  var c=CHARS[ci];
+  if(!c) return;
+  var tr=c.traitPool.find(function(x){return x.id===tid;});
+  if(!tr) return;
+  var sp=c.sp||0;
+  var lv=tr.level||0;
+  if(tr.maxLevel && lv>=tr.maxLevel){
+    if(typeof showToast==='function') showToast('已達最高等級 LV'+tr.maxLevel,'error');
+    return;
+  }
+  var cost=(tr.upgradeCosts&&tr.upgradeCosts[lv]!==undefined)?tr.upgradeCosts[lv]:tr.spCost;
+  if(sp<cost){
+    if(typeof showToast==='function') showToast('SP不足（需要 '+cost+'，目前 '+sp+'）','error');
+    return;
+  }
+  c.sp=sp-cost;
+  tr.level=(lv+1);
+  tr.unlocked=true;
+  var msg=lv===0?'解鎖特性：'+tr.name:'升級特性：'+tr.name+' → LV'+tr.level;
+  if(typeof showToast==='function') showToast(msg,'success');
+  if(curPage===1) render();
+  if(typeof saveGame==='function') saveGame();
+}
+function getTraitLevel(charKey,traitId){
+  var c=(typeof findCharByKey==='function')?findCharByKey(charKey):null;
+  if(!c||!c.traitPool||!c.equippedTraits) return 0;
+  if(c.equippedTraits.indexOf(traitId)<0) return 0;
+  var tr=c.traitPool.find(function(t){return t.id===traitId;});
+  return (tr&&tr.unlocked&&tr.level)?tr.level:0;
+}
 function getEquipBonus(key){
   var z={str:0,mag:0,def:0,spd:0,hp:0,mp:0};
   var c=findCharByKey(key);
@@ -2157,7 +2214,8 @@ function renderSkillTree(c){
   const acc=c.acc;
   const lv=c.lv;
   // ── 已裝備主動技能槽 (4格) ──
-  const activeSlots=Array.from({length:4},(_,i)=>{
+  const maxActSlots=Math.min(4,Math.floor(lv/5));
+  const activeSlots=Array.from({length:maxActSlots},(_,i)=>{
     const sid=c.equippedActive[i]||null;
     const sk=sid?c.activePool.find(x=>x.id===sid):null;
     return sk?`<div class="sk-slot filled" onclick="openSkillPicker(${CHARS.indexOf(c)},'active',${i})">
@@ -2179,7 +2237,8 @@ function renderSkillTree(c){
     </div>`;
   }).join('');
   // ── 已裝備被動技能槽 (4格) ──
-  const passiveSlots=Array.from({length:4},(_,i)=>{
+  const maxPasSlots=Math.min(4,Math.floor(lv/5));
+  const passiveSlots=Array.from({length:maxPasSlots},(_,i)=>{
     const sid=c.equippedPassive[i]||null;
     const sk=sid?c.passivePool.find(x=>x.id===sid):null;
     return sk?`<div class="sk-slot filled" onclick="openSkillPicker(${CHARS.indexOf(c)},'passive',${i})">
@@ -2246,13 +2305,25 @@ function renderSkillTree(c){
   // ── 特性池 ──
   const traitPool=c.traitPool.map(tr=>{
     const eq=c.equippedTraits.includes(tr.id);
-    const locked=!tr.unlocked;
-    return `<div class="tr-pool-item${eq?' equipped':''}${locked?' locked':''}" style="${eq?`border-color:${tr.c}`:''}" onclick="${locked?'':eq?`removeTrait(${CHARS.indexOf(c)},'${tr.id}')`:`openTraitPicker(${CHARS.indexOf(c)},-1,'${tr.id}')`}">
+    const lv=tr.level||0;
+    const locked=lv===0;
+    const canUp=!locked&&tr.maxLevel&&lv<tr.maxLevel;
+    const isMax=!locked&&(!tr.maxLevel||lv>=tr.maxLevel);
+    const curDesc=(tr.levelDescs&&lv>0)?(tr.baseDesc||tr.name)+' ('+tr.levelDescs[lv]+')':(tr.desc||tr.baseDesc||'');
+    const nextCost=canUp&&tr.upgradeCosts?tr.upgradeCosts[lv]:null;
+    const metaTxt=locked?'🔓 解鎖 SP '+(tr.upgradeCosts?tr.upgradeCosts[0]:tr.spCost):
+      canUp?'LV'+lv+' ｜ ⬆LV'+(lv+1)+' SP '+nextCost:
+      'LV'+lv+' MAX';
+    const mainClick=locked?`unlockTrait(${CHARS.indexOf(c)},'${tr.id}')`:
+      eq?`removeTrait(${CHARS.indexOf(c)},'${tr.id}')`:
+      `openTraitPicker(${CHARS.indexOf(c)},-1,'${tr.id}')`;
+    const upBtn=canUp?`<span onclick="event.stopPropagation();unlockTrait(${CHARS.indexOf(c)},'${tr.id}')" style="cursor:pointer;margin-left:6px;padding:1px 5px;border:1px solid ${tr.c};border-radius:3px;font-size:9px;color:${tr.c}">⬆升級</span>`:'';
+    return `<div class="tr-pool-item${eq?' equipped':''}${locked?' locked':''}" style="${eq?`border-color:${tr.c}`:''}" onclick="${mainClick}">
       <div class="tr-pool-ico" style="background:${tr.c}30;border:1px solid ${tr.c}60">${tr.ico}</div>
       <div class="tr-pool-body">
-        <div class="tr-pool-name" style="color:${locked?'var(--text2)':eq?tr.c:'var(--text)'}">${tr.name}</div>
-        <div class="tr-pool-desc">${tr.desc}</div>
-        <div class="tr-pool-meta" style="color:${tr.c}">SP ${tr.spCost}</div>
+        <div class="tr-pool-name" style="color:${locked?'var(--text2)':eq?tr.c:'var(--text)'}">${lv>0?'LV'+lv+' ':''}}${tr.name}</div>
+        <div class="tr-pool-desc">${curDesc}</div>
+        <div class="tr-pool-meta" style="color:${locked?'var(--gold)':tr.c}">${metaTxt}${upBtn}</div>
       </div>
     </div>`;
   }).join('');
@@ -2277,7 +2348,7 @@ function renderSkillTree(c){
     </div>
 
     <div class="sk-section-bar" style="margin-top:4px">
-      <div class="sk-section-title">特性　<span class="sk-counter" style="font-family:'Noto Serif TC',serif;font-size:7px">${c.equippedTraits.filter(Boolean).length}/10 裝備中</span></div>
+      <div class="sk-section-title">特性　<span class="sk-counter" style="font-family:'Noto Serif TC',serif;font-size:7px">${c.equippedTraits.filter(Boolean).length}/10 裝備中</span>　<span class="sk-counter" style="font-family:'Noto Serif TC',serif;font-size:7px;color:var(--gold)">SP ${c.sp||0}</span></div>
     </div>
     <div class="tr-slots">${traitSlots}</div>
     <div style="padding:0 14px 16px">
@@ -2309,6 +2380,7 @@ const CITIES=[
   {name:'暗淵城',faction:'魔族',desc:'上古魔王的城堡，攻心之魔將的據點，位於大陸西北端。',ch:'ch4'},
   {name:'灰牙鎮',faction:'盜賊',desc:'邊境混亂小鎮。地下牢房曾囚禁月之眼前任首領月華，由傑特秘密救出。',ch:'ch3'},
   {name:'夏洛伊',faction:'前大臣佔領',desc:'昔日夏洛伊王國首都，現由前王國大臣掌控。地底藏有魔王復活祭壇血月壇。',ch:'ch1'},
+  {name:'王都平原',faction:'練功場',desc:'夏洛伊城外的平原，野地適合磨練身手。莉卡莉絲入隊後可前往。',ch:'ch1'},
   {name:'艾爾登',faction:'商人聯盟',desc:'幻刃洲最大自由貿易城市，情報與商業交匯之地。莉卡莉絲的情報網延伸至此。',ch:null},
   {name:'赤盾城',faction:'貴族聯盟',desc:'東部貴族聯盟主城，莉卡莉絲前夫家族的封地。第二章決戰地，無心之魔將的據點。',ch:'ch2'},
   {name:'碧海港',faction:'商人聯盟',desc:'東南海港，商人聯盟的重要據點，海路貿易中心。',ch:null},
@@ -2333,6 +2405,15 @@ function mapSelectChapter(i){
   const el=document.getElementById('map-ch-name');const eq=document.getElementById('map-ch-quest');
   if(el)el.textContent=ch.title;if(eq)eq.textContent=ch.quest;
   document.querySelectorAll('.prog-btn').forEach((b,j)=>b.classList.toggle('cur',j===i));
+}
+function cityOpen(ct){
+  if(!ct) return false;
+  if(ct.name==='夏洛伊') return true;
+  if(ct.name==='王都平原') return (typeof STORY!=='undefined' && STORY.likaJoined);
+  var req=99;
+  if(ct.ch){ var n=parseInt(ct.ch.replace('ch',''),10); if(!isNaN(n)) req=n; }
+  var cur=(typeof STORY!=='undefined' && STORY.chapter) ? STORY.chapter : 1;
+  return req<=cur;
 }
 function mapSelectCity(name){
   var ct=CITIES.find(function(c){return c.name===name;});
@@ -2371,26 +2452,42 @@ function mapSelectCity(name){
   // 戰鬥按鈕（用 addEventListener，不用 onclick）
   var enc=typeof CITY_ENCOUNTERS!=='undefined'?CITY_ENCOUNTERS[name]:null;
   if(enc){
-    var battleSpan=document.createElement('span');
-    battleSpan.className='map-info-tag chapter';
-    battleSpan.style.cursor='pointer';
-    battleSpan.style.borderColor='#c83838';
-    battleSpan.style.color='#f08080';
-    battleSpan.textContent=enc.enemies[0]==='captain_heartless'?'⚔️ BOSS 戰':'⚔️ 進入戰鬥';
-    battleSpan.addEventListener('click',function(){
+    if(typeof cityOpen==='function' && !cityOpen(ct)){
+      var lockSpan=document.createElement('span');
+      lockSpan.className='map-info-tag';
+      lockSpan.style.borderColor='#555';
+      lockSpan.style.color='#888';
+      lockSpan.textContent='🔒 尚未開放';
+      tagsEl.appendChild(lockSpan);
+    } else {
+      var battleSpan=document.createElement('span');
+      battleSpan.className='map-info-tag chapter';
+      battleSpan.style.cursor='pointer';
+      battleSpan.style.borderColor='#c83838';
+      battleSpan.style.color='#f08080';
+      battleSpan.textContent=enc.enemies[0]==='captain_heartless'?'⚔️ BOSS 戰':'⚔️ 進入戰鬥';
+      battleSpan.addEventListener('click',function(){
+        if(name==='夏洛伊'){
+          openTown('shalloi');
+        } else if(name==='王都平原'){
+          if(typeof STORY!=='undefined' && !STORY.metMoonEye && typeof playMoonEyeEncounter==='function'){ playMoonEyeEncounter(); }
+          else { mapEncounter(name); }
+        } else {
+          mapEncounter(name);
+        }
+      });
       if(name==='夏洛伊'){
-        openTown('shalloi');
-      } else {
-        mapEncounter(name);
+        battleSpan.textContent='🏰 進入城鎮';
+        battleSpan.style.borderColor='var(--gold)';
+        battleSpan.style.color='var(--gold)';
       }
-    });
-    // 夏洛伊顯示不同文字
-    if(name==='夏洛伊'){
-      battleSpan.textContent='🏰 進入城鎮';
-      battleSpan.style.borderColor='var(--gold)';
-      battleSpan.style.color='var(--gold)';
+      if(name==='王都平原'){
+        battleSpan.textContent=(typeof STORY!=='undefined' && !STORY.metMoonEye)?'🌾 前往平原':'⚔️ 平原練功';
+        battleSpan.style.borderColor='#7bbf7b';
+        battleSpan.style.color='#9fe09f';
+      }
+      tagsEl.appendChild(battleSpan);
     }
-    tagsEl.appendChild(battleSpan);
   }
 }
 
@@ -2778,9 +2875,42 @@ render();
 // ════════════════════════════════════════
 // 角色資料（從主介面複製核心屬性）
 // ════════════════════════════════════════
+// ════════════════════════════════════════
+// SKILL_DB — 所有主動技能的戰鬥數值（id 對應技能樹 activePool）
+// ════════════════════════════════════════
+var SKILL_DB = {
+  // 暗影
+  sk_a1:{ico:'⚡',name:'影步',mpCost:12,type:'single',power:1.4,attr:'dark',desc:'單體暗屬斬擊'},
+  sk_a2:{ico:'🗡️',name:'暗刃',mpCost:18,type:'single',power:1.8,attr:'dark',desc:'單體斬擊，暗屬傷害提升'},
+  sk_a3:{ico:'♟',name:'落子無悔',mpCost:18,type:'single',power:1.8,pierceDef:0.3,attr:'dark',desc:'無視防禦30%'},
+  sk_a4:{ico:'🌑',name:'月蝕刃',mpCost:28,type:'single',power:2.3,attr:'dark',desc:'蓄力大斬，暗+物理雙屬'},
+  sk_a5:{ico:'⊞',name:'縱橫之局',mpCost:0,rbCost:300,type:'all',power:1.2,attr:'dark',desc:'消耗300 RB 全體攻擊'},
+  sk_a6:{ico:'🌑',name:'復國之誓',mpCost:0,isLimit:true,type:'all',power:3.5,attr:'dark',desc:'LIMIT 全體暗屬爆發'},
+  // 莉卡莉絲
+  lk_a1:{ico:'💊',name:'緋紅治癒',mpCost:35,type:'heal_single',power:1.5,desc:'回復單體HP，附帶解毒'},
+  lk_a2:{ico:'🩸',name:'妖刀赤鬼斬',mpCost:0,rbCost:200,type:'single',power:1.6,drain:true,desc:'斬擊後吸收敵方MP'},
+  lk_a3:{ico:'🔥',name:'火炎術',mpCost:22,type:'single',power:1.7,attr:'fire',dot:'burn',desc:'單體火焰魔法，燃燒3回合'},
+  lk_a4:{ico:'🌊',name:'火海',mpCost:40,type:'all',power:1.3,attr:'fire',dot:'burn',desc:'範圍火焰，全體敵人燃燒'},
+  lk_a5:{ico:'💉',name:'強化治癒',mpCost:50,type:'heal_single',power:2.2,desc:'回復量大幅提升'},
+  lk_a6:{ico:'🐉',name:'赤鬼覺醒・千劍',mpCost:0,isLimit:true,type:'all',power:2.8,attr:'fire',desc:'LIMIT 全體火焰'},
+  // 菲拉
+  fi_a1:{ico:'🔪',name:'月影連斬',mpCost:22,type:'single',power:2.2,hits:2,desc:'兩連擊'},
+  fi_a2:{ico:'⚡',name:'雷步突刺',mpCost:0,rbCost:200,type:'single',power:1.9,pierceDef:0.5,desc:'穿透防禦50%'},
+  fi_a3:{ico:'🌙',name:'月影亂舞',mpCost:35,type:'all',power:1.3,hits:2,desc:'全體二連擊'},
+  fi_a4:{ico:'⚡',name:'雷電突刺',mpCost:28,type:'single',power:1.9,pierceDef:0.4,attr:'thunder',desc:'穿透防禦，雷屬性強襲'},
+  fi_a5:{ico:'🌙',name:'月之眼・暗殺令',mpCost:0,isLimit:true,type:'all',power:0,halfHp:true,desc:'LIMIT 全體HP減半'},
+  // 艾爾薇斯
+  el_a1:{ico:'🌙',name:'暗月斬',mpCost:30,type:'single',power:2.0,attr:'moon',desc:'月光穿透攻擊'},
+  el_a2:{ico:'⚔️',name:'雙刃颶風',mpCost:0,rbCost:300,type:'all',power:1.5,desc:'全體旋風'},
+  el_a3:{ico:'🛡️',name:'月盾',mpCost:20,type:'buff_self',buffType:'def',buffVal:1.5,buffDur:3,desc:'自身防禦大幅提升3回合'},
+  el_a4:{ico:'❄️',name:'月冰刃',mpCost:38,type:'single',power:2.1,attr:'moon',desc:'冰+月屬性複合攻擊'},
+  el_a5:{ico:'🌕',name:'月之力覺醒',mpCost:0,rbCost:400,type:'buff_all',buffAtk:1.3,buffDur:3,desc:'全隊攻擊+30% 3回合'},
+  el_a6:{ico:'🐺',name:'月之眼覺醒',mpCost:0,isLimit:true,type:'all',power:3.0,attr:'moon',desc:'LIMIT 召喚月狼'},
+};
+
 const PARTY_DEF = [
   {key:'anei',nameEn:'Anei',nameZh:'暗影',acc:'#9b7fd4',
-   baseHp:1600,baseMp:700,baseRb:500,initRb:0,
+   baseHp:1000,baseMp:200,baseRb:500,initRb:0,
    str:62,mag:78,def:44,spd:95,lv:10,
    skills:[
      {id:'sk_a1',ico:'⚡',name:'影步',mpCost:12,type:'single',power:1.4,attr:'dark',desc:'單體暗屬斬擊'},
@@ -2789,7 +2919,7 @@ const PARTY_DEF = [
      {id:'sk_a6',ico:'🌑',name:'復國之誓',mpCost:0,isLimit:true,type:'all',power:3.5,attr:'dark',desc:'LIMIT 全體暗屬爆發'},
    ]},
   {key:'lika',nameEn:'Licarise',nameZh:'莉卡莉絲',acc:'#d46050',
-   baseHp:1400,baseMp:900,baseRb:500,initRb:0,
+   baseHp:1000,baseMp:200,baseRb:500,initRb:0,
    str:45,mag:94,def:38,spd:72,lv:14,
    skills:[
      {id:'lk_a1',ico:'💊',name:'緋紅治癒',mpCost:35,type:'heal_single',power:1.5,desc:'回復單體HP'},
@@ -2798,7 +2928,7 @@ const PARTY_DEF = [
      {id:'lk_a6',ico:'🐉',name:'赤鬼覺醒',mpCost:0,isLimit:true,type:'all',power:2.8,attr:'fire',desc:'LIMIT 全體火焰'},
    ]},
   {key:'fira',nameEn:'Fira',nameZh:'菲拉',acc:'#d47040',
-   baseHp:1800,baseMp:500,baseRb:500,initRb:0,
+   baseHp:1000,baseMp:200,baseRb:500,initRb:0,
    str:88,mag:42,def:62,spd:98,lv:10,
    skills:[
      {id:'fi_a1',ico:'🔪',name:'月影連斬',mpCost:22,type:'single',power:2.2,hits:2,desc:'兩連擊'},
@@ -2807,7 +2937,7 @@ const PARTY_DEF = [
      {id:'fi_a5',ico:'🌙',name:'暗殺令',mpCost:0,isLimit:true,type:'all',power:0,halfHp:true,desc:'LIMIT 全體HP減半'},
    ]},
   {key:'elweis',nameEn:'Elweis',nameZh:'艾爾薇斯',acc:'#7090c8',
-   baseHp:2500,baseMp:800,baseRb:500,initRb:0,
+   baseHp:1000,baseMp:200,baseRb:500,initRb:0,
    str:95,mag:68,def:88,spd:70,lv:20,
    skills:[
      {id:'el_a1',ico:'🌙',name:'暗月斬',mpCost:30,type:'single',power:2.0,attr:'moon',desc:'月光穿透攻擊'},
@@ -2915,23 +3045,35 @@ var BATTLE_ON_WIN = null;  // 戰後勝利回呼
 
 function initBattle(enemyKeys, locationName){
   // 初始化隊伍
-  var _pdefs = BATTLE_PARTY ? PARTY_DEF.filter(function(p){ return BATTLE_PARTY.indexOf(p.key) >= 0; }) : PARTY_DEF;
+  var _keys;
+  if(BATTLE_PARTY){ _keys = BATTLE_PARTY; }
+  else if(typeof CHARS !== 'undefined'){ _keys = CHARS.filter(function(c){ return c.unlocked !== false; }).map(function(c){ return c.key; }); }
+  else { _keys = PARTY_DEF.map(function(p){ return p.key; }); }
+  var _pdefs = PARTY_DEF.filter(function(p){ return _keys.indexOf(p.key) >= 0; });
   const party = _pdefs.map(p=>{
     var st = getPartyState(p.key);
     var eqb = (typeof getEquipBonus === 'function') ? getEquipBonus(p.key) : {str:0,mag:0,def:0,spd:0,hp:0,mp:0};
     var mHp = maxHpFor(p, st) + (eqb.hp||0);
     var mMp = maxMpFor(p, st) + (eqb.mp||0);
+    // ── 技能：依技能樹「裝備中」的主動技能（equippedActive）對應 SKILL_DB；找不到時回退舊版 p.skills ──
+    var _ch = (typeof findCharByKey==='function') ? findCharByKey(p.key) : null;
+    var _eqActive = (_ch && _ch.equippedActive) ? _ch.equippedActive.filter(Boolean) : null;
+    var _skills = (_eqActive && _eqActive.length) ? _eqActive.map(function(sid){ var sk=(typeof SKILL_DB!=='undefined')?SKILL_DB[sid]:null; return sk?Object.assign({id:sid},sk):null; }).filter(Boolean) : null;
+    if(!_skills || !_skills.length) _skills = p.skills;
+    // 疾風步（fi_p4）：行動順序+1 → 戰鬥內 SPD +15
+    var spdBonus = (typeof hasPassive==='function' && hasPassive(p.key,'fi_p4')) ? 15 : 0;
     return {
       ...p,
       str: (p.str||0) + (eqb.str||0),
       mag: (p.mag||0) + (eqb.mag||0),
       def: (p.def||0) + (eqb.def||0),
-      spd: (p.spd||0) + (eqb.spd||0),
+      spd: (p.spd||0) + (eqb.spd||0) + spdBonus,
       sub: (typeof getEquipSubs === 'function') ? getEquipSubs(p.key) : null,
+      skills: _skills,
       lv: st.lv,
       hp: Math.min(st.hp, mHp),
       maxHp: mHp,
-      mp: Math.min(st.mp, mMp),
+      mp: Math.min(mMp, st.mp + (eqb.mp||0)),
       maxMp: mMp,
       rb: st.rb,           // 保留上場戰鬥的 RB
       maxRb: p.baseRb,     // 500
@@ -2956,6 +3098,12 @@ function initBattle(enemyKeys, locationName){
     };
   });
 
+  // 先手（tr_init）：戰鬥開始ATB即滿
+  party.forEach(function(p){
+    if(typeof getTraitLevel==='function' && getTraitLevel(p.key,'tr_init')>0){
+      p.atb = p.maxAtb;
+    }
+  });
   BS = {
     party,
     enemies,
@@ -3002,7 +3150,10 @@ function atbTick(){
 
   // 填充 ATB
   all.forEach(({unit})=>{
-    const spd = unit.spd || unit.atk/2 + 30;
+    const spdBuf = (unit.buffs ? unit.buffs.filter(b=>b.type==='spd').reduce((a,b)=>a+b.val,0) : 0);
+    const quickLv = (typeof getTraitLevel==='function')? getTraitLevel(unit.key,'tr_quick'):0;
+    const quickSpd = (quickLv>0 && unit.maxHp && unit.hp/unit.maxHp<0.4) ? (unit.spd*[0,0.05,0.10,0.15][quickLv]) : 0;
+    const spd = (unit.spd || unit.atk/2 + 30) + spdBuf + quickSpd;
     unit.atb = Math.min(unit.maxAtb, unit.atb + spd * 0.08 * BS.globalAtbMult);
   });
 
@@ -3109,6 +3260,11 @@ function executeSkill(actor, skill, target){
     addLog('✨ '+actorName+' 使出【'+skill.name+'】— 全隊攻擊力提升 '+skill.buffDur+' 回合！', 'important');
     floatText('BUFF!', 'center', '#e8cc80');
   }
+  else if(skill.type==='buff_self'){
+    actor.buffs.push({type:skill.buffType||'def', val:skill.buffVal||1.5, turns:skill.buffDur||3});
+    addLog('🛡️ '+actorName+' 使出【'+skill.name+'】— 防禦力大幅提升 '+(skill.buffDur||3)+' 回合！', 'important');
+    floatText('防禦UP', 'party_'+actor.key, '#80a0f0');
+  }
   else if(skill.type==='heal_single'){
     const healAmt = Math.round(actor.mag * skill.power * 3);
     target.hp = Math.min(target.maxHp, target.hp + healAmt);
@@ -3133,7 +3289,11 @@ function executeSkill(actor, skill, target){
 
 function applyDamage(actor, targets, skill){
   const actorName = actor.nameZh || actor.name;
-  const hits = skill.hits || 1;
+  let hits = skill.hits || 1;
+  // 雙持適性 / 雙劍精通：單體技能追加一擊
+  if(skill.type==='single' && typeof hasPassive==='function' && (hasPassive(actor.key,'sk_p2')||hasPassive(actor.key,'el_p3'))){
+    hits += 1;
+  }
 
   targets.forEach((target, ti)=>{
     if(!target.alive) return;
@@ -3152,6 +3312,19 @@ function applyDamage(actor, targets, skill){
       }
       let basePow = atkStat * skill.power * DMG_K;
 
+      // 鬥爭心（tr_fight）：HP 40%以下攻擊力提升
+      if(typeof getTraitLevel==='function'){
+        var fightLv=getTraitLevel(actor.key,'tr_fight');
+        if(fightLv>0 && actor.maxHp && actor.hp/actor.maxHp<0.4){
+          basePow*=(1+[0,0.05,0.10,0.15][fightLv]);
+        }
+      }
+      // 屬性技能傷害加成（被動）
+      if(skill.attr && typeof hasPassive==='function'){
+        if(skill.attr==='fire' && hasPassive(actor.key,'lk_p2')) basePow *= 1.18;
+        if(skill.attr==='moon' && hasPassive(actor.key,'el_p5')) basePow *= 1.15;
+      }
+
       // 裝備/buff 加成（簡化）
       const atkBuff = (actor.buffs ? actor.buffs.filter(b=>b.type==='atk').reduce((a,b)=>a*b.val,1) : 1) || 1;
       basePow *= atkBuff;
@@ -3164,7 +3337,11 @@ function applyDamage(actor, targets, skill){
 
       // 暴擊（10% + spd 加成 + 裝備爆擊率）
       const subA = actor.sub || {};
-      const critRate = 0.1 + (actor.spd||0)/1000 + (subA.crit||0);
+      let critRate = 0.1 + (actor.spd||0)/1000 + (subA.crit||0);
+      if(typeof hasPassive==='function'){
+        if(hasPassive(actor.key,'sk_p1')) critRate += 0.10; // 暗刃本能
+        if(hasPassive(actor.key,'lk_p4')) critRate += 0.10; // 幸運體質
+      }
       const isCrit = Math.random() < critRate;
       if(isCrit) dmg = Math.round(dmg * (1.6 + (subA.critdmg||0)));
 
@@ -3172,6 +3349,16 @@ function applyDamage(actor, targets, skill){
       if(skill.halfHp) dmg = Math.round(target.hp * 0.5);
 
       target.hp = Math.max(0, target.hp - dmg);
+
+      // 赤焰之觸（lk_p1）：普攻附加燃燒，3%HP/回合，最多5層
+      if(skill.isBasic && typeof hasPassive==='function' && hasPassive(actor.key,'lk_p1')){
+        var burnCount = target.ailments ? target.ailments.filter(function(a){return a.type==='burn';}).length : 0;
+        if(burnCount < 5){
+          if(!target.ailments) target.ailments=[];
+          target.ailments.push({type:'burn',turns:2,pctHp:0.03});
+          addLog('🔥 '+actorName+' 赤焰之觸！'+(target.nameZh||target.name)+' 著火！（第'+(burnCount+1)+'層）','dmg');
+        }
+      }
 
       // ── 裝備副屬效果（玩家攻擊時）──
       if(actor.sub){
@@ -3333,9 +3520,25 @@ function applyEnemyDamage(enemy, targets, skill){
     if(!target.alive) return;
     const hits = skill.hits || 1;
     for(let h=0;h<hits;h++){
+      // 迴避（被動：影避 sk_p4 +12%、月之眼員 fi_p3 +8%）
+      let dodgeChance = 0;
+      if(typeof hasPassive==='function'){
+        if(hasPassive(target.key,'sk_p4')) dodgeChance += 0.12;
+        if(hasPassive(target.key,'fi_p3')) dodgeChance += 0.08;
+      }
+      if(dodgeChance > 0 && Math.random() < dodgeChance){
+        addLog('💨 '+(target.nameZh||target.name)+' 閃避了攻擊！', 'system');
+        continue;
+      }
+
       let dmg = Math.round(enemy.atk * skill.power * (0.85 + Math.random()*0.3));
       const defMult = 1 - target.def/300;
-      dmg = Math.max(1, Math.round(dmg * defMult));
+      // 月盾等防禦buff（buffs 中 type==='def' 的乘數，越大減傷越多）
+      const defBuff = (target.buffs ? target.buffs.filter(b=>b.type==='def').reduce((a,b)=>a*b.val,1) : 1) || 1;
+      // 鐵壁（tr_iron）：HP 40%以下防禦力提升
+      var ironLv=(typeof getTraitLevel==='function')?getTraitLevel(target.key,'tr_iron'):0;
+      var ironMult=(ironLv>0&&target.maxHp&&target.hp/target.maxHp<0.4)?(1-[0,0.05,0.10,0.15][ironLv]):1;
+      dmg = Math.max(1, Math.round(dmg * defMult / defBuff * ironMult));
       const isCrit = Math.random() < 0.08;
       if(isCrit) dmg = Math.round(dmg*1.5);
 
@@ -3344,8 +3547,30 @@ function applyEnemyDamage(enemy, targets, skill){
         dmg = Math.max(1, Math.round(dmg * 0.5));
       }
 
+      // 鐵壁守護（el_p4）：20% 機率格擋，再減傷50%
+      if(typeof hasPassive==='function' && hasPassive(target.key,'el_p4') && Math.random()<0.2){
+        dmg = Math.max(1, Math.round(dmg * 0.5));
+        addLog('🛡️ '+(target.nameZh||target.name)+' 格擋了攻擊！', 'system');
+      }
+
       target.hp = Math.max(0, target.hp - dmg);
       target.rb = Math.min(target.maxRb, target.rb + 35);
+
+      // 影速反應（sk_p2）：被攻擊後SPD+30，持續3回合
+      if(target.hp > 0 && typeof hasPassive==='function' && hasPassive(target.key,'sk_p2')){
+        target.buffs.push({type:'spd',val:30,turns:3});
+        addLog('💨 '+(target.nameZh||target.name)+' 影速反應！速度提升（3回合）','system');
+      }
+
+      // 焰盾反擊（lk_p2）：被攻擊時50%機率對攻擊者附加燃燒（最多5層）
+      if(target.hp > 0 && typeof hasPassive==='function' && hasPassive(target.key,'lk_p2') && Math.random()<0.5){
+        var eBurns=enemy.ailments?enemy.ailments.filter(function(a){return a.type==='burn';}).length:0;
+        if(eBurns<5){
+          if(!enemy.ailments) enemy.ailments=[];
+          enemy.ailments.push({type:'burn',turns:2,pctHp:0.03});
+          addLog('🔥 '+(target.nameZh||target.name)+' 焰盾反擊！'+(enemy.name||'敵人')+' 著火！（第'+(eBurns+1)+'層）','dmg');
+        }
+      }
 
       // 反擊：被擊中時機率反擊攻擊者
       if(target.hp > 0 && target.sub && target.sub.counter && Math.random() < target.sub.counter){
@@ -3390,6 +3615,15 @@ function processTurnEffects(unit){
   });
   // buff 倒計時
   if(unit.buffs) unit.buffs = unit.buffs.filter(b=>{ b.turns--; return b.turns>0; });
+
+  // 妙手回春（lk_p3）：每回合自動回復5% HP
+  if(unit.alive && typeof hasPassive==='function' && hasPassive(unit.key,'lk_p3')){
+    var regen = Math.max(1, Math.round((unit.maxHp||unit.hp) * 0.05));
+    if(unit.hp < unit.maxHp){
+      unit.hp = Math.min(unit.maxHp, unit.hp + regen);
+      addLog('💚 '+(unit.nameZh||unit.name)+'（妙手回春）回復 '+regen+' HP', 'heal');
+    }
+  }
 }
 
 // ════════════════════════════════════════
@@ -3482,7 +3716,7 @@ function showResult(type){
   const div = document.createElement('div');
   div.className = 'result-overlay';
   const expTotal = type==='win' ? BS.enemies.reduce((a,e)=>a+(e.exp||0),0) : 0;
-  const goldTotal = type==='win' ? BS.enemies.reduce((a,e)=>a+(e.gold||0),0) : 0;
+  var goldTotal = type==='win' ? BS.enemies.reduce((a,e)=>a+(e.gold||0),0) : 0;
 
   // 將戰鬥後 HP/MP/RB 存回持久狀態
   BS.party.forEach(function(p){
@@ -3493,20 +3727,26 @@ function showResult(type){
     st.rb = p.rb; // RB 保留到下場（存著打 boss）
   });
 
-  // 升級處理
+  // 升級處理 + SP 經濟
   var levelUpLines = [];
   if(type==='win'){
+    // 傭兵經驗（fi_p1）：戰後 Gil +20%
+    if(typeof hasPassive==='function' && BS.party.some(function(p){ return p.alive && hasPassive(p.key,'fi_p1'); })){
+      goldTotal = Math.round(goldTotal * 1.2);
+    }
+    // 擊殺 SP：每隻敵人 +5，Boss +20（取代而非疊加）
+    var killSp = BS.enemies.reduce(function(a,e){ return a + (e.isBoss?20:5); }, 0);
     BS.party.forEach(function(p){
       if(!p.alive) return; // 倒下的不獲得經驗
       var st = getPartyState(p.key);
       if(!st) return;
       st.exp += expTotal;
-      var leveled = false;
+      var leveled = false, lvGain = 0;
       while(st.exp >= st.expNext){
         st.exp -= st.expNext;
         st.lv += 1;
         st.expNext = expNeeded(st.lv);
-        leveled = true;
+        leveled = true; lvGain++;
       }
       if(leveled){
         // 升級回復滿 HP/MP（RB 保留）
@@ -3515,6 +3755,9 @@ function showResult(type){
         st.mp = maxMpFor(def, st);
         levelUpLines.push(p.nameZh + ' → Lv.' + st.lv);
       }
+      // SP：擊殺 + 升級（每級+5）
+      var ch = (typeof findCharByKey==='function') ? findCharByKey(p.key) : null;
+      if(ch) ch.sp = (ch.sp||0) + killSp + lvGain*5;
     });
   }
 
@@ -4093,6 +4336,7 @@ function closeBattleOverlay(){
 // 城市戰鬥觸發
 // ════════════════════════════════════════
 var CITY_ENCOUNTERS = {
+  '王都平原': {enemies:['thug','thug'], label:'王都平原'},
   '夏洛伊':   {enemies:['shadow_soldier','shadow_soldier'], label:'夏洛伊郊外'},
   '赤盾城':   {enemies:['shadow_soldier','dark_mage'],      label:'赤盾城門口'},
   '灰牙鎮':   {enemies:['shadow_soldier','shadow_soldier'], label:'灰牙鎮街道'},
@@ -4707,11 +4951,16 @@ function rollAndGrantGearDrops(){
   var got = [];
   if(typeof BS === 'undefined' || !BS || !BS.enemies) return got;
   var key = activeCharKey();
+  // 幸運體質（lk_p4）：獲得道具機率+15%
+  var itemRateMult = 1;
+  if(typeof hasPassive==='function' && BS.party && BS.party.some(function(p){ return p.alive && hasPassive(p.key,'lk_p4'); })){
+    itemRateMult = 1.15;
+  }
   BS.enemies.forEach(function(e){
     var ds = e.drops || [];
     ds.forEach(function(d){
       if(!d.gearTier) return;
-      if(Math.random() <= d.rate){
+      if(Math.random() <= d.rate * itemRateMult){
         var g = rollGearDrop(d.gearTier);
         if(g){ grantEquipToChar(key, g); got.push(g); }
       }
@@ -4814,10 +5063,22 @@ function buildSaveData(){
   if(typeof CHARS !== 'undefined'){
     for(var ci=0; ci<CHARS.length; ci++){
       var cc = CHARS[ci];
+      var traitUnlocked = {};
+      if(cc.traitPool){
+        for(var ti=0; ti<cc.traitPool.length; ti++){
+          var trc = cc.traitPool[ti];
+          traitUnlocked[trc.id] = {unlocked:!!trc.unlocked, level:trc.level||0};
+        }
+      }
       chars[cc.key] = {
         inventory: cc.inventory || [],
         equippedEquip: cc.equippedEquip || [],
-        unlocked: (cc.unlocked === false) ? false : true
+        unlocked: (cc.unlocked === false) ? false : true,
+        sp: cc.sp || 0,
+        equippedActive: cc.equippedActive || [],
+        equippedPassive: cc.equippedPassive || [],
+        equippedTraits: cc.equippedTraits || [],
+        traitUnlocked: traitUnlocked
       };
     }
   }
@@ -4853,8 +5114,7 @@ function applySaveData(data){
     if(data.bag && data.bag.length !== undefined) PLAYER.bag = data.bag;
   }
   if(data.story && typeof STORY !== 'undefined'){
-    if(typeof data.story.firaMet === 'boolean') STORY.firaMet = data.story.firaMet;
-    if(typeof data.story.shalloiTestDone === 'boolean') STORY.shalloiTestDone = data.story.shalloiTestDone;
+    for(var sk in data.story){ if(data.story.hasOwnProperty(sk) && STORY.hasOwnProperty(sk)){ STORY[sk] = data.story[sk]; } }
   }
   if(data.chars && typeof findCharByKey === 'function'){
     for(var ckey in data.chars){
@@ -4865,6 +5125,23 @@ function applySaveData(data){
       if(sv2.inventory) cc2.inventory = sv2.inventory;
       if(sv2.equippedEquip) cc2.equippedEquip = sv2.equippedEquip;
       if(typeof sv2.unlocked === 'boolean') cc2.unlocked = sv2.unlocked;
+      if(typeof sv2.sp === 'number') cc2.sp = sv2.sp;
+      if(sv2.equippedActive) cc2.equippedActive = sv2.equippedActive;
+      if(sv2.equippedPassive) cc2.equippedPassive = sv2.equippedPassive;
+      if(sv2.equippedTraits) cc2.equippedTraits = sv2.equippedTraits;
+      if(sv2.traitUnlocked && cc2.traitPool){
+        for(var ti2=0; ti2<cc2.traitPool.length; ti2++){
+          var trc2 = cc2.traitPool[ti2];
+          if(Object.prototype.hasOwnProperty.call(sv2.traitUnlocked, trc2.id)){
+            var sv_tr=sv2.traitUnlocked[trc2.id];
+            if(typeof sv_tr==='object'&&sv_tr!==null){
+              trc2.unlocked=!!sv_tr.unlocked; trc2.level=sv_tr.level||0;
+            } else {
+              trc2.unlocked=!!sv_tr; trc2.level=sv_tr?1:0;
+            }
+          }
+        }
+      }
     }
   }
   if(typeof data.gearUid === 'number' && typeof GEAR_UID !== 'undefined' && data.gearUid > GEAR_UID){ GEAR_UID = data.gearUid; }
@@ -6213,7 +6490,7 @@ function exitTown(){
 // ════════════════════════════════════════
 // 序章劇情：後巷・菲拉相遇（戰後接續）
 // ════════════════════════════════════════
-var STORY = { firaMet:false, shalloiTestDone:false };
+var STORY = { firaMet:false, shalloiTestDone:false, likaJoined:false, metMoonEye:false, chapter:1 };
 
 function firaRescue(){
   openDialog([
@@ -6247,21 +6524,58 @@ function firaFarewell(){
   });
 }
 
+function joinParty(key){
+  var c = (typeof findCharByKey==='function') ? findCharByKey(key) : null;
+  if(c) c.unlocked = true;
+  if(typeof renderTabs==='function'){ try { renderTabs(); } catch(e){} }
+}
+
 function openLikaClue(){
+  if(typeof STORY!=='undefined' && !STORY.likaJoined){
+    openDialog([
+      {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'回來了。後巷那幾個，解決了？……看你身上沒幾道傷，是解決了。'},
+      {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'行。我認你是傑特的人。聽好了——'},
+      {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'黑月之變那一夜，動手的不只是黑暗組織。城裡有個貴族家族，提前打開了城門。'},
+      {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'那家族的姓，我還在查。但線索，指向東邊的赤盾城。'},
+      {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'……這趟我跟你一起走。赤盾城那筆舊帳，我也得親自去討。'},
+      {speaker:'暗影',face:'anei',acc:'#9b7fd4', text:'……隨你。別拖後腿。'},
+      {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'這話原封不動還你。去赤盾城之前，先把自己練利點——王都城外的平原，夠你磨刀了。'},
+    ], function(){
+      if(typeof joinParty==='function') joinParty('lika');
+      if(typeof STORY!=='undefined'){ STORY.likaJoined = true; }
+      if(typeof saveGame==='function') saveGame();
+      if(typeof showToast==='function') showToast('莉卡莉絲 加入隊伍！前往「王都平原」練功', 'success');
+    });
+    return;
+  }
   openDialog([
-    {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'回來了。後巷那幾個，解決了？……看你身上沒幾道傷，是解決了。'},
-    {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'行。我認你是傑特的人。聽好了——'},
-    {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'黑月之變那一夜，動手的不只是黑暗組織。城裡有個貴族家族，提前打開了城門。'},
-    {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'那家族的姓，我還在查。但線索，指向東邊的赤盾城。',
+    {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'去王都平原練練手，或直接動身赤盾城——你決定。',
      choices:[
-       {text:'多謝',next:'lika_clue_end'},
+       {text:'知道了',next:'lika_done'},
        {text:'先喝一杯',next:'open_inn_shop'},
      ]},
   ], null, {
-    lika_clue_end:[
-      {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'去赤盾城之前，先把自己練利點。王都城外的野地，夠你磨刀了。'},
+    lika_done:[
+      {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'路上小心。'},
     ],
     open_inn_shop_end: function(){ openShop('inn'); }
+  });
+}
+
+function playMoonEyeEncounter(){
+  openDialog([
+    {speaker:'菲拉',face:'fira',acc:'#d47040', text:'欸——是你！後巷那個！世界真小啊。'},
+    {speaker:'暗影',face:'anei',acc:'#9b7fd4', text:'……地痞那次的。你怎麼在這。'},
+    {speaker:'艾爾薇斯',face:'elweis',acc:'#7090c8', text:'菲拉，認識？'},
+    {speaker:'菲拉',face:'fira',acc:'#d47040', text:'救命恩人。隊長，這位很能打。'},
+    {speaker:'艾爾薇斯',face:'elweis',acc:'#7090c8', text:'……月之眼的艾爾薇斯。我們在找一個人。順路的話，路上彼此照應。'},
+    {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'（低聲）月之眼……隊長級的。這人有點意思。'},
+    {speaker:'艾爾薇斯',face:'elweis',acc:'#7090c8', text:'我們得往北。你們往東——赤盾城那邊，最近不太平。多加小心。'},
+    {speaker:'菲拉',face:'fira',acc:'#d47040', text:'下次見啦！欠的人情，記著的。'},
+  ], function(){
+    if(typeof STORY!=='undefined'){ STORY.metMoonEye = true; STORY.chapter = 2; }
+    if(typeof saveGame==='function') saveGame();
+    if(typeof showToast==='function') showToast('第二章開啟：赤盾城 已可前往', 'success');
   });
 }
 
