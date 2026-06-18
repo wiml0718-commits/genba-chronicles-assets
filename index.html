@@ -2504,9 +2504,11 @@ const CITIES=[
   {name:'灰牙鎮',faction:'盜賊',desc:'邊境混亂小鎮。地下牢房曾囚禁月之眼前任首領月華，由傑特秘密救出。',ch:'ch3'},
   {name:'夏洛伊',faction:'前大臣佔領',desc:'昔日夏洛伊王國首都，現由前王國大臣掌控。地底藏有魔王復活祭壇血月壇。',ch:'ch1'},
   {name:'王都平原',faction:'練功場',desc:'夏洛伊城外的平原，野地適合磨練身手。莉卡莉絲入隊後可前往。',ch:'ch1'},
-  {name:'艾爾登',faction:'商人聯盟',desc:'幻刃洲最大自由貿易城市，情報與商業交匯之地。莉卡莉絲的情報網延伸至此。',ch:null},
+  {name:'刃脊山脈',faction:'練功場',desc:'橫貫大陸中央的山脈，晶峰院與霧冕城之間的險惡地帶，第三章後可前往磨練身手。',ch:'ch3'},
+  {name:'灰燼荒野',faction:'練功場',desc:'暗淵城外的焦土荒地，魔氣瀰漫，第四章後可前往磨練身手。',ch:'ch4'},
+  {name:'艾爾登',faction:'商人聯盟',desc:'幻刃洲最大自由貿易城市，情報與商業交匯之地。莉卡莉絲的情報網延伸至此。',ch:'ch4'},
   {name:'赤盾城',faction:'貴族聯盟',desc:'東部貴族聯盟主城，莉卡莉絲前夫家族的封地。第二章決戰地，無心之魔將的據點。',ch:'ch2'},
-  {name:'碧海港',faction:'商人聯盟',desc:'東南海港，商人聯盟的重要據點，海路貿易中心。',ch:null},
+  {name:'碧海港',faction:'商人聯盟',desc:'東南海港，商人聯盟的重要據點，海路貿易中心。',ch:'ch4'},
 ];
 let _mapChapter=0,_mapUnlocked=7;
 function renderMap(c){
@@ -2594,6 +2596,18 @@ function mapSelectCity(name){
           openTown('shalloi');
         } else if(name==='赤盾城'){
           openRedshieldTown();
+        } else if(name==='晶峰院'){
+          openJingfengTown();
+        } else if(name==='霧冕城'){
+          openWumianTown();
+        } else if(name==='灰牙鎮'){
+          openGreyfangTown();
+        } else if(name==='暗淵城'){
+          openAbyssTown();
+        } else if(name==='艾爾登'){
+          openEldonTown();
+        } else if(name==='碧海港'){
+          openBihaiTown();
         } else if(name==='王都平原'){
           if(typeof STORY!=='undefined' && !STORY.metMoonEye && typeof playMoonEyeEncounter==='function'){ playMoonEyeEncounter(); }
           else { mapEncounter(name); }
@@ -2607,6 +2621,11 @@ function mapSelectCity(name){
         battleSpan.style.color='var(--gold)';
       }
       if(name==='赤盾城'){
+        battleSpan.textContent='🏰 進入城鎮';
+        battleSpan.style.borderColor='var(--gold)';
+        battleSpan.style.color='var(--gold)';
+      }
+      if(['晶峰院','霧冕城','灰牙鎮','暗淵城','艾爾登','碧海港'].indexOf(name)>=0){
         battleSpan.textContent='🏰 進入城鎮';
         battleSpan.style.borderColor='var(--gold)';
         battleSpan.style.color='var(--gold)';
@@ -3284,19 +3303,68 @@ const ENEMY_DEFS = {
     drops:[{id:'potion_mp_s',rate:0.5,qty:1},{id:'dark_shard',rate:0.4,qty:1},{id:'potion_mp_m',rate:0.1,qty:1}],
   },
   captain_heartless:{
-    name:'無心之魔將',ico:'👹',
-    hp:3200,maxHp:3200,def:65,mag_def:50,spd:55,atk:145,
+    name:'攻心之魔將・二把手',ico:'👹',
+    hp:11500,maxHp:11500,def:92,mag_def:70,spd:72,atk:188,
     isBoss:true,
-    phase2Hp:1600, // 進入第二階段
+    phase2Hp:5750, // 進入第二階段
+    bossLoot:{blue:'heartless_blade_blue',red:'heartless_crown_red'},
     skills:[
       {name:'魔將斬',type:'single',power:1.8,prob:0.35},
       {name:'黑月壓制',type:'all',power:1.2,prob:0.25},
       {name:'吸命之觸',type:'single',power:1.5,drain:true,prob:0.25},
-      {name:'黑暗爆炎',type:'all',power:2.2,prob:0.0,phase2Only:true},
-      {name:'絕望之刃',type:'single',power:3.0,prob:0.15},
+      {name:'黑暗爆炎',type:'all',power:2.6,prob:0.0,phase2Only:true,phase2Prob:0.5},
+      {name:'絕望之刃',type:'single',power:3.2,prob:0.15},
     ],
-    exp:800,gold:300,
-    drops:[{id:'potion_hp_m',rate:1.0,qty:2},{id:'dark_shard',rate:1.0,qty:3},{id:'silver_rod',rate:0.3,qty:1}],
+    exp:1800,gold:620,
+    drops:[{id:'potion_hp_l',rate:1.0,qty:2},{id:'dark_shard',rate:1.0,qty:3}],
+  },
+  crystal_guardian:{
+    name:'晶脈守衛獸・晶嵐',ico:'💎',
+    hp:6000,maxHp:6000,def:62,mag_def:40,spd:65,atk:135,
+    isBoss:true,
+    phase2Hp:3000,
+    bossLoot:{blue:'crystal_blade_blue',red:'crystal_claw_red'},
+    skills:[
+      {name:'晶角衝撞',type:'single',power:1.4,prob:0.4},
+      {name:'共鳴震波',type:'all',power:1.1,prob:0.3},
+      {name:'結晶反射',type:'single',power:1.0,prob:0.15},
+      {name:'超載爆裂',type:'all',power:2.0,prob:0.0,phase2Only:true,phase2Prob:0.5},
+      {name:'貫晶突刺',type:'single',power:2.2,prob:0.15},
+    ],
+    exp:650,gold:220,
+    drops:[{id:'potion_hp_m',rate:0.6,qty:2}],
+  },
+  cult_archon:{
+    name:'咒術之魔將・維倫',ico:'📖',
+    hp:9000,maxHp:9000,def:70,mag_def:80,spd:80,atk:160,
+    isBoss:true,
+    phase2Hp:4500,
+    bossLoot:{blue:'velen_staff_blue',red:'forbidden_grimoire_red'},
+    skills:[
+      {name:'咒紋束縛',type:'single',power:1.5,prob:0.35},
+      {name:'禁咒爆裂',type:'all',power:1.6,prob:0.25},
+      {name:'噬魂咒',type:'single',power:1.9,drain:true,prob:0.2},
+      {name:'萬咒齊發',type:'all',power:2.5,prob:0.0,phase2Only:true,phase2Prob:0.52},
+      {name:'終咒・斷罪',type:'single',power:3.0,prob:0.2},
+    ],
+    exp:1300,gold:450,
+    drops:[{id:'potion_hp_m',rate:0.7,qty:2},{id:'mage_scroll',rate:0.5,qty:2}],
+  },
+  bandit_king:{
+    name:'灰牙賊王・卓岡',ico:'🪦',
+    hp:6200,maxHp:6200,def:48,mag_def:30,spd:78,atk:130,
+    isBoss:true,
+    phase2Hp:3100,
+    bossLoot:{blue:'shadowfang_blue',red:'kingpact_red'},
+    skills:[
+      {name:'暗影連斬',type:'single',power:1.3,hits:2,prob:0.4},
+      {name:'毒刃突襲',type:'single',power:1.2,dot:'poison',prob:0.25},
+      {name:'狡詐躲避',type:'single',power:0.8,prob:0.15},
+      {name:'夜幕殺陣',type:'all',power:2.1,prob:0.0,phase2Only:true,phase2Prob:0.5},
+      {name:'背刺絕殺',type:'single',power:2.9,prob:0.2},
+    ],
+    exp:680,gold:240,
+    drops:[{id:'potion_hp_m',rate:0.6,qty:2}],
   },
   noble_heavy_guard:{
     name:'貴族重裝衛',ico:'🛡️',
@@ -3345,6 +3413,54 @@ const ENEMY_DEFS = {
     ],
     exp:1100,gold:380,
     drops:[{id:'potion_hp_m',rate:0.7,qty:2},{gearTier:'red',rate:1.0}],
+  },
+
+  // ── 刃脊山脈 練功場野怪(ch3後,小機率紅裝) ──
+  ridge_wolf:{
+    name:'山脊狼',ico:'🐺',
+    hp:2000,maxHp:2000,def:40,mag_def:24,spd:88,atk:100,
+    skills:[
+      {name:'撕咬突襲',type:'single',power:1.2,prob:0.5},
+      {name:'狼嚎',type:'single',power:0.8,prob:0.2},
+      {name:'連續撕咬',type:'single',power:1.4,hits:2,prob:0.3},
+    ],
+    exp:240,gold:130,
+    drops:[{id:'potion_hp_m',rate:0.4,qty:1},{gearTier:'blue',rate:0.2},{gearTier:'red',rate:0.06}],
+  },
+  rock_golem:{
+    name:'岩晶傀儡',ico:'🗿',
+    hp:2600,maxHp:2600,def:70,mag_def:50,spd:38,atk:108,
+    skills:[
+      {name:'重拳',type:'single',power:1.3,prob:0.55},
+      {name:'岩盤震擊',type:'all',power:1.0,prob:0.25},
+      {name:'硬化',type:'single',power:0.5,prob:0.2},
+    ],
+    exp:260,gold:140,
+    drops:[{id:'potion_hp_m',rate:0.4,qty:1},{gearTier:'blue',rate:0.2},{gearTier:'red',rate:0.06}],
+  },
+
+  // ── 灰燼荒野 練功場野怪(ch4後,小機率紅裝) ──
+  ash_fiend:{
+    name:'焰燼魔',ico:'🔥',
+    hp:3000,maxHp:3000,def:55,mag_def:60,spd:70,atk:135,
+    skills:[
+      {name:'灰燼爆',type:'single',power:1.5,prob:0.45},
+      {name:'燃燒波',type:'all',power:1.3,dot:'burn',prob:0.3},
+      {name:'熾焰護甲',type:'single',power:0.6,prob:0.25},
+    ],
+    exp:340,gold:180,
+    drops:[{id:'potion_hp_l',rate:0.35,qty:1},{gearTier:'blue',rate:0.22},{gearTier:'red',rate:0.08}],
+  },
+  ash_hound:{
+    name:'荒野魔犬',ico:'🐕‍🦺',
+    hp:2700,maxHp:2700,def:45,mag_def:40,spd:96,atk:128,
+    skills:[
+      {name:'魔氣撕咬',type:'single',power:1.3,hits:2,prob:0.5},
+      {name:'狂奔突進',type:'single',power:1.6,prob:0.3},
+      {name:'嗜血怒吼',type:'single',power:0.7,prob:0.2},
+    ],
+    exp:320,gold:170,
+    drops:[{id:'potion_hp_l',rate:0.35,qty:1},{gearTier:'blue',rate:0.22},{gearTier:'red',rate:0.08}],
   },
 };
 
@@ -4707,10 +4823,27 @@ function useItemOnTarget(target){
 // ════════════════════════════════════════
 // 主介面整合：開啟/關閉戰鬥
 // ════════════════════════════════════════
+var BOSS_BATTLE_BG = {
+  rain_boss: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0539.png',
+  bandit_king: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0543.png',
+};
+
 function openBattle(enemyKeys, locationName){
   var overlay = document.getElementById('battle-overlay');
   if(!overlay) return;
   overlay.style.display = 'flex';
+  // 依敵人套用戰鬥背景圖（找不到對應圖則用預設純色背景）
+  var bossBg = null;
+  (enemyKeys||[]).some(function(k){
+    if(BOSS_BATTLE_BG[k]){ bossBg = BOSS_BATTLE_BG[k]; return true; }
+    return false;
+  });
+  if(bossBg){
+    overlay.style.background =
+      'linear-gradient(rgba(7,9,15,0.55),rgba(7,9,15,0.78)), url(\''+bossBg+'\') center/cover no-repeat';
+  } else {
+    overlay.style.background = 'var(--bg)';
+  }
   // 記錄 town-overlay 是否開啟中（方便戰鬥結束後恢復）
   var townOv = document.getElementById('town-overlay');
   if(townOv && townOv.style.display !== 'none'){
@@ -4728,7 +4861,7 @@ function openBattle(enemyKeys, locationName){
 
 function closeBattleOverlay(){
   var overlay = document.getElementById('battle-overlay');
-  if(overlay) overlay.style.display = 'none';
+  if(overlay){ overlay.style.display = 'none'; overlay.style.background = 'var(--bg)'; }
   if(BS && BS.atbInterval){ clearInterval(BS.atbInterval); BS.atbInterval = null; }
   BS = null;
   if(typeof BATTLE_PARTY !== 'undefined'){ BATTLE_PARTY = null; }
@@ -4754,6 +4887,8 @@ function closeBattleOverlay(){
 // ════════════════════════════════════════
 var CITY_ENCOUNTERS = {
   '王都平原': {enemies:['noble_guard','bounty_hunter'], label:'王都平原'},
+  '刃脊山脈': {enemies:['ridge_wolf','rock_golem'], label:'刃脊山脈'},
+  '灰燼荒野': {enemies:['ash_fiend','ash_hound'], label:'灰燼荒野'},
   '夏洛伊':   {enemies:['shadow_soldier','shadow_soldier'], label:'夏洛伊郊外'},
   '赤盾城':   {enemies:['noble_heavy_guard','redshield_warden'], label:'赤盾城門口'},
   '灰牙鎮':   {enemies:['shadow_soldier','shadow_soldier'], label:'灰牙鎮街道'},
@@ -5316,6 +5451,47 @@ var EQUIPS = {
   amulet_dark:  {id:'amulet_dark',  name:'暗月護符',   ico:'🌙', slot:'飾品', str:5, mag:10,def:5, spd:5, mp:30, buy:600, sell:420, ch:2, desc:'月夜力量'},
   no_encounter_ring: {id:'no_encounter_ring', name:'隱匿戒指', ico:'🔮', slot:'飾品', str:0, mag:0, def:0, spd:0, buy:0, sell:0, ch:0, noEncounter:true, desc:'裝備後不會遇到敵人'},
   black_mask:   {id:'black_mask',   name:'黑色面罩',   ico:'🎭', slot:'飾品', str:10,mag:0, def:0, spd:10, buy:0, sell:0, ch:0, desc:'師父傑特所贈的面罩，遮去身分，也遮去過去'},
+
+  // ── 晶峰院 白裝(ch3) ──
+  crystal_blade:  {id:'crystal_blade',  name:'晶刃',     ico:'🗡️', slot:'武器', str:30,mag:0, def:0, spd:0, buy:760, sell:532, ch:3, desc:'晶石灌注的鋒刃'},
+  crystal_armor:  {id:'crystal_armor',  name:'晶甲',     ico:'🛡️', slot:'防具', str:0, mag:0, def:42,spd:0, buy:820, sell:574, ch:3, desc:'晶石礦脈鍊成的厚甲'},
+  crystal_ring:   {id:'crystal_ring',   name:'晶石戒',   ico:'💍', slot:'飾品', str:0, mag:0, def:0, spd:0, mp:40, buy:700, sell:490, ch:3, desc:'蘊含晶石魔力'},
+  swift_crystal_boot:{id:'swift_crystal_boot', name:'速石靴', ico:'👟', slot:'鞋子', str:0,mag:0,def:0,spd:18, buy:740, sell:518, ch:3, desc:'晶石輕量化處理'},
+  // ── 霧冕城 白裝(ch3) ──
+  rune_staff:     {id:'rune_staff',     name:'咒紋杖',   ico:'🪄', slot:'武器', str:0, mag:42,def:0, spd:0, buy:800, sell:560, ch:3, desc:'刻滿禁忌咒紋的法杖'},
+  mage_robe_t3:   {id:'mage_robe_t3',   name:'法師袍',   ico:'🥋', slot:'防具', str:0, mag:0, def:24,spd:0, buy:780, sell:546, ch:3, desc:'教團本院制式法袍'},
+  grimoire_charm: {id:'grimoire_charm', name:'禁書符',   ico:'📿', slot:'飾品', str:0, mag:20,def:0, spd:0, buy:760, sell:532, ch:3, desc:'封存咒文的符紙'},
+  light_boot_t3:  {id:'light_boot_t3',  name:'輕靴',     ico:'👟', slot:'鞋子', str:0, mag:0, def:0, spd:16, buy:700, sell:490, ch:3, desc:'術士專用輕靴'},
+  // ── 灰牙鎮 白裝(ch3) ──
+  soulrend_blades:{id:'soulrend_blades',name:'鎮魂雙刃', ico:'🔪', slot:'武器', str:26,mag:0, def:0, spd:10,buy:790, sell:553, ch:3, desc:'雙持暗器'},
+  bandit_vest:    {id:'bandit_vest',    name:'皮甲',     ico:'🥋', slot:'防具', str:0, mag:0, def:18,spd:8, buy:730, sell:511, ch:3, desc:'盜賊輕量皮甲'},
+  bandit_ring:    {id:'bandit_ring',    name:'賊王戒',   ico:'💍', slot:'飾品', str:0, mag:0, def:0, spd:22,buy:780, sell:546, ch:3, desc:'灰牙鎮地下流通的戒指'},
+  night_boot:     {id:'night_boot',     name:'夜行鞋',   ico:'👟', slot:'鞋子', str:0, mag:0, def:0, spd:24,buy:800, sell:560, ch:3, desc:'潛行專用軟底鞋'},
+  // ── 暗淵城 白裝(ch4) ──
+  demon_sword:    {id:'demon_sword',    name:'魔劍',     ico:'⚔️', slot:'武器', str:45,mag:0, def:0, spd:0, buy:1180,sell:826, ch:4, desc:'浸染魔氣的劍'},
+  demon_armor:    {id:'demon_armor',    name:'魔甲',     ico:'🛡️', slot:'防具', str:0, mag:0, def:35,spd:0, buy:1150,sell:805, ch:4, desc:'魔族鍛造甲冑'},
+  demon_amulet:   {id:'demon_amulet',   name:'魔石護符', ico:'🔮', slot:'飾品', str:0, mag:30,def:0, spd:0, mp:50, buy:1200,sell:840, ch:4, desc:'封印魔力的護符'},
+  heavy_boot:     {id:'heavy_boot',     name:'重靴',     ico:'👢', slot:'鞋子', str:0, mag:0, def:15,spd:0, buy:1050,sell:735, ch:4, desc:'沉重但堅固'},
+  // ── 艾爾登 白裝(ch4) ──
+  guild_sword:    {id:'guild_sword',    name:'商會佩劍', ico:'🗡️', slot:'武器', str:22,mag:0, def:0, spd:8, buy:980, sell:686, ch:4, desc:'商會私衛配劍'},
+  silk_armor:     {id:'silk_armor',     name:'絲緞甲',   ico:'🥋', slot:'防具', str:0, mag:0, def:16,spd:6, buy:960, sell:672, ch:4, desc:'華麗卻實用'},
+  credit_ring:    {id:'credit_ring',    name:'信用戒',   ico:'💍', slot:'飾品', str:0, mag:0, def:0, spd:0, mp:35, buy:940, sell:658, ch:4, desc:'商會信用憑證戒'},
+  eldon_boot:     {id:'eldon_boot',     name:'皮靴',     ico:'👢', slot:'鞋子', str:0, mag:0, def:0, spd:14,buy:900, sell:630, ch:4, desc:'商旅用皮靴'},
+  // ── 碧海港 白裝(ch4) ──
+  tide_blade:     {id:'tide_blade',     name:'潮汐刃',   ico:'🗡️', slot:'武器', str:24,mag:0, def:0, spd:12,buy:1000,sell:700, ch:4, desc:'海港鑄刃師之作'},
+  sea_leather:    {id:'sea_leather',    name:'海皮甲',   ico:'🥋', slot:'防具', str:0, mag:0, def:20,spd:5, buy:980, sell:686, ch:4, desc:'防水鞣製皮甲'},
+  coral_ring:     {id:'coral_ring',     name:'珊瑚戒',   ico:'💍', slot:'飾品', str:0, mag:0, def:0, spd:5, mp:30, buy:960, sell:672, ch:4, desc:'深海珊瑚打磨'},
+  sailor_boot:    {id:'sailor_boot',    name:'船員靴',   ico:'👢', slot:'鞋子', str:0, mag:0, def:0, spd:20,buy:1020,sell:714, ch:4, desc:'防滑甲板靴'},
+
+  // ── Boss 專屬掉落：藍裝(主屬性+副屬性) / 紅裝(雙主屬性+副屬性) ──
+  crystal_blade_blue:   {id:'crystal_blade_blue',   name:'裂晶劍',   ico:'🗡️', slot:'武器', str:35,mag:0,def:0,spd:0,  buy:0, sell:560, ch:3, sub:{type:'crit',pct:0.12},      desc:'晶嵐破碎後的鋒利結晶'},
+  crystal_claw_red:     {id:'crystal_claw_red',     name:'晶嵐之爪', ico:'🦅', slot:'武器', str:32,mag:0,def:0,spd:20, buy:0, sell:980, ch:3, sub:{type:'lifesteal',pct:0.15},  desc:'凝結晶嵐之力的雙重賜福'},
+  velen_staff_blue:     {id:'velen_staff_blue',     name:'維倫之杖', ico:'🪄', slot:'武器', str:0,mag:48,def:0,spd:0,  buy:0, sell:600, ch:3, sub:{type:'poison',pct:0.14},     desc:'咒術之魔將遺留的法杖'},
+  forbidden_grimoire_red:{id:'forbidden_grimoire_red',name:'禁咒法典', ico:'📖', slot:'飾品', str:0,mag:38,def:20,spd:0, buy:0, sell:1020, ch:3, sub:{type:'confuse',pct:0.16}, desc:'記載終咒的禁忌典籍'},
+  shadowfang_blue:      {id:'shadowfang_blue',      name:'暗影雙牙', ico:'🔪', slot:'武器', str:28,mag:0,def:0,spd:14, buy:0, sell:580, ch:3, sub:{type:'instakill',pct:0.08},  desc:'賊王卓岡的暗器'},
+  kingpact_red:         {id:'kingpact_red',         name:'賊王之契', ico:'📜', slot:'飾品', str:30,mag:0,def:0,spd:25, buy:0, sell:1000, ch:3, sub:{type:'lifesteal',pct:0.18}, desc:'灰牙鎮地下勢力的契約'},
+  heartless_blade_blue: {id:'heartless_blade_blue', name:'噬心劍',   ico:'⚔️', slot:'武器', str:48,mag:0,def:0,spd:0,  buy:0, sell:760, ch:4, sub:{type:'lifesteal',pct:0.2},   desc:'吸取心氣的魔劍'},
+  heartless_crown_red:  {id:'heartless_crown_red',  name:'攻心之冠', ico:'👑', slot:'頭飾', str:0,mag:40,def:28,spd:0, buy:0, sell:1320, ch:4, sub:{type:'confuse',pct:0.22},  desc:'二把手的權柄象徵'},
 };
 
 // ════════════════════════════════════════
@@ -5355,6 +5531,28 @@ function grantEquipToChar(charKey, item){
   if(!c || !c.inventory) return false;
   c.inventory.push(item);
   return true;
+}
+// 依 EQUIPS 定義中固定的 sub 屬性產生裝備（boss專屬掉落用，不隨機）
+function makeFixedGearItem(equipsId, rar){
+  var base = (typeof EQUIPS !== 'undefined') ? EQUIPS[equipsId] : null;
+  if(!base) return null;
+  GEAR_UID++;
+  var it = {
+    id: equipsId + '_g' + GEAR_UID,
+    t: base.slot, name: base.name, ico: base.ico, slot: base.slot,
+    str: base.str||0, mag: base.mag||0, def: base.def||0, spd: base.spd||0, hp: base.hp||0, mp: base.mp||0,
+    rar: rar, r: rarityClassOf(rar)
+  };
+  if(base.sub) it.sub = base.sub;
+  return it;
+}
+// boss 勝利後依 ENEMY_DEFS[key].bossLoot 發放專屬藍/紅裝
+function grantBossLoot(enemyKey){
+  var def = (typeof ENEMY_DEFS !== 'undefined') ? ENEMY_DEFS[enemyKey] : null;
+  if(!def || !def.bossLoot) return;
+  var key = (typeof activeCharKey === 'function') ? activeCharKey() : 'anei';
+  if(def.bossLoot.blue) grantEquipToChar(key, makeFixedGearItem(def.bossLoot.blue, 'blue'));
+  if(def.bossLoot.red) grantEquipToChar(key, makeFixedGearItem(def.bossLoot.red, 'red'));
 }
 var DROP_POOL = ['iron_sword','short_dagger','oak_staff','steel_blade','twin_fang','silver_rod',
   'cloth_armor','leather_vest','chain_mail','robe_dark','cloth_hat','iron_helm','silver_tiara',
@@ -5592,6 +5790,138 @@ var SHOP_STOCK = {
     items:[],
     equips:['iron_ring','charm_speed'],
   },
+
+  // ════ 晶峰院 ════
+  weapon_jingfeng:{ico:'⚔️',name:'晶鑄武坊',sub:'晶峰院',
+    npc:{name:'匠人凡格',face:'fange',ico:'⚒️',acc:'#5ad0d0'},
+    greeting:[{text:'晶石淬鍊的刃，削鐵如泥。'}], bye:[{text:'願晶光護你。'}],
+    items:[], equips:['crystal_blade']},
+  armor_jingfeng:{ico:'🛡️',name:'晶甲鋪',sub:'晶峰院',
+    npc:{name:'岩奈',face:'yanna',ico:'🧱',acc:'#7090a0'},
+    greeting:[{text:'這甲，扛得住礦脈崩落的衝擊。'}], bye:[{text:'保重，礦道不平靜。'}],
+    items:[], equips:['crystal_armor']},
+  accessory_jingfeng:{ico:'💍',name:'晶飾閣',sub:'晶峰院',
+    npc:{name:'賽兒',face:'saier',ico:'💎',acc:'#9ad8e8'},
+    greeting:[{text:'晶石的共鳴，能助你更快找回魔力。'}], bye:[{text:'晶光與你同行。'}],
+    items:[], equips:['crystal_ring','swift_crystal_boot']},
+  grocery_jingfeng:{ico:'🏪',name:'雜貨棚',sub:'晶峰院',
+    npc:{name:'老皮',face:'laopi',ico:'🧑',acc:'#b0a070'},
+    greeting:[{text:'礦工都來我這補貨，東西實在。'}], bye:[{text:'小心礦道裡的傢伙。'}],
+    items:['potion_hp_m','potion_mp_m','antidote','burn_cure'], equips:[]},
+  inn_jingfeng:{ico:'🍺',name:'礦工酒寮',sub:'晶峰院',
+    npc:{name:'酒寮老闊・夯德',face:'hangde',ico:'🍺',acc:'#c89050'},
+    greeting:[{text:'坐，礦工的酒最烈，喝完才有力氣下礦道。'}], bye:[{text:'下次再來喝一杯。'}],
+    items:['potion_hp_m','potion_mp_m','rb_drink'], equips:[]},
+
+  // ════ 霧冕城 ════
+  weapon_wumian:{ico:'🪄',name:'咒紋工坊',sub:'霧冕城',
+    npc:{name:'修拉',face:'xiula',ico:'📐',acc:'#8a78d8'},
+    greeting:[{text:'每一道咒紋，都是我親手刻的。'}], bye:[{text:'別讓咒力反噬了自己。'}],
+    items:[], equips:['rune_staff']},
+  armor_wumian:{ico:'🥋',name:'本院法袍坊',sub:'霧冕城',
+    npc:{name:'賓恩',face:'binen',ico:'🧵',acc:'#6878b0'},
+    greeting:[{text:'這袍子，教團本院弟子都穿。'}], bye:[{text:'修行順利。'}],
+    items:[], equips:['mage_robe_t3']},
+  accessory_wumian:{ico:'📿',name:'禁書閣',sub:'霧冕城',
+    npc:{name:'伊蕾娜',face:'yilaina',ico:'📚',acc:'#a888d0'},
+    greeting:[{text:'這些符紙，封存著本院的咒文殘片。'}], bye:[{text:'切記，咒術需謹慎使用。'}],
+    items:[], equips:['grimoire_charm','light_boot_t3']},
+  grocery_wumian:{ico:'🏪',name:'本院雜貨堂',sub:'霧冕城',
+    npc:{name:'堂主・米拉',face:'mila',ico:'🧑',acc:'#9090c0'},
+    greeting:[{text:'本院弟子用的藥劑，效果都經過驗證。'}], bye:[{text:'願霧霭護你平安。'}],
+    items:['potion_hp_m','potion_mp_m','antidote','burn_cure'], equips:[]},
+  inn_wumian:{ico:'🍷',name:'霧隱茶坊',sub:'霧冕城',
+    npc:{name:'茶坊主・芙妮',face:'funi',ico:'🍵',acc:'#a0b0d8'},
+    greeting:[{text:'本院附近，這裡最安靜，喝口茶歇歇吧。'}], bye:[{text:'霧重，慢走。'}],
+    items:['potion_hp_m','potion_mp_m','rb_drink'], equips:[]},
+
+  // ════ 灰牙鎮 ════
+  weapon_greyfang:{ico:'🔪',name:'地下鐵舖',sub:'灰牙鎮',
+    npc:{name:'刀疤・銳克',face:'ruike',ico:'🔧',acc:'#a05050'},
+    greeting:[{text:'灰牙鎮的貨，別問來路。'}], bye:[{text:'走快點，少惹麻煩。'}],
+    items:[], equips:['soulrend_blades']},
+  armor_greyfang:{ico:'🥋',name:'雜皮甲坊',sub:'灰牙鎮',
+    npc:{name:'啞婆',face:'yapo',ico:'🧓',acc:'#807060'},
+    greeting:[{text:'……（遞出皮甲，不發一語）'}], bye:[{text:'……（揮手示意離開）'}],
+    items:[], equips:['bandit_vest']},
+  accessory_greyfang:{ico:'💍',name:'黑市飾鋪',sub:'灰牙鎮',
+    npc:{name:'掮客・莫斯',face:'mosi',ico:'🎲',acc:'#c0a040'},
+    greeting:[{text:'這戒指，問都不要問哪來的，能用就好。'}], bye:[{text:'錢貨兩清，別回頭找我。'}],
+    items:[], equips:['bandit_ring','night_boot']},
+  grocery_greyfang:{ico:'🏪',name:'雜貨攤',sub:'灰牙鎮',
+    npc:{name:'攤主・阿憨',face:'ahan',ico:'🧑',acc:'#b09060'},
+    greeting:[{text:'便宜貨，但能用。'}], bye:[{text:'快走，巡邏隊要來了。'}],
+    items:['potion_hp_m','potion_mp_m','antidote','burn_cure'], equips:[]},
+  inn_greyfang:{ico:'🍺',name:'破爛酒館',sub:'灰牙鎮',
+    npc:{name:'酒館老闆・葛斯',face:'geshi',ico:'🍺',acc:'#9a7040'},
+    greeting:[{text:'這裡什麼都聽不到，什麼都看不到，懂？'}], bye:[{text:'下次悄悄來。'}],
+    items:['potion_hp_m','potion_mp_m','rb_drink'], equips:[]},
+
+  // ════ 暗淵城 ════
+  weapon_abyss:{ico:'⚔️',name:'魔鐵兵器坊',sub:'暗淵城',
+    npc:{name:'魔鍛師・葛侃',face:'gekan',ico:'🔥',acc:'#a03030'},
+    greeting:[{text:'魔氣淬煉的劍，連魔族都忌憚。'}], bye:[{text:'此地不宜久留。'}],
+    items:[], equips:['demon_sword']},
+  armor_abyss:{ico:'🛡️',name:'魔甲鑄坊',sub:'暗淵城',
+    npc:{name:'鎧甲匠・黎恩',face:'lien',ico:'⚙️',acc:'#705050'},
+    greeting:[{text:'這甲，能擋下魔族的爪牙。'}], bye:[{text:'保重，深淵不饒人。'}],
+    items:[], equips:['demon_armor']},
+  accessory_abyss:{ico:'🔮',name:'魔石閣',sub:'暗淵城',
+    npc:{name:'封印師・薇拉',face:'weila',ico:'🔮',acc:'#8050a0'},
+    greeting:[{text:'這護符，封住了魔石的暴亂之力。'}], bye:[{text:'願封印護你周全。'}],
+    items:[], equips:['demon_amulet','heavy_boot']},
+  grocery_abyss:{ico:'🏪',name:'深淵補給站',sub:'暗淵城',
+    npc:{name:'補給商・哈克',face:'hake',ico:'🧑',acc:'#807080'},
+    greeting:[{text:'這裡的貨，是我冒死運進來的。'}], bye:[{text:'活著回來最重要。'}],
+    items:['potion_hp_l','potion_mp_m','antidote','burn_cure'], equips:[]},
+  inn_abyss:{ico:'🍷',name:'最後旅店',sub:'暗淵城',
+    npc:{name:'旅店主・厄爾',face:'eer',ico:'🕯️',acc:'#605050'},
+    greeting:[{text:'進去前，先喝一杯，可能是最後一次機會。'}], bye:[{text:'……祝你好運。'}],
+    items:['potion_hp_l','potion_mp_m','rb_drink'], equips:[]},
+
+  // ════ 艾爾登 ════
+  weapon_eldon:{ico:'🗡️',name:'商會兵器行',sub:'艾爾登',
+    npc:{name:'掌櫃・范恩',face:'fanen',ico:'🧑‍💼',acc:'#c0a050'},
+    greeting:[{text:'品質保證，商會信用掛保的貨。'}], bye:[{text:'歡迎下次再光顧。'}],
+    items:[], equips:['guild_sword']},
+  armor_eldon:{ico:'🥋',name:'錦緞防具行',sub:'艾爾登',
+    npc:{name:'裁縫師・莉莎',face:'lisha',ico:'🧵',acc:'#d0a0c0'},
+    greeting:[{text:'美觀與防護兼具，這是艾爾登的特色。'}], bye:[{text:'祝您生意興隆，旅途平安。'}],
+    items:[], equips:['silk_armor']},
+  accessory_eldon:{ico:'💍',name:'信用交易所',sub:'艾爾登',
+    npc:{name:'交易員・霍夫',face:'huofu',ico:'💼',acc:'#a0a0c0'},
+    greeting:[{text:'這戒指，是商會的信用憑證，到哪都好用。'}], bye:[{text:'合作愉快。'}],
+    items:[], equips:['credit_ring','eldon_boot']},
+  grocery_eldon:{ico:'🏪',name:'自由市集',sub:'艾爾登',
+    npc:{name:'市集小販・阿才',face:'acai',ico:'🧑',acc:'#c0b070'},
+    greeting:[{text:'全幻刃洲的貨，這裡都找得到。'}], bye:[{text:'歡迎常來逛逛。'}],
+    items:['potion_hp_m','potion_mp_m','antidote','burn_cure'], equips:[]},
+  inn_eldon:{ico:'🍷',name:'金葉酒館',sub:'艾爾登',
+    npc:{name:'酒館主・蕾依',face:'leiyi',ico:'🍷',acc:'#d0b060'},
+    greeting:[{text:'消息與美酒，這裡都不缺。'}], bye:[{text:'有空再來聽聽情報。'}],
+    items:['potion_hp_m','potion_mp_m','rb_drink'], equips:[]},
+
+  // ════ 碧海港 ════
+  weapon_bihai:{ico:'🗡️',name:'潮鳴鑄刃坊',sub:'碧海港',
+    npc:{name:'鑄刃師・歐肯',face:'ouken',ico:'⚒️',acc:'#4090a0'},
+    greeting:[{text:'這刃，吃過鹽水淬鍊，韌得很。'}], bye:[{text:'出海小心風浪。'}],
+    items:[], equips:['tide_blade']},
+  armor_bihai:{ico:'🥋',name:'海皮防具行',sub:'碧海港',
+    npc:{name:'皮匠・沃克',face:'woke',ico:'🧵',acc:'#6090a0'},
+    greeting:[{text:'防水又耐用，碼頭工人都用這個。'}], bye:[{text:'一帆風順。'}],
+    items:[], equips:['sea_leather']},
+  accessory_bihai:{ico:'💍',name:'珊瑚飾鋪',sub:'碧海港',
+    npc:{name:'採珠人・娜雅',face:'naya',ico:'🐚',acc:'#50b0c0'},
+    greeting:[{text:'深海採來的珊瑚，戴著能定心神。'}], bye:[{text:'願大海眷顧你。'}],
+    items:[], equips:['coral_ring','sailor_boot']},
+  grocery_bihai:{ico:'🏪',name:'碼頭雜貨棚',sub:'碧海港',
+    npc:{name:'棚主・老海',face:'laohai',ico:'🧑',acc:'#80a0a0'},
+    greeting:[{text:'船員出海前都來我這補貨。'}], bye:[{text:'一路順風。'}],
+    items:['potion_hp_m','potion_mp_m','antidote','burn_cure'], equips:[]},
+  inn_bihai:{ico:'🍺',name:'錨頭酒館',sub:'碧海港',
+    npc:{name:'酒館老闆・布蘭',face:'bulan',ico:'⚓',acc:'#5080a0'},
+    greeting:[{text:'坐，聽聽水手們吹的牛。'}], bye:[{text:'下次帶些海上故事回來。'}],
+    items:['potion_hp_m','potion_mp_m','rb_drink'], equips:[]},
 };
 
 // ── 玩家狀態（測試用）──
@@ -5978,6 +6308,34 @@ function showChoicesOverlay(choices){
   document.body.appendChild(ov);
 }
 
+var FACE_MAP = {
+  licarise:'licarise_face.jpg', anei:'anei_face.jpg', fira:'fira_face.jpg', elweis:'elweis_face.jpg',
+  // ── 夏洛伊酒館 新員工（莉卡莉絲入隊後接任）──
+  ling:'IMG_0548.png',
+  // ── 晶峰院 ──
+  fange:'IMG_0549.png', yanna:'IMG_0550.png', saier:'IMG_0551.png',
+  laopi:'IMG_0552.png', hangde:'IMG_0553.png',
+  // ── 霧冕城 ──
+  xiula:'IMG_0554.png', binen:'IMG_0555.png', yilaina:'IMG_0556.png',
+  mila:'IMG_0557.png', funi:'IMG_0558.png',
+  // ── 灰牙鎮 ──
+  ruike:'IMG_0559.png', yapo:'IMG_0560.png', mosi:'IMG_0561.png',
+  ahan:'IMG_0562.png', geshi:'IMG_0563.png',
+  // ── 暗淵城 ──
+  gekan:'IMG_0564.png', lien:'IMG_0565.png', weila:'IMG_0566.png',
+  hake:'IMG_0567.png', eer:'IMG_0568.png',
+  // ── 艾爾登 ──
+  fanen:'IMG_0569.png', lisha:'IMG_0570.png', huofu:'IMG_0571.png',
+  acai:'IMG_0572.png', leiyi:'IMG_0573.png',
+  // ── 碧海港 ──
+  ouken:'IMG_0574.png', woke:'IMG_0575.png', naya:'IMG_0576.png',
+  laohai:'IMG_0577.png', bulan:'IMG_0578.png',
+  // ── Boss 頭像 ──
+  rain_boss:'3A39EACC-3C90-40E5-8C76-3DE1B7ADEB17.jpeg',
+  captain_heartless:'3DE8C405-A80E-4E04-AE9A-8BEBD50A583F.jpeg',
+  cult_archon:'66BA8325-D72E-4F94-AB20-959FF73C4372.jpeg',
+};
+
 function showLine(idx){
   if(idx >= DLG.lines.length){
     var branchEndCb = DLG.activeBranchEnd || null;
@@ -6004,9 +6362,8 @@ function showLine(idx){
 
   var inner = document.getElementById('dialog-inner');
   if(inner){
-    var faceMap = {licarise:'licarise_face.jpg',anei:'anei_face.jpg',fira:'fira_face.jpg',elweis:'elweis_face.jpg'};
     var faceKey = line.face || '';
-    var faceFile = faceMap[faceKey] || '';
+    var faceFile = FACE_MAP[faceKey] || '';
     var avatarHtml = '';
     if(faceFile){
       avatarHtml =
@@ -6640,20 +6997,34 @@ var OBJECTS = [
   {x:16,y:10,type:'npc',ico:'👩',name:'路人',zone:'street',
    dialog:[{speaker:'路過婦人',ico:'👩',text:'別多管閒事！'}]},
   // 緋色酒館建築
-  {x:3,y:14,type:'building',ico:'🍺',name:'緋色酒館',zone:'street',shopKey:'inn',size:2,
-   dialog:[
-     {speaker:'莉卡莉絲',ico:'🍷',acc:'#d46050',text:'歡迎光臨緋色酒館。你就是傑特說的那個人？'},
-     {speaker:'莉卡莉絲',ico:'🍷',acc:'#d46050',text:'小聲點。這裡耳目眾多。我有你需要的情報。',
-      choices:[
-        {text:'告訴我情報', action:function(){
-          var co=document.getElementById('choices-overlay'); if(co) co.remove();
-          var tw=document.getElementById('town-overlay'); if(tw) tw.style.pointerEvents='all';
-          showLine(2);
-        }},
-        {text:'先喝一杯',   action:function(){endDialog();openShop('inn');}},
-      ]},
-     {speaker:'莉卡莉絲',ico:'🍷',acc:'#d46050',text:'王城地底有個祭壇。大人正在準備某個儀式——先去替我處理廣場那幾個礙事的士兵。'},
-   ]},
+  {x:3,y:14,type:'building',ico:'🍺',name:'緋色酒館',zone:'street',shopKey:'inn',
+   get dialog(){
+     if(typeof STORY!=='undefined' && STORY.likaJoined){
+       return [
+         {speaker:'玲',face:'ling',acc:'#e0a0c0',text:'歡迎光臨緋色酒館～莉卡莉絲姐去忙正事了，現在這裡我來照看。'},
+         {speaker:'玲',face:'ling',acc:'#e0a0c0',text:'要喝點什麼，還是想看看我們的存貨？',
+          choices:[
+            {text:'進入商店', action:function(){endDialog();openShop('inn');}},
+            {text:'先聊聊',   action:function(){ var co=document.getElementById('choices-overlay'); if(co) co.remove(); var tw=document.getElementById('town-overlay'); if(tw) tw.style.pointerEvents='all'; showLine(2); }},
+          ]},
+         {speaker:'玲',face:'ling',acc:'#e0a0c0',text:'這裡什麼消息都聽得到，有空常來坐坐。'},
+       ];
+     }
+     return [
+       {speaker:'莉卡莉絲',ico:'🍷',acc:'#d46050',text:'歡迎光臨緋色酒館。你就是傑特說的那個人？'},
+       {speaker:'莉卡莉絲',ico:'🍷',acc:'#d46050',text:'小聲點。這裡耳目眾多。我有你需要的情報。',
+        choices:[
+          {text:'告訴我情報', action:function(){
+            var co=document.getElementById('choices-overlay'); if(co) co.remove();
+            var tw=document.getElementById('town-overlay'); if(tw) tw.style.pointerEvents='all';
+            showLine(2);
+          }},
+          {text:'先喝一杯',   action:function(){endDialog();openShop('inn');}},
+        ]},
+       {speaker:'莉卡莉絲',ico:'🍷',acc:'#d46050',text:'王城地底有個祭壇。大人正在準備某個儀式——先去替我處理廣場那幾個礙事的士兵。'},
+     ];
+   },
+   size:2},
   // 草地旅人
   {x:9,y:17,type:'npc',ico:'🧙',name:'旅人',zone:'grassland',
    dialog:[{speaker:'流浪旅人',ico:'🧙',text:'這條路通往赤盾城，但現在危險得很……'}]},
@@ -7475,18 +7846,18 @@ function redshieldStartBattle(enemyKeys, onWinFn){
 
 function redshieldWave2(){
   openDialog([
-    {speaker:'雷恩．特列斯',ico:'🃏',acc:'#c83838', text:'哦？衝破了第一道防線。那再來一批吧。'},
+    {speaker:'雷恩．特列斯',face:'rain_boss',acc:'#c83838', text:'哦？衝破了第一道防線。那再來一批吧。'},
     {triggerBattle:['noble_heavy_guard','magic_puppet'], battleParty:['anei','lika','fira','elweis'], onWin: redshieldBossFight},
   ], null);
 }
 
 function redshieldBossFight(){
   openDialog([
-    {speaker:'雷恩．特列斯',ico:'🃏',acc:'#c83838', text:'呵……莉卡莉絲。十年了，妳氣色還是這麼好。'},
+    {speaker:'雷恩．特列斯',face:'rain_boss',acc:'#c83838', text:'呵……莉卡莉絲。十年了，妳氣色還是這麼好。'},
     {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'雷恩。你還記得自己做過什麼嗎？'},
-    {speaker:'雷恩．特列斯',ico:'🃏',acc:'#c83838', text:'做過什麼？我只記得，妳把一切都交給我的那個夜晚，很美。'},
+    {speaker:'雷恩．特列斯',face:'rain_boss',acc:'#c83838', text:'做過什麼？我只記得，妳把一切都交給我的那個夜晚，很美。'},
     {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'……你瘋了。'},
-    {speaker:'雷恩．特列斯',ico:'🃏',acc:'#c83838', text:'瘋的不是我，是這個讓妳心軟的世界。來，讓我看看妳這十年練出了什麼。'},
+    {speaker:'雷恩．特列斯',face:'rain_boss',acc:'#c83838', text:'瘋的不是我，是這個讓妳心軟的世界。來，讓我看看妳這十年練出了什麼。'},
     {speaker:'暗影',face:'anei',acc:'#9b7fd4', text:'（拔刀。）廢話夠了。'},
     {triggerBattle:['rain_boss'], battleParty:['anei','lika','fira','elweis'], onWin: redshieldAftermath},
   ], null);
@@ -7494,7 +7865,7 @@ function redshieldBossFight(){
 
 function redshieldBossEncounter(){
   openDialog([
-    {speaker:'雷恩．特列斯',ico:'🃏',acc:'#c83838', text:'闖進我的宅邸？守衛，讓他們見識特列斯家的鐵壁。'},
+    {speaker:'雷恩．特列斯',face:'rain_boss',acc:'#c83838', text:'闖進我的宅邸？守衛，讓他們見識特列斯家的鐵壁。'},
     {speaker:'菲拉',face:'fira',acc:'#d47040', text:'來了一群。打開一條路！'},
     {triggerBattle:['noble_heavy_guard','redshield_warden'], battleParty:['anei','lika','fira','elweis'], onWin: redshieldWave2},
   ], null);
@@ -7518,6 +7889,209 @@ function redshieldAftermath(){
     if(typeof saveGame === 'function') saveGame();
     if(typeof showToast === 'function') showToast('第三章「咒術之痕」開啟', 'success');
   });
+}
+
+// ════════════════════════════════════════
+// 六座簡化選單式城鎮（赤盾城樣式）
+// ════════════════════════════════════════
+function _makeSimpleTown(opts){
+  var old = document.getElementById(opts.id);
+  if(old && old.parentNode) old.parentNode.removeChild(old);
+
+  var ov = document.createElement('div');
+  ov.id = opts.id;
+  ov.setAttribute('style',
+    'position:fixed;top:0;left:0;right:0;bottom:0;z-index:650;' +
+    'background:'+opts.bg+';' +
+    'display:flex;flex-direction:column;opacity:0;transition:opacity 0.3s ease;');
+
+  var dim = document.createElement('div');
+  dim.setAttribute('style','position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(6,8,14,0.45);');
+  ov.appendChild(dim);
+
+  var head = document.createElement('div');
+  head.setAttribute('style','position:relative;z-index:2;padding:26px 20px 14px;text-align:center;border-bottom:1px solid rgba(200,168,74,0.25);flex-shrink:0;');
+  head.innerHTML =
+    '<div style="font-family:Cinzel,\'Noto Serif TC\',serif;font-size:15px;letter-spacing:4px;color:var(--gold)">'+opts.name+'</div>' +
+    '<div style="margin-top:6px;font-size:11px;color:#cfd6ee;letter-spacing:1px">'+opts.sub+'</div>';
+  ov.appendChild(head);
+
+  var body = document.createElement('div');
+  body.setAttribute('style','position:relative;z-index:2;flex:1;padding:18px 16px;overflow-y:auto;');
+
+  opts.spots.forEach(function(s){
+    var card = document.createElement('div');
+    card.setAttribute('style',
+      'display:flex;align-items:center;gap:14px;padding:14px 16px;margin-bottom:10px;' +
+      'border:1px solid rgba(200,168,74,0.35);border-radius:8px;background:rgba(10,12,22,0.55);cursor:pointer;');
+    card.innerHTML =
+      '<div style="font-size:26px;line-height:1;">' + s.ico + '</div>' +
+      '<div style="flex:1;font-size:14px;color:#e7d9a8;font-family:\'Noto Serif TC\',serif;letter-spacing:1px;">' + s.label + '</div>' +
+      '<div style="font-size:11px;color:#8a93b8;">▶</div>';
+    card.addEventListener('click', s.action);
+    body.appendChild(card);
+  });
+  ov.appendChild(body);
+
+  var back = document.createElement('div');
+  back.textContent = '返回地圖';
+  back.setAttribute('style',
+    'position:relative;z-index:2;text-align:center;cursor:pointer;padding:14px 0;margin:0 16px 24px;border-radius:6px;' +
+    'border:1px solid rgba(112,128,176,0.5);color:#ccd4f0;font-family:"Noto Serif TC",serif;' +
+    'font-size:13px;letter-spacing:3px;flex-shrink:0;');
+  back.addEventListener('click', function(){
+    var o = document.getElementById(opts.id);
+    if(o && o.parentNode) o.parentNode.removeChild(o);
+  });
+  ov.appendChild(back);
+
+  document.body.appendChild(ov);
+  setTimeout(function(){ ov.style.opacity = '1'; }, 20);
+}
+
+function openJingfengTown(){
+  _makeSimpleTown({
+    id:'jingfeng-overlay', name:'晶峰院', sub:'教團分院・刃脊山脈晶石礦脈',
+    bg:"url('https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0542.png') center/cover no-repeat",
+    spots:[
+      {ico:'⛏️', label:'礦脈深處（晶嵐）', action:function(){ fightCrystalGuardian(); }},
+      {ico:'⚔️', label:'晶鑄武坊', action:function(){ enterShop('weapon_jingfeng'); }},
+      {ico:'🛡️', label:'晶甲鋪', action:function(){ enterShop('armor_jingfeng'); }},
+      {ico:'💍', label:'晶飾閣', action:function(){ enterShop('accessory_jingfeng'); }},
+      {ico:'🏪', label:'雜貨棚', action:function(){ enterShop('grocery_jingfeng'); }},
+      {ico:'🍺', label:'礦工酒寮', action:function(){ enterShop('inn_jingfeng'); }},
+    ]
+  });
+}
+function fightCrystalGuardian(){
+  openDialog([
+    {speaker:'暗影',face:'anei',acc:'#9b7fd4', text:'……礦脈深處有東西在動。'},
+    {triggerBattle:['crystal_guardian'], battleParty:['anei','lika','fira','elweis'], onWin: function(){
+      grantBossLoot('crystal_guardian');
+      if(typeof showToast==='function') showToast('擊敗晶嵐，獲得專屬裝備！', 'success');
+    }},
+  ], null);
+}
+
+function openWumianTown(){
+  _makeSimpleTown({
+    id:'wumian-overlay', name:'霧冕城', sub:'教團本院・禁忌之術典籍存放地',
+    bg:"url('https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0541.png') center/cover no-repeat",
+    spots:[
+      {ico:'📖', label:'本院深處（咒術之魔將）', action:function(){ fightCultArchon(); }},
+      {ico:'🪄', label:'咒紋工坊', action:function(){ enterShop('weapon_wumian'); }},
+      {ico:'🥋', label:'本院法袍坊', action:function(){ enterShop('armor_wumian'); }},
+      {ico:'📿', label:'禁書閣', action:function(){ enterShop('accessory_wumian'); }},
+      {ico:'🏪', label:'本院雜貨堂', action:function(){ enterShop('grocery_wumian'); }},
+      {ico:'🍷', label:'霧隱茶坊', action:function(){ enterShop('inn_wumian'); }},
+    ]
+  });
+}
+function fightCultArchon(){
+  openDialog([
+    {speaker:'咒術之魔將・維倫',face:'cult_archon',acc:'#8a6fd0', text:'禁忌之術，本就不是凡人該觸碰的東西……既然來了，就讓你們見識見識。'},
+    {speaker:'艾爾薇斯',face:'elweis',acc:'#5a9bd4', text:'禁忌之術的源頭，就在本院深處。'},
+    {speaker:'暗影',face:'anei',acc:'#9b7fd4', text:'結束這一切。'},
+    {triggerBattle:['cult_archon'], battleParty:['anei','lika','fira','elweis'], onWin: function(){
+      grantBossLoot('cult_archon');
+      if(typeof STORY !== 'undefined') STORY.chapter = 4;
+      if(typeof saveGame === 'function') saveGame();
+      if(typeof showToast==='function') showToast('擊敗咒術之魔將！第四章「攻心之局」開啟', 'success');
+    }},
+  ], null);
+}
+
+function openGreyfangTown(){
+  _makeSimpleTown({
+    id:'greyfang-overlay', name:'灰牙鎮', sub:'邊境混亂小鎮・盜賊勢力盤據',
+    bg:"url('https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0540.png') center/cover no-repeat",
+    spots:[
+      {ico:'🪦', label:'地下牢房（賊王）', action:function(){ fightBanditKing(); }},
+      {ico:'🔪', label:'地下鐵舖', action:function(){ enterShop('weapon_greyfang'); }},
+      {ico:'🥋', label:'雜皮甲坊', action:function(){ enterShop('armor_greyfang'); }},
+      {ico:'💍', label:'黑市飾鋪', action:function(){ enterShop('accessory_greyfang'); }},
+      {ico:'🏪', label:'雜貨攤', action:function(){ enterShop('grocery_greyfang'); }},
+      {ico:'🍺', label:'破爛酒館', action:function(){ enterShop('inn_greyfang'); }},
+    ]
+  });
+}
+function fightBanditKing(){
+  openDialog([
+    {speaker:'菲拉',face:'fira',acc:'#d47040', text:'地下牢房就在前面，賊王應該躲在那。'},
+    {triggerBattle:['bandit_king'], battleParty:['anei','lika','fira','elweis'], onWin: function(){
+      grantBossLoot('bandit_king');
+      if(typeof showToast==='function') showToast('擊敗灰牙賊王，獲得專屬裝備！', 'success');
+    }},
+  ], null);
+}
+
+function openAbyssTown(){
+  _makeSimpleTown({
+    id:'abyss-overlay', name:'暗淵城', sub:'上古魔王城堡・二把手據點',
+    bg:'linear-gradient(160deg,#3a1414,#28100c 60%,#140808)',
+    spots:[
+      {ico:'👹', label:'王座廳（攻心之魔將）', action:function(){ fightCaptainHeartless(); }},
+      {ico:'⚔️', label:'魔鐵兵器坊', action:function(){ enterShop('weapon_abyss'); }},
+      {ico:'🛡️', label:'魔甲鑄坊', action:function(){ enterShop('armor_abyss'); }},
+      {ico:'🔮', label:'魔石閣', action:function(){ enterShop('accessory_abyss'); }},
+      {ico:'🏪', label:'深淵補給站', action:function(){ enterShop('grocery_abyss'); }},
+      {ico:'🍷', label:'最後旅店', action:function(){ enterShop('inn_abyss'); }},
+    ]
+  });
+}
+function fightCaptainHeartless(){
+  openDialog([
+    {speaker:'攻心之魔將・二把手',face:'captain_heartless',acc:'#a03030', text:'遠道而來，就由我來送你們最後一程。'},
+    {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'二把手就在王座廳。這次，沒有退路了。'},
+    {speaker:'暗影',face:'anei',acc:'#9b7fd4', text:'走。'},
+    {triggerBattle:['captain_heartless'], battleParty:['anei','lika','fira','elweis'], onWin: function(){
+      grantBossLoot('captain_heartless');
+      if(typeof STORY !== 'undefined') STORY.chapter = 5;
+      if(typeof saveGame === 'function') saveGame();
+      if(typeof showToast==='function') showToast('擊敗攻心之魔將！終章「各自的答案」開啟', 'success');
+    }},
+  ], null);
+}
+
+function openEldonTown(){
+  _makeSimpleTown({
+    id:'eldon-overlay', name:'艾爾登', sub:'商人聯盟・自由貿易城市',
+    bg:'linear-gradient(160deg,#2a2410,#221c0c 60%,#120f06)',
+    spots:[
+      {ico:'🏛️', label:'商會總部（劇情待開放）', action:function(){ if(typeof showToast==='function') showToast('劇情尚未開放，敬請期待', 'system'); }},
+      {ico:'🗡️', label:'商會兵器行', action:function(){ enterShop('weapon_eldon'); }},
+      {ico:'🥋', label:'錦緞防具行', action:function(){ enterShop('armor_eldon'); }},
+      {ico:'💍', label:'信用交易所', action:function(){ enterShop('accessory_eldon'); }},
+      {ico:'🏪', label:'自由市集', action:function(){ enterShop('grocery_eldon'); }},
+      {ico:'🍷', label:'金葉酒館', action:function(){ enterShop('inn_eldon'); }},
+    ]
+  });
+}
+
+function openBihaiTown(){
+  _makeSimpleTown({
+    id:'bihai-overlay', name:'碧海港', sub:'商人聯盟・東南海港貿易中心',
+    bg:'linear-gradient(160deg,#0e2832,#0c2230 60%,#06141c)',
+    spots:[
+      {ico:'⚓', label:'走私碼頭（劇情待開放）', action:function(){ if(typeof showToast==='function') showToast('劇情尚未開放，敬請期待', 'system'); }},
+      {ico:'🗡️', label:'潮鳴鑄刃坊', action:function(){ enterShop('weapon_bihai'); }},
+      {ico:'🥋', label:'海皮防具行', action:function(){ enterShop('armor_bihai'); }},
+      {ico:'💍', label:'珊瑚飾鋪', action:function(){ enterShop('accessory_bihai'); }},
+      {ico:'🏪', label:'碼頭雜貨棚', action:function(){ enterShop('grocery_bihai'); }},
+      {ico:'🍺', label:'錨頭酒館', action:function(){ enterShop('inn_bihai'); }},
+    ]
+  });
+}
+
+// 進店前顯示掌櫃 greeting 對話（含頭像），對話結束後再開買賣畫面
+function enterShop(shopKey){
+  var shop = (typeof SHOP_STOCK !== 'undefined') ? SHOP_STOCK[shopKey] : null;
+  if(!shop || !shop.npc){ openShop(shopKey); return; }
+  var npc = shop.npc;
+  var lines = (shop.greeting && shop.greeting.length ? shop.greeting : [{text:'歡迎光臨。'}]).map(function(g){
+    return {speaker:npc.name, face:npc.face, ico:npc.ico, acc:npc.acc, text:g.text};
+  });
+  openDialog(lines, function(){ openShop(shopKey); });
 }
 
 function openTown(townKey){
