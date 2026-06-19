@@ -5732,7 +5732,7 @@ function rollAndGrantGearDrops(){
 var SHOP_STOCK = {
   grocery:{
     ico:'🏪', name:'雜貨店', sub:'夏洛伊王都',
-    npc:{name:'店主阿德', ico:'🧑', acc:'#7080b0'},
+    npc:{name:'店主阿德', face:'shalloi_grocer', ico:'🧑', acc:'#7080b0'},
     greeting:[
       {text:'歡迎光臨！有什麼需要的嗎？'},
       {text:'這些都是最新進的貨，品質保證！'},
@@ -5745,7 +5745,7 @@ var SHOP_STOCK = {
   },
   weapon:{
     ico:'⚔️', name:'鑄劍師傅', sub:'夏洛伊王都',
-    npc:{name:'鑄劍師葛雷', ico:'⚒️', acc:'#c87040'},
+    npc:{name:'鑄劍師葛雷', face:'shalloi_weapon', ico:'⚒️', acc:'#c87040'},
     greeting:[
       {text:'喲，識貨的人。我這裡的刀劍都是自己打的，不是那些爛貨。'},
       {text:'看你眼力還行，想買什麼？'},
@@ -5758,7 +5758,7 @@ var SHOP_STOCK = {
   },
   inn:{
     ico:'🍷', name:'緋色酒館', sub:'夏洛伊王都',
-    npc:{name:'莉卡莉絲', ico:'🍷', acc:'#d46050'},
+    npc:{name:'莉卡莉絲', face:'licarise', ico:'🍷', acc:'#d46050'},
     greeting:[{text:'這裡的酒是最好的。要點什麼？'}],
     bye:[{text:'保重。這條路不好走。'}],
     items:['potion_hp_s','potion_hp_m','potion_mp_s','rb_drink','antidote','burn_cure'],
@@ -5766,7 +5766,7 @@ var SHOP_STOCK = {
   },
   armor:{
     ico:'🛡️', name:'防具店', sub:'夏洛伊王都',
-    npc:{name:'女鎧甲師', ico:'🧱', acc:'#8090c0'},
+    npc:{name:'女鎧甲師・凱倫', face:'shalloi_armor', ico:'🧱', acc:'#8090c0'},
     greeting:[
       {text:'防具比武器更重要——活著才能打仗。'},
       {text:'看看這些，都是我親手打造的。'},
@@ -5779,7 +5779,7 @@ var SHOP_STOCK = {
   },
   accessory:{
     ico:'💍', name:'飾品店', sub:'夏洛伊王都',
-    npc:{name:'飾品商人', ico:'💍', acc:'#c8a84a'},
+    npc:{name:'飾品商人・鐸夫', face:'shalloi_accessory', ico:'💍', acc:'#c8a84a'},
     greeting:[
       {text:'歡迎，旅人。這裡有護身的戒指與符飾。'},
       {text:'有些可不只是裝飾品喔，仔細看看。'},
@@ -5790,6 +5790,28 @@ var SHOP_STOCK = {
     items:[],
     equips:['iron_ring','charm_speed'],
   },
+
+  // ════ 赤盾城（獨立商店，不再共用夏洛伊）════
+  weapon_redshield:{ico:'⚔️',name:'赤盾兵器坊',sub:'赤盾城',
+    npc:{name:'鐵衛兵匠・霍恩',face:'redshield_weapon',ico:'⚒️',acc:'#a05858'},
+    greeting:[{text:'特列斯家族指定供應商，刀劍品質不必懷疑。'}], bye:[{text:'戰場保重。'}],
+    items:[], equips:['steel_blade','twin_fang','silver_rod']},
+  armor_redshield:{ico:'🛡️',name:'赤盾甲冑行',sub:'赤盾城',
+    npc:{name:'鎧甲監造・賽妮',face:'redshield_armor',ico:'🧱',acc:'#8a7090'},
+    greeting:[{text:'貴族聯盟的鎧甲，鍛造工序比外面講究得多。'}], bye:[{text:'願鐵甲護你周全。'}],
+    items:[], equips:['chain_mail','iron_helm','silver_tiara','leather_boot','swift_boot']},
+  accessory_redshield:{ico:'💍',name:'赤盾珍飾閣',sub:'赤盾城',
+    npc:{name:'珠寶商・羅倫',face:'redshield_accessory',ico:'💍',acc:'#c0a060'},
+    greeting:[{text:'貴族圈流通的飾品，這裡都有。'}], bye:[{text:'歡迎再次光臨。'}],
+    items:[], equips:['iron_ring','charm_speed']},
+  grocery_redshield:{ico:'🏪',name:'赤盾雜貨行',sub:'赤盾城',
+    npc:{name:'掌櫃・佟伯',face:'redshield_grocery',ico:'🧑',acc:'#909070'},
+    greeting:[{text:'城裡什麼都缺不了，缺什麼儘管問。'}], bye:[{text:'慢走，常來。'}],
+    items:['potion_hp_s','potion_hp_m','potion_mp_s','antidote','burn_cure'], equips:[]},
+  inn_redshield:{ico:'🍷',name:'赤盾貴賓酒館',sub:'赤盾城',
+    npc:{name:'酒館主・伊莎貝',face:'redshield_inn',ico:'🍷',acc:'#b06878'},
+    greeting:[{text:'歡迎光臨，這裡的酒，貴族們也愛喝。'}], bye:[{text:'路上小心。'}],
+    items:['potion_hp_s','potion_hp_m','potion_mp_s','rb_drink','antidote','burn_cure'], equips:[]},
 
   // ════ 晶峰院 ════
   weapon_jingfeng:{ico:'⚔️',name:'晶鑄武坊',sub:'晶峰院',
@@ -6311,7 +6333,7 @@ function showChoicesOverlay(choices){
 var FACE_MAP = {
   licarise:'licarise_face.jpg', anei:'anei_face.jpg', fira:'fira_face.jpg', elweis:'elweis_face.jpg',
   // ── 夏洛伊酒館 新員工（莉卡莉絲入隊後接任）──
-  ling:'IMG_0548.png',
+  ling:'IMG_0589.png',
   // ── 晶峰院 ──
   fange:'IMG_0549.png', yanna:'IMG_0550.png', saier:'IMG_0551.png',
   laopi:'IMG_0552.png', hangde:'IMG_0553.png',
@@ -6334,6 +6356,13 @@ var FACE_MAP = {
   rain_boss:'3A39EACC-3C90-40E5-8C76-3DE1B7ADEB17.jpeg',
   captain_heartless:'3DE8C405-A80E-4E04-AE9A-8BEBD50A583F.jpeg',
   cult_archon:'66BA8325-D72E-4F94-AB20-959FF73C4372.jpeg',
+  // ── 夏洛伊 5 店 ──
+  shalloi_grocer:'IMG_0590.png', shalloi_weapon:'IMG_0591.png',
+  shalloi_armor:'IMG_0594.png', shalloi_accessory:'IMG_0597.png',
+  // ── 赤盾城 5 店（獨立NPC）──
+  redshield_weapon:'IMG_0595.png', redshield_armor:'IMG_0592.png',
+  redshield_accessory:'IMG_0596.png', redshield_grocery:'IMG_0593.png',
+  redshield_inn:'IMG_0588.png',
 };
 
 function showLine(idx){
@@ -7740,10 +7769,11 @@ function openRedshieldTown(){
 
   var spots = [
     {ico:'🏯', label:'特列斯邸宅', action:redshieldManor},
-    {ico:'⚔️', label:'武器店', action:function(){ openShop('weapon'); }},
-    {ico:'🛡️', label:'防具店', action:function(){ openShop('armor'); }},
-    {ico:'🏪', label:'雜貨店', action:function(){ openShop('grocery'); }},
-    {ico:'💍', label:'飾品店', action:function(){ openShop('accessory'); }},
+    {ico:'⚔️', label:'武器店', action:function(){ enterShop('weapon_redshield'); }},
+    {ico:'🛡️', label:'防具店', action:function(){ enterShop('armor_redshield'); }},
+    {ico:'🏪', label:'雜貨店', action:function(){ enterShop('grocery_redshield'); }},
+    {ico:'💍', label:'飾品店', action:function(){ enterShop('accessory_redshield'); }},
+    {ico:'🍷', label:'酒館', action:function(){ enterShop('inn_redshield'); }},
     {ico:'⛲', label:'城中廣場', action:redshieldSquare},
   ];
 
