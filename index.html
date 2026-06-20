@@ -2493,7 +2493,7 @@ const CHAPTERS=[
   {id:'ch1',label:'第一章',title:'第一章・相遇',quest:'與艾爾薇斯、菲拉同行，調查月華失蹤'},
   {id:'ch2',label:'第二章',title:'第二章・無心之傷',quest:'前往赤盾城，追查無心之魔將'},
   {id:'ch3',label:'第三章',title:'第三章・咒術之痕',quest:'前往月隱砦，追查咒術之魔將'},
-  {id:'ch4',label:'第四章',title:'第四章・攻心之局',quest:'深入暗淵城，正面迎戰二把手'},
+  {id:'ch4',label:'第四章',title:'第四章・攻心之局',quest:'深入暗淵城，正面迎戰攻心之魔將・諾維'},
   {id:'final',label:'終章',title:'終章・各自的答案',quest:'返回夏洛伊王都，阻止魔王復活'},
   {id:'epilogue',label:'尾聲',title:'尾聲・新的日常',quest:'緋色酒館，新的日常從這裡開始'},
 ];
@@ -2538,7 +2538,11 @@ function cityOpen(ct){
   var req=99;
   if(ct.ch){ var n=parseInt(ct.ch.replace('ch',''),10); if(!isNaN(n)) req=n; }
   var cur=(typeof STORY!=='undefined' && STORY.chapter) ? STORY.chapter : 1;
-  return req<=cur;
+  if(req>cur) return false;
+  // 第三章三城強制鎖序：灰牙鎮 → 晶峰院 → 霧冕城
+  if(ct.name==='晶峰院') return (typeof STORY!=='undefined' && STORY.yuehuaSaved);
+  if(ct.name==='霧冕城') return (typeof STORY!=='undefined' && STORY.crystalKeyObtained);
+  return true;
 }
 function mapSelectCity(name){
   var ct=CITIES.find(function(c){return c.name===name;});
@@ -3303,20 +3307,21 @@ const ENEMY_DEFS = {
     drops:[{id:'potion_mp_s',rate:0.5,qty:1},{id:'dark_shard',rate:0.4,qty:1},{id:'potion_mp_m',rate:0.1,qty:1}],
   },
   captain_heartless:{
-    name:'攻心之魔將・二把手',ico:'👹',
-    hp:11500,maxHp:11500,def:92,mag_def:70,spd:72,atk:188,
+    name:'攻心之魔將・諾維',ico:'👹',
+    hp:18000,maxHp:18000,def:98,mag_def:82,spd:78,atk:205,
     isBoss:true,
-    phase2Hp:5750, // 進入第二階段
+    phase2Hp:12000, // 進入第二階段
+    phase3Hp:6000,  // 進入第三階段（狂暴）
     bossLoot:{blue:'heartless_blade_blue',red:'heartless_crown_red'},
     skills:[
-      {name:'魔將斬',type:'single',power:1.8,prob:0.35},
-      {name:'黑月壓制',type:'all',power:1.2,prob:0.25},
-      {name:'吸命之觸',type:'single',power:1.5,drain:true,prob:0.25},
-      {name:'黑暗爆炎',type:'all',power:2.6,prob:0.0,phase2Only:true,phase2Prob:0.5},
-      {name:'絕望之刃',type:'single',power:3.2,prob:0.15},
+      {name:'魔將斬',type:'single',power:1.8,prob:0.3},
+      {name:'攻心干擾',type:'all',power:1.3,prob:0.25},
+      {name:'吸命之觸',type:'single',power:1.6,drain:true,prob:0.2},
+      {name:'複製招式',type:'single',power:2.0,prob:0.0,phase2Only:true,phase2Prob:0.45},
+      {name:'絕望之刃',type:'single',power:3.4,prob:0.25},
     ],
-    exp:1800,gold:620,
-    drops:[{id:'potion_hp_l',rate:1.0,qty:2},{id:'dark_shard',rate:1.0,qty:3}],
+    exp:2400,gold:780,
+    drops:[{id:'potion_hp_l',rate:1.0,qty:3},{id:'dark_shard',rate:1.0,qty:4}],
   },
   crystal_guardian:{
     name:'晶脈守衛獸・晶嵐',ico:'💎',
@@ -3335,10 +3340,10 @@ const ENEMY_DEFS = {
     drops:[{id:'potion_hp_m',rate:0.6,qty:2}],
   },
   cult_archon:{
-    name:'咒術之魔將・維倫',ico:'📖',
-    hp:9000,maxHp:9000,def:70,mag_def:80,spd:80,atk:160,
+    name:'咒術之魔將・奧薇拉',ico:'📖',
+    hp:12000,maxHp:12000,def:78,mag_def:88,spd:82,atk:172,
     isBoss:true,
-    phase2Hp:4500,
+    phase2Hp:6000,
     bossLoot:{blue:'velen_staff_blue',red:'forbidden_grimoire_red'},
     skills:[
       {name:'咒紋束縛',type:'single',power:1.5,prob:0.35},
@@ -3347,8 +3352,8 @@ const ENEMY_DEFS = {
       {name:'萬咒齊發',type:'all',power:2.5,prob:0.0,phase2Only:true,phase2Prob:0.52},
       {name:'終咒・斷罪',type:'single',power:3.0,prob:0.2},
     ],
-    exp:1300,gold:450,
-    drops:[{id:'potion_hp_m',rate:0.7,qty:2},{id:'mage_scroll',rate:0.5,qty:2}],
+    exp:1600,gold:520,
+    drops:[{id:'potion_hp_l',rate:0.7,qty:2},{id:'mage_scroll',rate:0.5,qty:2}],
   },
   bandit_king:{
     name:'灰牙賊王・卓岡',ico:'🪦',
@@ -3365,6 +3370,16 @@ const ENEMY_DEFS = {
     ],
     exp:680,gold:240,
     drops:[{id:'potion_hp_m',rate:0.6,qty:2}],
+  },
+  gray_fang_soldier:{
+    name:'灰牙賊兵',ico:'🗡️',
+    hp:1900,maxHp:1900,def:38,mag_def:22,spd:60,atk:92,
+    skills:[
+      {name:'蠻力斬擊',type:'single',power:1.1,prob:0.6},
+      {name:'亂刀齊上',type:'single',power:1.3,prob:0.4},
+    ],
+    exp:130,gold:70,
+    drops:[{id:'potion_hp_m',rate:0.4,qty:1},{gearTier:'blue',rate:0.2}],
   },
   noble_heavy_guard:{
     name:'貴族重裝衛',ico:'🛡️',
@@ -3471,6 +3486,92 @@ let BS = null; // BattleState
 
 var BATTLE_PARTY = null;   // 單場出戰名單覆寫（key 陣列），null=全隊
 var BATTLE_ON_WIN = null;  // 戰後勝利回呼
+
+// ════════════════════════════════════════
+// BGM 音樂系統（音檔放 github repo，檔名見 BGM_TRACKS）
+// ════════════════════════════════════════
+var BGM_BASE = 'https://wiml0718-commits.github.io/genba-chronicles-assets/';
+var BGM_TRACKS = {
+  town:   'bgm_town.mp3',      // 城鎮（含酒館、標題/開場）
+  battle: 'bgm_battle.mp3',    // 戰鬥（一般戰、小兵戰、練功場）
+  boss:   'bgm_boss.mp3',      // Boss 戰
+};
+var BGM = {
+  el: null,
+  current: null,
+  enabled: true,
+  volume: 0.5,
+  init: function(){
+    if(this.el) return;
+    var a = document.createElement('audio');
+    a.id = 'bgm-audio'; a.loop = true; a.preload = 'auto';
+    a.crossOrigin = 'anonymous';
+    a.volume = this.volume;
+    document.body.appendChild(a);
+    this.el = a;
+    // 還原存檔設定
+    if(typeof GS !== 'undefined' && GS){
+      if(typeof GS.bgmEnabled === 'boolean') this.enabled = GS.bgmEnabled;
+      if(typeof GS.bgmVolume === 'number'){ this.volume = GS.bgmVolume; a.volume = this.volume; }
+    }
+  },
+  play: function(track){
+    this.init();
+    if(!BGM_TRACKS[track]) return;
+    if(this.current === track && !this.el.paused) return;
+    this.current = track;
+    if(!this.enabled){ return; }
+    var src = BGM_BASE + BGM_TRACKS[track];
+    if(this.el.getAttribute('src') !== src){
+      this.el.setAttribute('src', src);
+      this.el.load();
+    }
+    var p = this.el.play();
+    if(p && p.catch){ p.catch(function(){}); } // 行動裝置需使用者互動後才能播，靜默失敗
+  },
+  stop: function(){
+    if(this.el){ this.el.pause(); }
+    this.current = null;
+  },
+  setEnabled: function(on){
+    this.init();
+    this.enabled = on;
+    if(typeof GS !== 'undefined' && GS){ GS.bgmEnabled = on; }
+    if(!on){ this.el.pause(); }
+    else if(this.current){ var c = this.current; this.current = null; this.play(c); }
+  },
+  setVolume: function(v){
+    this.init();
+    this.volume = Math.max(0, Math.min(1, v));
+    this.el.volume = this.volume;
+    if(typeof GS !== 'undefined' && GS){ GS.bgmVolume = this.volume; }
+  },
+  // 首次使用者互動時解鎖播放（行動裝置政策）
+  unlock: function(){
+    this.init();
+    var self = this;
+    if(this.current && this.enabled && this.el.paused){
+      var p = this.el.play(); if(p && p.catch) p.catch(function(){});
+    }
+  }
+};
+// 任意點擊解鎖一次
+document.addEventListener('click', function _unlockBgm(){
+  BGM.unlock();
+}, {once:false});
+
+// 依敵人 key 判斷該放 boss 曲還是一般戰鬥曲
+function bgmForBattle(enemyKeys){
+  var bossKeys = ['rain_boss','captain_heartless','cult_archon','crystal_guardian','bandit_king',
+                  'redshield_warden'];
+  var isBoss = (enemyKeys||[]).some(function(k){
+    if(bossKeys.indexOf(k)>=0) return true;
+    var d = (typeof ENEMY_DEFS!=='undefined') ? ENEMY_DEFS[k] : null;
+    return d && d.isBoss;
+  });
+  return isBoss ? 'boss' : 'battle';
+}
+
 
 function initBattle(enemyKeys, locationName){
   // 初始化隊伍
@@ -4856,6 +4957,7 @@ function openBattle(enemyKeys, locationName){
     rsOv.style.display = 'none';
   }
   if(BS && BS.atbInterval) clearInterval(BS.atbInterval);
+  if(typeof BGM !== 'undefined'){ BGM.play(bgmForBattle(enemyKeys)); }
   initBattle(enemyKeys, locationName);
 }
 
@@ -4879,6 +4981,10 @@ function closeBattleOverlay(){
   if(rsOv && rsOv.dataset.wasOpen === 'true'){
     rsOv.style.display = 'flex';
     rsOv.dataset.wasOpen = '';
+  }
+  // 戰後恢復 BGM：回到城鎮或標題畫面皆播城鎮曲
+  if(typeof BGM !== 'undefined'){
+    BGM.play('town');
   }
 }
 
@@ -5486,7 +5592,7 @@ var EQUIPS = {
   // ── Boss 專屬掉落：藍裝(主屬性+副屬性) / 紅裝(雙主屬性+副屬性) ──
   crystal_blade_blue:   {id:'crystal_blade_blue',   name:'裂晶劍',   ico:'🗡️', slot:'武器', str:35,mag:0,def:0,spd:0,  buy:0, sell:560, ch:3, sub:{type:'crit',pct:0.12},      desc:'晶嵐破碎後的鋒利結晶'},
   crystal_claw_red:     {id:'crystal_claw_red',     name:'晶嵐之爪', ico:'🦅', slot:'武器', str:32,mag:0,def:0,spd:20, buy:0, sell:980, ch:3, sub:{type:'lifesteal',pct:0.15},  desc:'凝結晶嵐之力的雙重賜福'},
-  velen_staff_blue:     {id:'velen_staff_blue',     name:'維倫之杖', ico:'🪄', slot:'武器', str:0,mag:48,def:0,spd:0,  buy:0, sell:600, ch:3, sub:{type:'poison',pct:0.14},     desc:'咒術之魔將遺留的法杖'},
+  velen_staff_blue:     {id:'velen_staff_blue',     name:'奧薇拉之杖', ico:'🪄', slot:'武器', str:0,mag:48,def:0,spd:0,  buy:0, sell:600, ch:3, sub:{type:'poison',pct:0.14},     desc:'咒術之魔將遺留的法杖'},
   forbidden_grimoire_red:{id:'forbidden_grimoire_red',name:'禁咒法典', ico:'📖', slot:'飾品', str:0,mag:38,def:20,spd:0, buy:0, sell:1020, ch:3, sub:{type:'confuse',pct:0.16}, desc:'記載終咒的禁忌典籍'},
   shadowfang_blue:      {id:'shadowfang_blue',      name:'暗影雙牙', ico:'🔪', slot:'武器', str:28,mag:0,def:0,spd:14, buy:0, sell:580, ch:3, sub:{type:'instakill',pct:0.08},  desc:'賊王卓岡的暗器'},
   kingpact_red:         {id:'kingpact_red',         name:'賊王之契', ico:'📜', slot:'飾品', str:30,mag:0,def:0,spd:25, buy:0, sell:1000, ch:3, sub:{type:'lifesteal',pct:0.18}, desc:'灰牙鎮地下勢力的契約'},
@@ -6127,11 +6233,42 @@ function renderSettings(){
       '<div style="display:flex;gap:8px;margin-top:11px">'+actions+'</div>'+
     '</div>';
   }
+  var bgmOn = (typeof BGM!=='undefined') ? BGM.enabled : true;
+  var bgmVol = (typeof BGM!=='undefined') ? Math.round(BGM.volume*100) : 50;
+  var audioPanel =
+    '<div style="font-family:Cinzel,serif;font-size:14px;letter-spacing:4px;color:var(--gold);margin:24px 0 16px">音樂 ・ 音效</div>'+
+    '<div style="border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;background:var(--panel)">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'+
+        '<span style="font-size:13px;color:var(--text)">背景音樂</span>'+
+        '<button id="bgm-toggle" onclick="toggleBgm()" style="padding:7px 18px;border-radius:5px;font-size:12px;letter-spacing:2px;cursor:pointer;'+
+          'background:'+(bgmOn?'var(--gold)':'transparent')+';color:'+(bgmOn?'#07090f':'var(--text2)')+';border:1px solid var(--gold)">'+
+          (bgmOn?'開啟':'關閉')+'</button>'+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:12px">'+
+        '<span style="font-size:12px;color:var(--text2)">音量</span>'+
+        '<input type="range" min="0" max="100" value="'+bgmVol+'" oninput="setBgmVol(this.value)" '+
+          'style="flex:1;accent-color:var(--gold)">'+
+        '<span id="bgm-vol-val" style="font-size:12px;color:var(--text2);width:34px;text-align:right">'+bgmVol+'%</span>'+
+      '</div>'+
+    '</div>';
   return '<div style="padding:16px 16px 28px">'+
     '<div style="font-family:Cinzel,serif;font-size:14px;letter-spacing:4px;color:var(--gold);margin-bottom:16px">存檔 ・ 讀檔</div>'+
     rows+
     '<div style="font-size:9px;color:var(--text2);margin-top:8px;line-height:1.7;letter-spacing:.3px">遊戲會在戰鬥結算、商店交易、離開城鎮時自動存檔，標題畫面「繼續」即讀取自動存檔。此處為獨立的手動存讀檔格。</div>'+
+    audioPanel+
   '</div>';
+}
+function toggleBgm(){
+  if(typeof BGM==='undefined') return;
+  BGM.setEnabled(!BGM.enabled);
+  if(typeof autoSave==='function') autoSave();
+  if(typeof render==='function') render();
+}
+function setBgmVol(v){
+  if(typeof BGM==='undefined') return;
+  BGM.setVolume(v/100);
+  var el = document.getElementById('bgm-vol-val');
+  if(el) el.textContent = v+'%';
 }
 function settingsSave(i){
   var key = SAVE_SLOTS[i];
@@ -7466,7 +7603,7 @@ function exitTown(){
 // ════════════════════════════════════════
 // 序章劇情：後巷・菲拉相遇（戰後接續）
 // ════════════════════════════════════════
-var STORY = { firaMet:false, shalloiTestDone:false, likaJoined:false, metMoonEye:false, redshieldArrived:false, likaTruthRevealed:false, chapter:1, advRank:'E', advPoints:0 };
+var STORY = { firaMet:false, shalloiTestDone:false, likaJoined:false, metMoonEye:false, redshieldArrived:false, likaTruthRevealed:false, chapter:1, advRank:'E', advPoints:0, yuehuaSaved:false, crystalKeyObtained:false };
 
 function firaRescue(){
   openDialog([
@@ -7744,6 +7881,7 @@ var SHALLOI_SPOTS = [
 function openRedshieldTown(){
   var old = document.getElementById('redshield-overlay');
   if(old && old.parentNode) old.parentNode.removeChild(old);
+  if(typeof BGM !== 'undefined'){ BGM.play('town'); }
 
   var ov = document.createElement('div');
   ov.id = 'redshield-overlay';
@@ -7925,6 +8063,7 @@ function redshieldAftermath(){
 // 六座簡化選單式城鎮（赤盾城樣式）
 // ════════════════════════════════════════
 function _makeSimpleTown(opts){
+  if(typeof BGM !== 'undefined'){ BGM.play('town'); }
   var old = document.getElementById(opts.id);
   if(old && old.parentNode) old.parentNode.removeChild(old);
 
@@ -7984,7 +8123,9 @@ function openJingfengTown(){
     id:'jingfeng-overlay', name:'晶峰院', sub:'教團分院・刃脊山脈晶石礦脈',
     bg:"url('https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0542.png') center/cover no-repeat",
     spots:[
-      {ico:'⛏️', label:'礦脈深處（晶嵐）', action:function(){ fightCrystalGuardian(); }},
+      {ico:'⛏️', label:'礦脈深處（晶嵐）', action:function(){
+        if(typeof STORY!=='undefined' && STORY.crystalKeyObtained){ jingfengAftermath(); } else { fightCrystalGuardian(); }
+      }},
       {ico:'⚔️', label:'晶鑄武坊', action:function(){ enterShop('weapon_jingfeng'); }},
       {ico:'🛡️', label:'晶甲鋪', action:function(){ enterShop('armor_jingfeng'); }},
       {ico:'💍', label:'晶飾閣', action:function(){ enterShop('accessory_jingfeng'); }},
@@ -7995,11 +8136,25 @@ function openJingfengTown(){
 }
 function fightCrystalGuardian(){
   openDialog([
-    {speaker:'暗影',face:'anei',acc:'#9b7fd4', text:'……礦脈深處有東西在動。'},
-    {triggerBattle:['crystal_guardian'], battleParty:['anei','lika','fira','elweis'], onWin: function(){
-      grantBossLoot('crystal_guardian');
-      if(typeof showToast==='function') showToast('擊敗晶嵐，獲得專屬裝備！', 'success');
-    }},
+    {speaker:'艾爾薇斯',face:'elweis',acc:'#5a9bd4', text:'晶鑰就在守衛獸的核心裡。這條路，我們非走不可。'},
+    {speaker:'暗影',face:'anei',acc:'#9b7fd4', text:'走。'},
+    {triggerBattle:['crystal_guardian'], battleParty:['anei','lika','fira','elweis'], onWin: crystalGuardianAftermath},
+  ], null);
+}
+function crystalGuardianAftermath(){
+  grantBossLoot('crystal_guardian');
+  openDialog([
+    {speaker:'艾爾薇斯',face:'elweis',acc:'#5a9bd4', text:'（獨白）……晶鑰到手了。但這守衛獸的核心裡，怎麼會藏著一卷禁術書頁的殘篇？'},
+    {speaker:'艾爾薇斯',face:'elweis',acc:'#5a9bd4', text:'（獨白）「靈魂轉移之術」……教團果然在鑽研這種東西。先收起來，誰都不能知道。'},
+  ], function(){
+    if(typeof STORY !== 'undefined') STORY.crystalKeyObtained = true;
+    if(typeof saveGame === 'function') saveGame();
+    if(typeof showToast==='function') showToast('擊敗晶嵐，獲得晶鑰！霧冕城已解鎖', 'success');
+  });
+}
+function jingfengAftermath(){
+  openDialog([
+    {speaker:'暗影',face:'anei',acc:'#9b7fd4', text:'晶嵐已經倒下，礦脈深處安靜得很。'},
   ], null);
 }
 
@@ -8008,7 +8163,9 @@ function openWumianTown(){
     id:'wumian-overlay', name:'霧冕城', sub:'教團本院・禁忌之術典籍存放地',
     bg:"url('https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0541.png') center/cover no-repeat",
     spots:[
-      {ico:'📖', label:'本院深處（咒術之魔將）', action:function(){ fightCultArchon(); }},
+      {ico:'📖', label:'本院深處（咒術之魔將）', action:function(){
+        if(typeof STORY!=='undefined' && STORY.chapter>=4){ wumianAftermath(); } else { fightCultArchon(); }
+      }},
       {ico:'🪄', label:'咒紋工坊', action:function(){ enterShop('weapon_wumian'); }},
       {ico:'🥋', label:'本院法袍坊', action:function(){ enterShop('armor_wumian'); }},
       {ico:'📿', label:'禁書閣', action:function(){ enterShop('accessory_wumian'); }},
@@ -8019,15 +8176,34 @@ function openWumianTown(){
 }
 function fightCultArchon(){
   openDialog([
-    {speaker:'咒術之魔將・維倫',face:'cult_archon',acc:'#8a6fd0', text:'禁忌之術，本就不是凡人該觸碰的東西……既然來了，就讓你們見識見識。'},
-    {speaker:'艾爾薇斯',face:'elweis',acc:'#5a9bd4', text:'禁忌之術的源頭，就在本院深處。'},
-    {speaker:'暗影',face:'anei',acc:'#9b7fd4', text:'結束這一切。'},
-    {triggerBattle:['cult_archon'], battleParty:['anei','lika','fira','elweis'], onWin: function(){
-      grantBossLoot('cult_archon');
-      if(typeof STORY !== 'undefined') STORY.chapter = 4;
-      if(typeof saveGame === 'function') saveGame();
-      if(typeof showToast==='function') showToast('擊敗咒術之魔將！第四章「攻心之局」開啟', 'success');
-    }},
+    {speaker:'？？？',ico:'📖',acc:'#8a6fd0', text:'（陰影中現身）終於來了。本院深處，可不是誰都能踏入的禁地。'},
+    {speaker:'咒術之魔將・奧薇拉',face:'cult_archon',ico:'📖',acc:'#8a6fd0', text:'十年前，邊境那對夫妻，求饒的樣子，和你現在的眼神——一模一樣。'},
+    {speaker:'菲拉',face:'fira',acc:'#d47040', text:'……你說什麼？（瞳孔劇震，呼吸開始發顫）'},
+    {speaker:'咒術之魔將・奧薇拉',face:'cult_archon',ico:'📖',acc:'#8a6fd0', text:'呵呵呵……看樣子，妳想起來了。'},
+    {speaker:'菲拉',face:'fira',acc:'#d47040', text:'是你……是你殺了我爸媽——我要你用血還！（衝動上前，卻渾身僵住動彈不得）'},
+    {speaker:'咒術之魔將・奧薇拉',face:'cult_archon',ico:'📖',acc:'#8a6fd0', text:'（咒紋纏向呆立的菲拉）既然想起來了，就一起回憶吧。'},
+    {speaker:'艾爾薇斯',face:'elweis',acc:'#5a9bd4', text:'（搶身擋下攻擊）發什麼呆。我在這裡，你不會有事。站到我身邊來。'},
+    {speaker:'暗影',face:'anei',acc:'#9b7fd4', text:'菲拉，深呼吸。仇，我們一起報。'},
+    {triggerBattle:['cult_archon'], battleParty:['anei','lika','fira','elweis'], onWin: cultArchonAftermath},
+  ], null);
+}
+function cultArchonAftermath(){
+  grantBossLoot('cult_archon');
+  openDialog([
+    {speaker:'咒術之魔將・奧薇拉',face:'cult_archon',ico:'📖',acc:'#8a6fd0', text:'……諾維大人，可是費了好大的心思，才把你……（話未說完，氣絕）'},
+    {speaker:'菲拉',face:'fira',acc:'#d47040', text:'……她要說的是——我，到底是什麼東西？'},
+    {speaker:'暗影',face:'anei',acc:'#9b7fd4', text:'（沉默片刻）諾維。又是這個名字。'},
+    {speaker:'艾爾薇斯',face:'elweis',acc:'#5a9bd4', text:'……我們得查清楚，這名字到底牽連了多少事。'},
+    {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'走吧。霧冕城不會是終點。'},
+  ], function(){
+    if(typeof STORY !== 'undefined') STORY.chapter = 4;
+    if(typeof saveGame === 'function') saveGame();
+    if(typeof showToast==='function') showToast('擊敗咒術之魔將！第四章「攻心之局」開啟', 'success');
+  });
+}
+function wumianAftermath(){
+  openDialog([
+    {speaker:'艾爾薇斯',face:'elweis',acc:'#5a9bd4', text:'本院深處已經沒有敵蹤了。諾維的事，還得繼續查。'},
   ], null);
 }
 
@@ -8036,7 +8212,9 @@ function openGreyfangTown(){
     id:'greyfang-overlay', name:'灰牙鎮', sub:'邊境混亂小鎮・盜賊勢力盤據',
     bg:"url('https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0540.png') center/cover no-repeat",
     spots:[
-      {ico:'🪦', label:'地下牢房（賊王）', action:function(){ fightBanditKing(); }},
+      {ico:'🪦', label:'地下牢房（賊王）', action:function(){
+        if(typeof STORY!=='undefined' && STORY.yuehuaSaved){ greyfangAftermath(); } else { fightBanditKing(); }
+      }},
       {ico:'🔪', label:'地下鐵舖', action:function(){ enterShop('weapon_greyfang'); }},
       {ico:'🥋', label:'雜皮甲坊', action:function(){ enterShop('armor_greyfang'); }},
       {ico:'💍', label:'黑市飾鋪', action:function(){ enterShop('accessory_greyfang'); }},
@@ -8048,10 +8226,60 @@ function openGreyfangTown(){
 function fightBanditKing(){
   openDialog([
     {speaker:'菲拉',face:'fira',acc:'#d47040', text:'地下牢房就在前面，賊王應該躲在那。'},
-    {triggerBattle:['bandit_king'], battleParty:['anei','lika','fira','elweis'], onWin: function(){
-      grantBossLoot('bandit_king');
-      if(typeof showToast==='function') showToast('擊敗灰牙賊王，獲得專屬裝備！', 'success');
-    }},
+    {speaker:'暗影',face:'anei',acc:'#9b7fd4', text:'有埋伏。準備動手。'},
+    {triggerBattle:['gray_fang_soldier','gray_fang_soldier','gray_fang_soldier','gray_fang_soldier'], battleParty:['anei','lika','fira','elweis'], onWin: banditWave2},
+  ], null);
+}
+function banditWave2(){
+  openDialog([
+    {speaker:'菲拉',ico:'💬',acc:'#7090a0', text:'還有！這幫人比想像中多。'},
+    {triggerBattle:['gray_fang_soldier','gray_fang_soldier','gray_fang_soldier','gray_fang_soldier'], battleParty:['anei','lika','fira','elweis'], onWin: banditAmbush},
+  ], null);
+}
+function banditAmbush(){
+  if(typeof getPartyState==='function' && typeof PARTY_DEF!=='undefined' && typeof maxHpFor==='function'){
+    var st = getPartyState('anei');
+    var pdef = PARTY_DEF.find(function(p){return p.key==='anei';});
+    if(st && pdef){
+      var eqb = (typeof getEquipBonus==='function') ? (getEquipBonus('anei')||{}) : {};
+      var mHp = maxHpFor(pdef, st) + (eqb.hp||0);
+      st.hp = Math.max(1, Math.floor(mHp*0.5));
+    }
+  }
+  openDialog([
+    {speaker:'卓岡',ico:'🪦',acc:'#704830', text:'（從暗處欺近）小丫頭，這地下牢房不是隨便進的。'},
+    {speaker:'暗影',face:'anei',acc:'#9b7fd4', text:'（反應不及，肩頭中刀）……！'},
+    {speaker:'？？？',ico:'🗡️',acc:'#8a8a8a', text:'（一道身影截下卓岡的刀）——退後。'},
+    {speaker:'菲拉',face:'fira',acc:'#d47040', text:'師父？！你怎麼會在這裡——'},
+    {speaker:'傑特',ico:'🗡️',acc:'#8a8a8a', text:'順著線索追過來的。剩下的，你們自己解決——這是你們的戰鬥。'},
+    {speaker:'卓岡',ico:'🪦',acc:'#704830', text:'呵，老頭子也來湊熱鬧。算了，先解決這幾個小的。'},
+    {triggerBattle:['bandit_king'], battleParty:['anei','lika','fira','elweis'], onWin: banditAftermath},
+  ], null);
+}
+function banditAftermath(){
+  grantBossLoot('bandit_king');
+  openDialog([
+    {speaker:'卓岡',ico:'🪦',acc:'#704830', text:'（倒地）……教團的人，給的可不只是錢……'},
+    {speaker:'暗影',face:'anei',acc:'#9b7fd4', text:'教團？你是說——'},
+    {speaker:'卓岡',ico:'🪦',acc:'#704830', text:'（氣絕，沒有再開口）'},
+    {speaker:'菲拉',face:'fira',acc:'#d47040', text:'地牢深處有人！是月華團長！'},
+    {speaker:'月華',ico:'🌙',acc:'#c8a850', text:'……你們？怎麼找到這裡的。'},
+    {speaker:'艾爾薇斯',face:'elweis',acc:'#5a9bd4', text:'月華團長，您沒事吧。'},
+    {speaker:'月華',ico:'🌙',acc:'#c8a850', text:'是賊王卓岡的人抓的，沒料到對方早有準備——教團的爪牙，連賊團都收編了。'},
+    {speaker:'月華',ico:'🌙',acc:'#c8a850', text:'我查到的線索全指向教團……他們埋的人，比我想的還要多。'},
+    {speaker:'月華',ico:'🌙',acc:'#c8a850', text:'（看向菲拉，欲言又止）菲拉，前方還有更深的局。遇上奧薇拉，無論她說什麼，都別亂了心。'},
+    {speaker:'菲拉',face:'fira',acc:'#d47040', text:'團長……？'},
+    {speaker:'月華',ico:'🌙',acc:'#c8a850', text:'（沒有再多說）走吧，先離開這裡再說。'},
+    {speaker:'月華',ico:'🌙',acc:'#c8a850', text:'（獨白・隊友不知）……查到的線索，疑似與菲拉雙親的死有關。但現在，我不能讓她知道。'},
+  ], function(){
+    if(typeof STORY !== 'undefined') STORY.yuehuaSaved = true;
+    if(typeof saveGame === 'function') saveGame();
+    if(typeof showToast==='function') showToast('救出月華！晶峰院已解鎖', 'success');
+  });
+}
+function greyfangAftermath(){
+  openDialog([
+    {speaker:'菲拉',face:'fira',acc:'#d47040', text:'地下牢房已經清乾淨了，沒什麼好留戀的。'},
   ], null);
 }
 
@@ -8071,7 +8299,7 @@ function openAbyssTown(){
 }
 function fightCaptainHeartless(){
   openDialog([
-    {speaker:'攻心之魔將・二把手',face:'captain_heartless',acc:'#a03030', text:'遠道而來，就由我來送你們最後一程。'},
+    {speaker:'攻心之魔將・諾維',face:'captain_heartless',acc:'#a03030', text:'歡迎，每一個被我安排到這裡的人。'},
     {speaker:'莉卡莉絲',face:'licarise',acc:'#d46050', text:'二把手就在王座廳。這次，沒有退路了。'},
     {speaker:'暗影',face:'anei',acc:'#9b7fd4', text:'走。'},
     {triggerBattle:['captain_heartless'], battleParty:['anei','lika','fira','elweis'], onWin: function(){
@@ -8127,6 +8355,7 @@ function enterShop(shopKey){
 function openTown(townKey){
   var ov = document.getElementById('town-overlay');
   if(!ov) return;
+  if(typeof BGM !== 'undefined'){ BGM.play('town'); }
 
   ov.setAttribute('style',
     'display:block;position:fixed;top:0;left:0;width:100%;height:100%;' +
@@ -8371,6 +8600,7 @@ function showLoadMenu(){
 function showTitleScreen(){
   var old = document.getElementById('title-screen');
   if(old && old.parentNode) old.parentNode.removeChild(old);
+  if(typeof BGM !== 'undefined'){ BGM.play('town'); }
 
   if(!document.getElementById('gc-title-style')){
     var stl = document.createElement('style');
