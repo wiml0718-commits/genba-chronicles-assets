@@ -403,7 +403,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
 .party-area{
   position:relative;z-index:5;
   flex:0 0 auto;
-  background:linear-gradient(0deg,rgba(7,9,15,.98),rgba(11,14,28,.95));
+  background:transparent;
   border-top:1px solid var(--border2);
 }
 
@@ -414,7 +414,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
   position:relative;z-index:4;}
 .hero-art-fig{height:100%;width:auto;max-width:25%;object-fit:contain;object-position:bottom center;
   filter:drop-shadow(0 6px 14px rgba(0,0,0,.6));}
-.party-list{display:flex;gap:0;border-bottom:1px solid var(--border);}
+.party-list{display:flex;gap:0;border-bottom:1px solid var(--border);background:linear-gradient(0deg,rgba(7,9,15,.98),rgba(11,14,28,.95));}
 .party-member{flex:1;padding:7px 6px 6px;position:relative;cursor:pointer;
   border-right:1px solid var(--border);transition:background .18s;}
 .party-member:last-child{border-right:none;}
@@ -442,7 +442,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
 .pm-ail{font-size:9px;}
 
 /* ── 行動介面 ── */
-.action-area{padding:8px 10px;min-height:90px;}
+.action-area{padding:8px 10px;min-height:90px;background:rgba(7,9,15,.96);}
 
 /* 技能按鈕 2×2 */
 .skill-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
@@ -5002,6 +5002,8 @@ var HERO_ART = {
   fira:   'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0621.png',
   elweis: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0618.png'
 };
+// 立繪大小微調（各圖框留白不一致時用；1=原始，數值越大圖越大、底部對齊）
+var HERO_ART_SCALE = { anei:1, lika:1, fira:1, elweis:1 };
 
 function renderHeroArt(){
   var cont = document.getElementById('hero-art');
@@ -5015,7 +5017,8 @@ function renderHeroArt(){
   BS.party.forEach(function(p){
     var url = HERO_ART[p.key] || '';
     if(!url) return;
-    html += '<img class="hero-art-fig" src="' + url + '" alt="" />';
+    var sc = HERO_ART_SCALE[p.key] || 1;
+    html += '<img class="hero-art-fig" src="' + url + '" alt="" style="height:' + (sc*100) + '%;" />';
   });
   cont.innerHTML = html;
 }
@@ -6491,7 +6494,7 @@ function endDialog(){
 }
 
 
-function showChoicesOverlay(choices){
+function showChoicesOverlay(choices, line){
   var old = document.getElementById('choices-overlay');
   if(old) old.remove();
 
@@ -6514,6 +6517,23 @@ function showChoicesOverlay(choices){
   var townOv = document.getElementById('town-overlay');
   if(townOv) townOv.style.pointerEvents = 'none';
   // dialog-screen 已在 body（openDialog 建立時就 append 到 body）
+
+  if(line){
+    var hacc = line.acc || 'var(--text2)';
+    var hkey = line.face || ((typeof SPEAKER_FACE!=='undefined' && SPEAKER_FACE[line.speaker]) || '') || '';
+    var hfile = (typeof FACE_MAP!=='undefined' && FACE_MAP[hkey]) || '';
+    var av = hfile
+      ? '<img src="https://wiml0718-commits.github.io/genba-chronicles-assets/'+hfile+'" style="width:48px;height:48px;object-fit:cover;object-position:top;border-radius:8px;border:2px solid '+hacc+';flex-shrink:0;" />'
+      : '<div style="font-size:30px;flex-shrink:0;width:48px;text-align:center;">'+(line.ico||'💬')+'</div>';
+    var hdr = document.createElement('div');
+    hdr.setAttribute('style','display:flex;gap:10px;margin-bottom:8px;align-items:flex-start;');
+    hdr.innerHTML = av +
+      '<div style="flex:1;">' +
+        '<div style="font-size:12px;font-weight:bold;color:'+hacc+';margin-bottom:3px;letter-spacing:1px;">'+(line.speaker||'')+'</div>' +
+        '<div style="font-size:13px;line-height:1.5;color:#ccd4f0;">'+(line.text||'')+'</div>' +
+      '</div>';
+    ov.appendChild(hdr);
+  }
 
   choices.forEach(function(c, ci){
     var btn = document.createElement('a');  // 用 <a> 而非 <button>，iOS 更可靠
@@ -6682,7 +6702,7 @@ function showLine(idx){
   DLG.typing = false;
   if(line.choices && line.choices.length > 0){
     if(footer) footer.style.display = 'none';
-    showChoicesOverlay(line.choices);
+    showChoicesOverlay(line.choices, line);
   } else {
     if(footer) footer.style.display = 'block';
   }
@@ -7921,9 +7941,9 @@ var SHALLOI_SPOTS = [
     left:'68%', top:'42%', width:'28%', height:'18%',
     action: function(){
       openDialog([
-        {speaker:'鑄劍師葛雷',face:'npc',acc:'#a08060',
+        {speaker:'鑄劍師葛雷',face:'shalloi_weapon',acc:'#a08060',
          text:'沒錢就別進來。'},
-        {speaker:'鑄劍師葛雷',face:'npc',acc:'#a08060',
+        {speaker:'鑄劍師葛雷',face:'shalloi_weapon',acc:'#a08060',
          text:'……有錢？那歡迎。',
          choices:[
            {text:'進入商店',next:'go_shop'},
@@ -7941,9 +7961,9 @@ var SHALLOI_SPOTS = [
     left:'2%', top:'76%', width:'30%', height:'16%',
     action: function(){
       openDialog([
-        {speaker:'女鎧甲師',face:'npc',acc:'#6080a0',
+        {speaker:'女鎧甲師',face:'shalloi_armor',acc:'#6080a0',
          text:'防具比武器更重要——活著才能打仗。'},
-        {speaker:'女鎧甲師',face:'npc',acc:'#6080a0',
+        {speaker:'女鎧甲師',face:'shalloi_armor',acc:'#6080a0',
          text:'需要什麼防護？',
          choices:[
            {text:'進入商店',next:'go_shop'},
@@ -7961,9 +7981,9 @@ var SHALLOI_SPOTS = [
     left:'8%', top:'52%', width:'26%', height:'16%',
     action: function(){
       openDialog([
-        {speaker:'店主阿德',face:'npc',acc:'#80a060',
+        {speaker:'店主阿德',face:'shalloi_grocer',acc:'#80a060',
          text:'歡迎歡迎！道具、補給品，應有盡有。'},
-        {speaker:'店主阿德',face:'npc',acc:'#80a060',
+        {speaker:'店主阿德',face:'shalloi_grocer',acc:'#80a060',
          text:'需要什麼？',
          choices:[
            {text:'進入商店',next:'go_shop'},
@@ -7981,9 +8001,9 @@ var SHALLOI_SPOTS = [
     left:'62%', top:'70%', width:'34%', height:'16%',
     action: function(){
       openDialog([
-        {speaker:'飾品商人',face:'npc',acc:'#c8a84a',
+        {speaker:'飾品商人',face:'shalloi_accessory',acc:'#c8a84a',
          text:'歡迎，旅人。這裡有護身的戒指與符飾。'},
-        {speaker:'飾品商人',face:'npc',acc:'#c8a84a',
+        {speaker:'飾品商人',face:'shalloi_accessory',acc:'#c8a84a',
          text:'有些可不只是裝飾品喔。',
          choices:[
            {text:'進入商店',next:'go_shop'},
