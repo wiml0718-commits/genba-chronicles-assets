@@ -408,6 +408,12 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
 }
 
 /* 隊伍成員列 */
+/* 戰鬥全身立繪（純裝飾靜態，去背 PNG，站於隊伍卡上方） */
+.hero-art-row{display:flex;align-items:flex-end;justify-content:center;gap:2%;
+  height:30vh;max-height:240px;min-height:120px;overflow:hidden;pointer-events:none;
+  position:relative;z-index:4;}
+.hero-art-fig{height:100%;width:auto;max-width:25%;object-fit:contain;object-position:bottom center;
+  filter:drop-shadow(0 6px 14px rgba(0,0,0,.6));}
 .party-list{display:flex;gap:0;border-bottom:1px solid var(--border);}
 .party-member{flex:1;padding:7px 6px 6px;position:relative;cursor:pointer;
   border-right:1px solid var(--border);transition:background .18s;}
@@ -1777,6 +1783,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
       <button class="shop-tab active" id="tab-buy-btn">購　買</button>
       <button class="shop-tab" id="tab-sell-btn">販　賣</button>
       <button class="shop-tab" id="tab-bag-btn">背　包</button>
+      <button class="shop-tab" id="tab-rest-btn" style="display:none">住　店</button>
     </div>
     <div class="shop-list" id="shop-list"></div>
     <div class="shop-footer">
@@ -1799,6 +1806,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;
   </div>
   <div class="battle-log" id="battle-log"></div>
   <div class="party-area">
+    <div class="hero-art-row" id="hero-art"></div>
     <div class="party-list" id="party-list"></div>
     <div class="action-area" id="action-area">
       <div class="waiting-msg">— ATB 充能中 —</div>
@@ -3605,7 +3613,7 @@ function initBattle(enemyKeys, locationName){
       lv: st.lv,
       hp: Math.min(st.hp, mHp),
       maxHp: mHp,
-      mp: mMp,
+      mp: Math.min(st.mp, mMp),
       maxMp: mMp,
       rb: st.rb,           // 保留上場戰鬥的 RB
       maxRb: p.baseRb,     // 500
@@ -3650,6 +3658,7 @@ function initBattle(enemyKeys, locationName){
     logLines: [],
     atbInterval: null,
     globalAtbMult: 1.0,    // 全局 ATB 速率
+    drankSet: {},          // 本場已喝酒的角色（每人限一次）
   };
 
   var isBoss = BS.enemies.some(function(e){ return e.isBoss; });
@@ -4571,6 +4580,7 @@ function renderAll(){
   renderEnemies();
   renderPartyList();
   renderActionArea();
+  renderHeroArt();
 }
 
 function renderEnemies(){
@@ -4830,6 +4840,8 @@ function renderItemSubmenu(area, actor){
     usable.forEach(function(it){
       const btn = document.createElement('button');
       btn.className = 'skill-btn';
+      var _isLiquor = (it.info.effect === 'liquor');
+      if(_isLiquor && BS.drankSet && BS.drankSet[actor.key]){ btn.disabled = true; btn.style.opacity = '0.4'; }
       btn.innerHTML =
         '<div class="skill-btn-ico">'+(it.info.ico||'📦')+'</div>' +
         '<div class="skill-btn-body">' +
@@ -4867,10 +4879,41 @@ function doDefend(actor){
 function selectItem(item){
   BS.pendingItem = item;
   var eff = item.info.effect;
+  if(eff === 'liquor'){ drinkLiquor(item); return; }
   // 回復/解除類 → 選隊友（含自己）；目前道具都是對我方
   BS.selectingTarget = 'party';
   BS.pendingSkill = {id:'use_item', name:item.info.name, type:'item', isItem:true};
   renderActionArea();
+}
+
+function drinkLiquor(item){
+  var actor = BS.pendingActor.unit;
+  var info = item.info;
+  if(!BS.drankSet) BS.drankSet = {};
+  if(BS.drankSet[actor.key]){
+    showToast('本場戰鬥已經喝過酒了', 'error');
+    return; // 不消耗回合，留在道具選單
+  }
+  if(!actor.buffs) actor.buffs = [];
+  actor.buffs.push({type: info.buffType, val: info.buffVal, turns: info.turns || 5});
+  var cost = Math.floor(actor.maxHp * 0.10);
+  actor.hp = Math.max(1, actor.hp - cost);
+  floatText('-' + cost, 'party_' + actor.key, '#f08080', 'dmg');
+  BS.drankSet[actor.key] = true;
+  if(typeof PLAYER !== 'undefined' && PLAYER.bag){
+    for(var i=0;i<PLAYER.bag.length;i++){
+      if(PLAYER.bag[i].id===item.id && !PLAYER.bag[i].isEquip){
+        PLAYER.bag[i].qty -= 1;
+        if(PLAYER.bag[i].qty <= 0) PLAYER.bag.splice(i,1);
+        break;
+      }
+    }
+  }
+  addLog('🍶 ' + (actor.nameZh||actor.name) + ' 飲下【'+info.name+'】— ' + (info.desc||'') + '（-'+cost+' HP）', 'limit');
+  BS.pendingItem = null;
+  BS.selectingTarget = false;
+  BS.actionMenu = 'main';
+  finishActorTurn();
 }
 
 function useItemOnTarget(target){
@@ -4925,9 +4968,57 @@ function useItemOnTarget(target){
 // 主介面整合：開啟/關閉戰鬥
 // ════════════════════════════════════════
 var BOSS_BATTLE_BG = {
-  rain_boss: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0539.png',
-  bandit_king: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0543.png',
+  // 既有
+  rain_boss: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0539.png',            // 赤盾城・雷恩
+  bandit_king: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0543.png',          // 灰牙鎮・卓岡
+  gray_fang_soldier: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0543.png',    // 灰牙賊兵（沿用卓岡）
+  // 暗巷（序章地痞戰）
+  thug: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0603.png',
+  thug_boss: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0603.png',
+  // 王都平原（第一章卡爾伏擊＋平原練功）
+  karl_boss: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0604.png',
+  bounty_hunter: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0604.png',
+  noble_guard: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0604.png',
+  hound: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0604.png',
+  shadow_soldier: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0604.png',
+  dark_mage: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0604.png',
+  // 晶峰院・霧冕城
+  crystal_guardian: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0605.png',     // 晶嵐
+  cult_archon: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0606.png',          // 奧薇拉
+  // 練功場
+  ridge_wolf: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0607.png',           // 刃脊山脈
+  rock_golem: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0607.png',
+  ash_fiend: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0586.png',            // 灰燼荒野
+  ash_hound: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0586.png',
+  // 暗淵城・諾維
+  captain_heartless: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0585.png',
+  // 血月壇 IMG_0587 待終章敵人 key 建立後再接
 };
+
+// 四主角戰鬥全身立繪（純裝飾靜態；去背透明 PNG；URL 待填，空字串=不顯示該角色立繪）
+var HERO_ART = {
+  anei:   'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0620.png',
+  lika:   'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0619.png',
+  fira:   'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0621.png',
+  elweis: 'https://wiml0718-commits.github.io/genba-chronicles-assets/IMG_0618.png'
+};
+
+function renderHeroArt(){
+  var cont = document.getElementById('hero-art');
+  if(!cont || !BS || !BS.party) return;
+  var keys = [];
+  BS.party.forEach(function(p){ keys.push(p.key); });
+  var sig = keys.join(',');
+  if(cont.dataset.sig === sig) return;
+  cont.dataset.sig = sig;
+  var html = '';
+  BS.party.forEach(function(p){
+    var url = HERO_ART[p.key] || '';
+    if(!url) return;
+    html += '<img class="hero-art-fig" src="' + url + '" alt="" />';
+  });
+  cont.innerHTML = html;
+}
 
 function openBattle(enemyKeys, locationName){
   var overlay = document.getElementById('battle-overlay');
@@ -5529,6 +5620,11 @@ var ITEMS = {
   antidote:     {id:'antidote',    name:'解毒藥',   ico:'💚', type:'consume', effect:'cure', cureType:'poison', buy:50, sell:35, desc:'解除中毒'},
   burn_cure:    {id:'burn_cure',   name:'清涼藥',   ico:'🧊', type:'consume', effect:'cure', cureType:'burn', buy:50, sell:35, desc:'解除燃燒'},
   rb_drink:     {id:'rb_drink',    name:'戰魂之飲', ico:'🔴', type:'consume', effect:'rb',  val:50,  buy:300,  sell:210, desc:'RB +50'},
+  liquor_atk:   {id:'liquor_atk',   name:'烈焰酒',   ico:'🍶', type:'consume', effect:'liquor', buffType:'atk',      buffVal:1.30, turns:5, buy:200, sell:140, desc:'攻擊×1.30（5回合）'},
+  liquor_def:   {id:'liquor_def',   name:'鐵衛酒',   ico:'🍶', type:'consume', effect:'liquor', buffType:'def',      buffVal:1.30, turns:5, buy:200, sell:140, desc:'防禦×1.30（5回合）'},
+  liquor_crit:  {id:'liquor_crit',  name:'鷹眼酒',   ico:'🍶', type:'consume', effect:'liquor', buffType:'critBuff', buffVal:0.20, turns:5, buy:200, sell:140, desc:'爆擊率+20%（5回合）'},
+  liquor_spd:   {id:'liquor_spd',   name:'疾風酒',   ico:'🍶', type:'consume', effect:'liquor', buffType:'spd',      buffVal:30,   turns:5, buy:200, sell:140, desc:'速度+30（5回合）'},
+  liquor_atk2:  {id:'liquor_atk2',  name:'狂戰烈酒', ico:'🍶', type:'consume', effect:'liquor', buffType:'atk',      buffVal:1.45, turns:5, buy:500, sell:350, desc:'攻擊×1.45（5回合）'},
   dark_shard:   {id:'dark_shard',  name:'暗影碎片', ico:'🔮', type:'material', buy:0, sell:120, desc:'黑暗魔力的結晶'},
   iron_fang:    {id:'iron_fang',   name:'鐵牙',     ico:'🦷', type:'material', buy:0, sell:80,  desc:'影衛士兵的牙'},
   dark_stone:   {id:'dark_stone',  name:'暗石',     ico:'🪨', type:'material', buy:0, sell:200, desc:'魔族的礦石碎片'},
@@ -6052,6 +6148,17 @@ var SHOP_STOCK = {
     items:['potion_hp_m','potion_mp_m','rb_drink'], equips:[]},
 };
 
+// 酒館改造：所有 inn 酒館 → 提供住店 + 改賣各種酒（移除與雜貨重疊的藥水）
+(function(){
+  var LIQUOR_LIST = ['liquor_atk','liquor_def','liquor_crit','liquor_spd','liquor_atk2','rb_drink'];
+  for(var _k in SHOP_STOCK){
+    if(_k==='inn' || _k.indexOf('inn_')===0){
+      SHOP_STOCK[_k].rest = true;
+      SHOP_STOCK[_k].items = LIQUOR_LIST.slice();
+    }
+  }
+})();
+
 // ── 玩家狀態（測試用）──
 var PLAYER = {
   gil: 1500,
@@ -6493,6 +6600,9 @@ var FACE_MAP = {
   rain_boss:'3A39EACC-3C90-40E5-8C76-3DE1B7ADEB17.jpeg',
   captain_heartless:'3DE8C405-A80E-4E04-AE9A-8BEBD50A583F.jpeg',
   cult_archon:'66BA8325-D72E-4F94-AB20-959FF73C4372.jpeg',
+  // ── 劇情人物 ──
+  yuehua:'6B4F026A-2F7A-4CC1-9F72-4758F40EBD39.jpeg',
+  jett:'B7356E16-B98D-453E-A5E3-DDCF6D2CEBA5.jpeg',
   // ── 夏洛伊 5 店 ──
   shalloi_grocer:'IMG_0590.png', shalloi_weapon:'IMG_0591.png',
   shalloi_armor:'IMG_0594.png', shalloi_accessory:'IMG_0597.png',
@@ -6501,6 +6611,9 @@ var FACE_MAP = {
   redshield_accessory:'IMG_0596.png', redshield_grocery:'IMG_0593.png',
   redshield_inn:'IMG_0588.png',
 };
+
+// 依 speaker 名稱自動補頭像（限本來無 face 的劇情人物）
+var SPEAKER_FACE = {'月華':'yuehua','傑特':'jett'};
 
 function showLine(idx){
   if(idx >= DLG.lines.length){
@@ -6528,7 +6641,7 @@ function showLine(idx){
 
   var inner = document.getElementById('dialog-inner');
   if(inner){
-    var faceKey = line.face || '';
+    var faceKey = line.face || SPEAKER_FACE[line.speaker] || '';
     var faceFile = FACE_MAP[faceKey] || '';
     var avatarHtml = '';
     if(faceFile){
@@ -6678,6 +6791,8 @@ function showShopScreen(shop){
   document.getElementById('shop-ico').textContent = shop.ico;
   document.getElementById('shop-name').textContent = shop.name;
   document.getElementById('shop-sub').textContent = shop.sub;
+  var _restTab = document.getElementById('tab-rest-btn');
+  if(_restTab) _restTab.style.display = shop.rest ? '' : 'none';
   updateGilDisplay();
   switchTab('buy');
   bindShopButtons();
@@ -6690,6 +6805,8 @@ function bindShopButtons(){
   if(tabSell){ tabSell.onclick = function(){ switchTab('sell'); }; }
   var tabBag = document.getElementById('tab-bag-btn');
   if(tabBag){ tabBag.onclick = function(){ switchTab('bag'); }; }
+  var tabRest = document.getElementById('tab-rest-btn');
+  if(tabRest){ tabRest.onclick = function(){ switchTab('rest'); }; }
   var closeBtn = document.getElementById('close-shop-btn');
   if(closeBtn){ closeBtn.onclick = closeShop; }
 }
@@ -6715,6 +6832,36 @@ function switchTab(tab){
   renderShopList();
 }
 
+var REST_COST = 300;
+function renderRestPanel(list, shop){
+  list.innerHTML =
+    '<div style="padding:20px 16px;text-align:center;">' +
+      '<div style="font-size:40px;margin-bottom:10px;">🛏️</div>' +
+      '<div style="font-size:13px;color:var(--text);letter-spacing:1px;margin-bottom:6px;">住宿一晚</div>' +
+      '<div style="font-size:10px;color:var(--text2);line-height:1.6;margin-bottom:18px;">恢復全隊 HP / MP（RB 保留不變）</div>' +
+      '<button id="rest-btn" class="result-btn" style="width:80%;max-width:240px;margin:0 auto;">住宿　—　' + REST_COST + ' Gil</button>' +
+    '</div>';
+  var rb = document.getElementById('rest-btn');
+  if(rb) rb.onclick = doRest;
+}
+function doRest(){
+  if(typeof PLAYER==='undefined'){ return; }
+  if((PLAYER.gil||0) < REST_COST){ showToast('Gil 不足！', 'error'); return; }
+  PLAYER.gil -= REST_COST;
+  if(typeof PARTY_STATE !== 'undefined' && typeof PARTY_DEF !== 'undefined'){
+    PARTY_STATE.forEach(function(st){
+      var def = PARTY_DEF.find(function(d){ return d.key===st.key; });
+      if(!def) return;
+      var eqb = (typeof getEquipBonus === 'function') ? getEquipBonus(st.key) : {hp:0,mp:0};
+      st.hp = maxHpFor(def, st) + (eqb.hp||0);
+      st.mp = maxMpFor(def, st) + (eqb.mp||0);
+    });
+  }
+  updateGilDisplay();
+  showToast('好好休息了一晚 — 全隊 HP / MP 已恢復', 'success');
+  renderShopList();
+  if(typeof saveGame==='function') saveGame();
+}
 function renderShopList(){
   var list = document.getElementById('shop-list');
   var shop = SHOP_STOCK[SHOP.current];
@@ -6726,6 +6873,8 @@ function renderShopList(){
     renderBuyList(list, shop);
   } else if(SHOP.tab === 'sell'){
     renderSellList(list);
+  } else if(SHOP.tab === 'rest'){
+    renderRestPanel(list, shop);
   } else {
     renderBagList(list);
   }
@@ -7665,7 +7814,7 @@ function openLikaClue(){
     {text:'知道了',next:'lika_done'},
     {text:'先喝一杯',next:'open_inn_shop'},
   ];
-  if(typeof STORY!=='undefined' && STORY.chapter>=2){
+  if(typeof STORY!=='undefined' && STORY.likaJoined){
     likaChoices.push({text:'📋 接任務',next:'open_quest_board'});
   }
   openDialog([
@@ -8349,6 +8498,19 @@ function enterShop(shopKey){
   var lines = (shop.greeting && shop.greeting.length ? shop.greeting : [{text:'歡迎光臨。'}]).map(function(g){
     return {speaker:npc.name, face:npc.face, ico:npc.ico, acc:npc.acc, text:g.text};
   });
+  // 酒館：問候後提供「進入酒館／接任務」選單（莉卡加入後 likaJoined 開放）
+  var canQuest = !!shop.rest && (typeof STORY!=='undefined' && STORY.likaJoined) && (typeof openQuestBoard==='function');
+  if(canQuest && lines.length){
+    lines[lines.length-1].choices = [
+      {text:'🍶 進入酒館', next:'tavern_shop'},
+      {text:'📋 接任務', next:'tavern_quest'}
+    ];
+    openDialog(lines, null, {
+      tavern_shop_end: function(){ openShop(shopKey); },
+      tavern_quest_end: function(){ openQuestBoard(); }
+    });
+    return;
+  }
   openDialog(lines, function(){ openShop(shopKey); });
 }
 
